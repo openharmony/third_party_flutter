@@ -1,0 +1,191 @@
+[
+    {
+        "Name": "flutter",
+        "License": "BSD 3-Clause License",
+        "License File": "LICENSE",
+        "Version Number": "v1.9.1+hotfix.1",
+        "Owner": "sunbingxin@huawei.com",
+        "Upstream URL": "https://flutter.dev/",
+        "Description": "Flutter makes it easy and fast to build beautiful mobile apps. Flutter is Google''s mobile app SDK for crafting high-quality native interfaces on iOS and Android in record time. Flutter works with existing code, is used by developers and organization"
+    },
+    {
+        "Name": "skia",
+        "License": "BSD 3-Clause License",
+        "License File": "engine/flutter/skia/LICENSE",
+        "Version Number": "4b567cd679ab964b5f6281a67a96c694c950f597",
+        "Owner": "sunbingxin@huawei.com",
+        "Upstream URL": "https://skia.org",
+        "Description": "Skia is a complete 2D graphic library for drawing Text, Geometries, and Images."
+    },
+    {
+        "Name": "ANGLE",
+        "License": "BSD 3-Clause License",
+        "License File": "skia/third_party/externals/angle2/LICENSE",
+        "Version Number": "cdecd97ceefa28409793d04caf873e7b0d0d723c",
+        "Owner": "sunbingxin@huawei.com",
+        "Upstream URL": "http://angleproject.org",
+        "Description": "The goal of ANGLE is to allow users of multiple operating systems to seamlessly run WebGL and other OpenGL ES content by translating OpenGL ES API calls to one of the hardware-supported APIs available for that platform."
+    },
+    {
+        "Name": "Dawn",
+        "License": "Apache 2.0",
+        "License File": "skia/third_party/externals/dawn/LICENSE",
+        "Version Number": "472bd1ec29d8d4e03404bf4b4e0233e4fc6031ce",
+        "Owner": "sunbingxin@huawei.com",
+        "Upstream URL": "https://dawn.googlesource.com/dawn",
+        "Description": "Dawn is an implementation of the WebGPU standard exposed through a C/C++ interface. It provides implementations on top of native graphics APIs like D3D12, Metal and Vulkan, as well as a client-server implementation to remote WebGPU outside sandboxed context like Chromium's render processes."
+    },
+    {
+        "Name": "etc1",
+        "License": "Apache 2.0",
+        "License File": "skia/third_party/etc1/LICENSE",
+        "Version Number": "01cc538b",
+        "Owner": "sunbingxin@huawei.com",
+        "Upstream URL": "https://android.googlesource.com/platform/frameworks/native/+/master/opengl/",
+        "Description": "PKM file format (ETC1 data) support Local Modifications: Created LICENSE file for compliance purposes. Not included in original distribution."
+    },
+    {
+        "Name": "freetype",
+        "License": "The FreeType Project LICENSE",
+        "License File": "skia/third_party/externals/freetype/docs/LICENSE.TXT",
+        "Version Number": "2.10.1",
+        "Owner": "sunbingxin@huawei.com",
+        "Upstream URL": "https://www.freetype.org",
+        "Description": "FreeType is a freely available software library to render fonts. It is written in C, designed to be small, efficient, highly customizable, and portable while capable of producing high-quality output (glyph images) of most vector and bitmap font formats."
+    },
+    {
+        "Name": "harfbuzz",
+        "License": "MIT",
+        "License File": "skia/third_party/externals/harfbuzz/COPYING",
+        "Version Number": "1bada656a86e9cb27d4a6b9fcc50748f0bd9c1d9",
+        "Owner": "sunbingxin@huawei.com",
+        "Upstream URL": "http://harfbuzz.org/",
+        "Description": "HarfBuzz is a text shaping engine. It primarily supports OpenType, but also Apple Advanced Typography. HarfBuzz is used in Android, Chrome, ChromeOS, Firefox, GNOME, GTK+, KDE, LibreOffice, OpenJDK, PlayStation, Qt, XeTeX, and other places."
+    },
+    {
+        "Name": "icu",
+        "License": "MIT",
+        "License File": "skia/third_party/externals/icu/LICENSE",
+        "Version Number": "63.1",
+        "Owner": "sunbingxin@huawei.com",
+        "Upstream URL": "https://github.com/unicode-org/icu",
+        "Description": "ICU is a mature, widely used set of portable C/C++ and Java libraries for Unicode support, software internationalization and globalization (i18n/g11n). The packages are mirrors of the main website."
+    },
+    {
+        "Name": "imgui",
+        "License": "MIT",
+        "License File": "skia/third_party/externals/imgui/LICENSE.txt",
+        "Version Number": "d38d7c6628bebd02692cfdd6fa76b4d992a35b75",
+        "Owner": "sunbingxin@huawei.com",
+        "Upstream URL": "https://travis-ci.org/ocornut/imgui",
+        "Description": "ImGui is a bloat-free graphical user interface library for C++. It outputs optimized vertex buffers that you can render anytime in your 3D-pipeline enabled application. It is fast, portable, renderer agnostic and self-contained (no external dependencies)."
+    },
+    {
+        "Name": "libjpeg-turbo",
+        "License": "BSD",
+        "License File": "skia/third_party/externals/libjpeg-turbo/LICENSE.md",
+        "Version Number": "574f3a772c96dc9db2c98ef24706feb3f6dbda9a",
+        "Owner": "sunbingxin@huawei.com",
+        "Upstream URL": "http://libjpeg-turbo.org/",
+        "Description": "libjpeg-turbo includes two APIs that can be used to compress and decompress JPEG images."
+    },
+    {
+        "Name": "libpng",
+        "License": "libpng license",
+        "License File": "skia/third_party/externals/libpng/LICENSE",
+        "Version Number": "386707c6d19b974ca2e3db7f5c61873813c6fe44",
+        "Owner": "sunbingxin@huawei.com",
+        "Upstream URL": "http://www.libpng.org",
+        "Description": "Reference library for supporting the Portable Network Graphics (PNG) format."
+    },
+    {
+        "Name": "libwebp",
+        "License": "BSD 3-Clause License",
+        "License File": "skia/third_party/externals/libwebp/COPYING",
+        "Version Number": "0fe1a89dbf1930fc2554dbe76adad5d962054ead",
+        "Owner": "sunbingxin@huawei.com",
+        "Upstream URL": "http://developers.google.com/speed/webp",
+        "Description": "WebP codec: library to encode and decode images in WebP format. This package contains the library that can be used in other programs to add WebP support, as well as the command line tools 'cwebp' and 'dwebp'."
+    },
+    {
+        "Name": "opencl-lib",
+        "License": "MIT License",
+        "License File": "skia/third_party/externals/opencl-lib/LICENSE",
+        "Version Number": "4e6d30e406d2e5a65e1d65e404fe6df5f772a32b",
+        "Owner": "sunbingxin@huawei.com",
+        "Upstream URL": "https://skia.googlesource.com/external/github.com/GPUOpen-Tools/common-lib-amd-APPSDK-3.0/",
+        "Description": "common-lib-amd-APPSDK-3.0"
+    },
+    {
+        "Name": "piex",
+        "License": "Apache License V2.0",
+        "License File": "skia/third_party/externals/piex/LICENSE",
+        "Version Number": "bb217acdca1cc0c16b704669dd6f91a1b509c406",
+        "Owner": "sunbingxin@huawei.com",
+        "Upstream URL": "https://android.googlesource.com/platform/external/piex/",
+        "Description": "The Preview Image Extractor (PIEX) is designed to find and extract the largest JPEG compressed preview image contained in a RAW file."
+    },
+    {
+        "Name": "sdl",
+        "License": "zlib/libpng License",
+        "License File": "skia/third_party/externals/sdl/COPYING.txt",
+        "Version Number": "5d7cfcca344034aff9327f77fc181ae3754e7a90",
+        "Owner": "sunbingxin@huawei.com",
+        "Upstream URL": "http://www.libsdl.org/",
+        "Description": "Simple DirectMedia Layer is a cross-platform development library designed to provide low level access to audio, keyboard, mouse, joystick, and graphics hardware via OpenGL and Direct3D. It is used by video playback software, emulators, and popular games including Valve's award winning catalog and many Humble Bundle games."
+    },
+    {
+        "Name": "sfntly",
+        "License": "Apache License V2.0",
+        "License File": "skia/third_party/externals/sfntly/cpp/COPYING.txt,skia/third_party/externals/sfntly/java/COPYING.tx",
+        "Version Number": "b55ff303ea2f9e26702b514cf6a3196a2e3e2974",
+        "Owner": "sunbingxin@huawei.com",
+        "Upstream URL": "https://github.com/rillig/sfntly",
+        "Description": "The sfntly project contains Java and C++ libraries for reading, editing, and writing sfnt container fonts (OpenType, TrueType, AAT/GX, and Graphite)."
+    },
+    {
+        "Name": "skcms",
+        "License": "BSD",
+        "License File": "skia/third_party/skcms/LICENSE",
+        "Version Number": "958fec279ed59ff630770dc0482eb10f30367a83",
+        "Owner": "sunbingxin@huawei.com",
+        "Upstream URL": "https://skia.org/",
+        "Description": "skcms"
+    },
+    {
+        "Name": "spirv-headers",
+        "License": "MIT",
+        "License File": "skia/third_party/externals/spirv-headers/LICENSE",
+        "Version Number": "661ad91124e6af2272afd00f804d8aa276e17107",
+        "Owner": "sunbingxin@huawei.com",
+        "Upstream URL": "https://www.khronos.org/registry/spir-v/",
+        "Description": "This repository contains machine-readable files from the SPIR-V Registry."
+    },
+    {
+        "Name": "spirv-tools",
+        "License": "Apache License V2.0",
+        "License File": "skia/third_party/externals/spirv-tools/LICENSE",
+        "Version Number": "e9e4393b1c5aad7553c05782acefbe32b42644bd",
+        "Owner": "sunbingxin@huawei.com",
+        "Upstream URL": "https://travis-ci.org/KhronosGroup/SPIRV-Tools",
+        "Description": "The project includes an assembler, binary module parser, disassembler, validator, and optimizer for SPIR-V. Except for the optimizer, all are based on a common static library.  The library contains all of the implementation details, and is used in the standalone tools whilst also enabling integration into other code bases directly. The optimizer implementation resides in its own library, which depends on the core library."
+    },
+    {
+        "Name": "wuffs",
+        "License": "Apache License V2.0",
+        "License File": "skia/third_party/externals/wuffs/LICENSE",
+        "Version Number": "6ad7d00a262e862549e4963b4a43d148a8285e50",
+        "Owner": "sunbingxin@huawei.com",
+        "Upstream URL": "https://wuffs.org/",
+        "Description": "Wuffs is a domain-specific language and library for wrangling untrusted file formats safely. Wrangling includes parsing, decoding and encoding. Examples of such file formats include images, audio, video, fonts and compressed archives."
+    },
+    {
+        "Name": "zlib",
+        "License": "zlib/libpng License",
+        "License File": "skia/third_party/externals/zlib/LICENSE",
+        "Version Number": "1.2.11",
+        "Owner": "sunbingxin@huawei.com",
+        "Upstream URL": "http://zlib.net/",
+        "Description": "A massively spiffy yet delicately unobtrusive compression library."
+    }
+]

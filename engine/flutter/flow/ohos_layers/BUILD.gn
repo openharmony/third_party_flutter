@@ -1,0 +1,44 @@
+# Copyright 2013 The Flutter Authors. All rights reserved.
+# Copyright (c) Huawei Technologies Co., Ltd. 2021. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/ohos.gni")
+import("//third_party/flutter/flutter_ace_config.gni")
+
+# build core flow sources
+template("flutter_ohos_layers_set") {
+  forward_variables_from(invoker, "*")
+  ohos_source_set(target_name) {
+    defines += invoker.defines
+    configs = [ "$flutter_root:flutter_config" ]
+
+    sources = [
+      "backdrop_filter_layer.cpp",
+      "clip_path_layer.cpp",
+      "clip_rect_layer.cpp",
+      "clip_rrect_layer.cpp",
+      "container_layer.cpp",
+      "layer_tree.cpp",
+      "layer_tree_builder.cpp",
+      "opacity_layer.cpp",
+      "picture_layer.cpp",
+      "shader_mask_layer.cpp",
+      "texture_layer.cpp",
+      "texture_register.cpp",
+      "transform_layer.cpp",
+    ]
+
+    deps = [ "$flutter_root:ace_skia_$platform" ]
+  }
+}
+
+flutter_ohos_layers_set("flutter_ohos_layers_ohos") {
+  defines = ace_ohos_defines
+  platform = "ohos"
+}
+
+flutter_ohos_layers_set("flutter_ohos_layers_multi") {
+  defines = ace_multi_platforms
+  platform = "multi"
+}

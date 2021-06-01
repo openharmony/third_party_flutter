@@ -1,0 +1,33 @@
+# Copyright 2016 Google Inc.
+#
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  skia_use_system_expat = is_official_build
+}
+
+import("../third_party.gni")
+
+if (skia_use_system_expat) {
+  system("expat") {
+    libs = [ "expat" ]
+  }
+} else {
+  third_party("expat") {
+    # Modify for use external libexpat
+    public_defines = [
+      "XML_STATIC",
+      "XML_POOR_ENTROPY",
+    ]
+    public_include_dirs = [ "//third_party/expat/lib" ]
+
+    defines = [ "HAVE_MEMMOVE" ]
+
+    sources = [
+      "//third_party/expat/lib/xmlparse.c",
+      "//third_party/expat/lib/xmlrole.c",
+      "//third_party/expat/lib/xmltok.c",
+    ]
+  }
+}
