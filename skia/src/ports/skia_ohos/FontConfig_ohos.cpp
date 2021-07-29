@@ -5,6 +5,7 @@
 #include "FontConfig_ohos.h"
 
 #include <dirent.h>
+#include <libgen.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -971,7 +972,9 @@ int FontConfig_OHOS::loadFont(const SkTypeface_FreeType::Scanner& scanner, const
             err = ERROR_FONT_INVALID_STREAM;
         }
         LOGE("%s : %s\n", errToString(err), fname);
-        errSet.emplace_back(err, basename(fname));
+        char* fnameCopy = strdup(fname);
+        errSet.emplace_back(err, basename(fnameCopy));
+        free(fnameCopy);
         return err;
     }
     // for adjustMap - update weight
