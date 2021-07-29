@@ -35,6 +35,13 @@ void PlatformViewOhos::NotifyCreated(::OHOS::Window* window)
     PlatformView::NotifyCreated();
 }
 
+void PlatformViewOhos::NotifyChanged(const SkISize& size)
+{
+    if (surface_) {
+        surface_->OnScreenSurfaceResize(size);
+    }
+}
+
 std::unique_ptr<Surface> PlatformViewOhos::CreateRenderingSurface()
 {
     if (!surface_) {

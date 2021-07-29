@@ -24,6 +24,8 @@ class OhosSurfaceSoftware final : public OhosSurface,
 
   std::unique_ptr<Surface> CreateGPUSurface() override;
 
+  bool OnScreenSurfaceResize(const SkISize& size) override;
+
   void SetPlatformWindow(OHOS::Window* window) override;
 
   sk_sp<SkSurface> AcquireBackingStore(const SkISize& size) override;

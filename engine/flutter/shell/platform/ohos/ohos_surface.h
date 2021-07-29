@@ -25,6 +25,8 @@ class OhosSurface {
 
     virtual std::unique_ptr<Surface> CreateGPUSurface() = 0;
 
+    virtual bool OnScreenSurfaceResize(const SkISize& size) = 0;
+
     virtual void SetPlatformWindow(::OHOS::Window* window) = 0;
 };
 
