@@ -64,6 +64,13 @@ std::unique_ptr<Surface> OhosSurfaceSoftware::CreateGPUSurface()
     return surface;
 }
 
+bool OhosSurfaceSoftware::OnScreenSurfaceResize(const SkISize& size)
+{
+    requestConfig_.width = size.fWidth;
+    requestConfig_.height = size.fHeight;
+    return true;
+}
+
 void OhosSurfaceSoftware::SetPlatformWindow(OHOS::Window* window)
 {
     if (window == nullptr) {

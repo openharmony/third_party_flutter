@@ -17,6 +17,7 @@ public:
     PlatformViewOhos(PlatformView::Delegate& delegate, flutter::TaskRunners task_runners, bool use_software_rendering);
 
     void NotifyCreated(::OHOS::Window* window);
+    void NotifyChanged(const SkISize& size);
     std::unique_ptr<Surface> CreateRenderingSurface();
     std::unique_ptr<VsyncWaiter> CreateVSyncWaiter(int32_t platform);
 
