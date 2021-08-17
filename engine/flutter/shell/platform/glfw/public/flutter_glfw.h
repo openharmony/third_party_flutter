@@ -80,6 +80,16 @@ FLUTTER_EXPORT void FlutterDesktopGetFramebufferSize(
     int* width,
     int* height);
 
+FLUTTER_EXPORT void FlutterDesktopGetWindowSize(
+    FlutterDesktopWindowRef flutter_window,
+    int* width,
+    int* height);
+
+FLUTTER_EXPORT void FlutterDesktopSetWindowSize(
+    FlutterDesktopWindowRef flutter_window,
+    int& width,
+    int& height);
+
 // Loops on Flutter window events until the window is closed.
 //
 // Once this function returns, |controller| is no longer valid, and must not be

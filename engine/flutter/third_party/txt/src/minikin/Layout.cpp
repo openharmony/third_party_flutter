@@ -1104,6 +1104,7 @@ void Layout::doLayoutRun(const uint16_t* buf,
         } else {
           ctx->paint.font->GetBounds(&glyphBounds, glyph_ix, ctx->paint);
         }
+        xAdvance = std::max(xAdvance, glyphBounds.mRight);
         glyphBounds.offset(x + xoff, y + yoff);
         mBounds.join(glyphBounds);
         if (static_cast<size_t>(info[i].cluster - clusterOffset) < count) {

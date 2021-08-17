@@ -71,6 +71,8 @@ class FontCollection : public std::enable_shared_from_this<FontCollection> {
   // Vary font collection with font weight scale.
   void VaryFontCollectionWithFontWeightScale(float fontWeightScale);
 
+  void LoadSystemFont();
+
 #if FLUTTER_ENABLE_SKSHAPER
 
   // Construct a Skia text layout FontCollection based on this collection.
@@ -114,6 +116,7 @@ class FontCollection : public std::enable_shared_from_this<FontCollection> {
   std::vector<FamilyKey> variedFonts_;
 
   std::mutex mutex_;
+  mutable std::mutex fontManagerMutex_;
 
   // Performs the actual work of MatchFallbackFont. The result is cached in
   // fallback_match_cache_.
@@ -133,6 +136,8 @@ class FontCollection : public std::enable_shared_from_this<FontCollection> {
   const std::shared_ptr<minikin::FontFamily>& GetFallbackFontFamily(
       const sk_sp<SkFontMgr>& manager,
       const std::string& family_name);
+
+  sk_sp<SkFontMgr> GetDefaultFontManagerSafely() const;
 
   FML_DISALLOW_COPY_AND_ASSIGN(FontCollection);
 };

@@ -78,6 +78,12 @@ class TxtFallbackFontProvider
     }
   }
 
+  virtual const std::shared_ptr<minikin::FontFamily>& matchFallbackFontFromHwFont(
+      uint32_t ch,
+      std::string locale) {
+    return g_null_family;
+  }
+
  private:
   std::weak_ptr<FontCollection> font_collection_;
 };
@@ -91,10 +97,12 @@ size_t FontCollection::GetFontManagersCount() const {
 }
 
 void FontCollection::SetupDefaultFontManager() {
+  std::lock_guard<std::mutex> lock(fontManagerMutex_);
   default_font_manager_ = GetDefaultFontManager();
 }
 
 void FontCollection::SetDefaultFontManager(sk_sp<SkFontMgr> font_manager) {
+  std::lock_guard<std::mutex> lock(fontManagerMutex_);
   default_font_manager_ = font_manager;
 }
 
@@ -110,6 +118,11 @@ void FontCollection::SetTestFontManager(sk_sp<SkFontMgr> font_manager) {
   test_font_manager_ = font_manager;
 }
 
+sk_sp<SkFontMgr> FontCollection::GetDefaultFontManagerSafely() const {
+  std::lock_guard<std::mutex> lock(fontManagerMutex_);
+  return default_font_manager_;
+}
+
 // Return the available font managers in the order they should be queried.
 std::vector<sk_sp<SkFontMgr>> FontCollection::GetFontManagerOrder() const {
   std::vector<sk_sp<SkFontMgr>> order;
@@ -119,8 +132,9 @@ std::vector<sk_sp<SkFontMgr>> FontCollection::GetFontManagerOrder() const {
     order.push_back(asset_font_manager_);
   if (test_font_manager_)
     order.push_back(test_font_manager_);
-  if (default_font_manager_)
-    order.push_back(default_font_manager_);
+  auto defaultFontManager = GetDefaultFontManagerSafely();
+  if (defaultFontManager)
+    order.push_back(defaultFontManager);
   return order;
 }
 
@@ -351,6 +365,9 @@ void FontCollection::VaryFontCollectionWithFontWeightScale(float fontWeightScale
   }
 }
 
+void FontCollection::LoadSystemFont() {
+}
+
 #if FLUTTER_ENABLE_SKSHAPER
 
 sk_sp<skia::textlayout::FontCollection>
@@ -358,7 +375,7 @@ FontCollection::CreateSktFontCollection() {
   sk_sp<skia::textlayout::FontCollection> skt_collection =
       sk_make_sp<skia::textlayout::FontCollection>();
 
-  skt_collection->setDefaultFontManager(default_font_manager_,
+  skt_collection->setDefaultFontManager(GetDefaultFontManagerSafely(),
                                         GetDefaultFontFamily().c_str());
   skt_collection->setAssetFontManager(asset_font_manager_);
   skt_collection->setDynamicFontManager(dynamic_font_manager_);

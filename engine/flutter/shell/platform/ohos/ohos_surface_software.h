@@ -14,7 +14,7 @@
 namespace flutter {
 
 class OhosSurfaceSoftware final : public OhosSurface,
-                                     public GPUSurfaceSoftwareDelegate {
+                                  public GPUSurfaceSoftwareDelegate {
  public:
   OhosSurfaceSoftware();
 

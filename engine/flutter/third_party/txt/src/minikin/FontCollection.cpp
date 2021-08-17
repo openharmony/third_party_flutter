@@ -298,6 +298,27 @@ const std::shared_ptr<FontFamily>& FontCollection::getFamilyForChar(
     uint32_t vs,
     uint32_t langListId,
     int variant) const {
+  // First find font in hw theme.
+  for (size_t k = 0; k < mFamilies.size(); k++) {
+    if (NULL == mFamilies[k]) {
+      continue;
+    }
+    if (mFamilies[k]->getHwFontFamilyType() > 0) {
+      if(mFamilies[k] ->getCoverage().get(ch)) {
+        return mFamilies[k];
+      }
+    }
+  }
+
+  if (mFallbackFontProvider) {
+    const std::shared_ptr<FontFamily>& fallback =
+        mFallbackFontProvider->matchFallbackFontFromHwFont(ch,
+                                                           GetFontLocale(langListId));
+    if (fallback) {
+      return fallback;
+    }
+  }
+
   if (ch >= mMaxChar) {
     // libtxt: check if the fallback font provider can match this character
     if (mFallbackFontProvider) {

@@ -44,6 +44,7 @@ struct FontFamilyItem {
     int index;
     int variant;
     std::vector<FontVariationAxis> variationAxes;
+    int hwFontFamilyType;
 };
 
 struct FamilyAliasObj {
@@ -58,13 +59,15 @@ public:
                        const std::string& lang,
                        FontVariant variantStyle,
                        const std::vector<FontVariationAxis>& variationAxes,
-                       int fontWeight)
+                       int fontWeight,
+                       int hwFontFamilyType)
         : fTypeface(typeface)
         , fLang(lang)
         , fVariantStyle(variantStyle)
         , fFamilyName(familyName.c_str())
         , variationAxes(variationAxes)
         , fontWeight(fontWeight)
+        , hwFontFamilyType(hwFontFamilyType)
     { }
 
     ~SkTypeface_OHOS() override = default;
@@ -98,6 +101,10 @@ public:
         return fLang;
     }
 
+    int getHwFontFamilyType() const {
+        return hwFontFamilyType;
+    }
+
 protected:
     SkTypeface* fTypeface = nullptr;
     std::string fLang;
@@ -105,6 +112,7 @@ protected:
     SkString fFamilyName;
     std::vector<FontVariationAxis> variationAxes;
     int fontWeight = 400; // default font weight is 400.
+    int hwFontFamilyType = 0;
 };
 
 class SkLanguage {
@@ -173,8 +181,9 @@ public:
                     variationAxis.push_back({ .tag = variationAxes.tag, .value = variationAxes.value });
                 }
             }
-            fStylesHost.push_back().reset(
-                new SkTypeface_OHOS(item.typeface, familyName, item.lang, item.variant, variationAxis, fontWeight));
+            fStylesHost.push_back().reset(new SkTypeface_OHOS(
+                item.typeface, familyName, item.lang, item.variant,
+                variationAxis, fontWeight, item.hwFontFamilyType));
         }
     }
 
@@ -240,6 +249,13 @@ public:
         return false;
     }
 
+    int getHwFontFamilyType() {
+        if (fStylesHost.count() <= 0) {
+            return 0;
+        }
+        return fStylesHost[0]->getHwFontFamilyType();
+    }
+
 private:
     SkTArray<sk_sp<SkTypeface>> fStyles;
     SkTArray<sk_sp<SkTypeface_OHOS>> fStylesHost;
@@ -262,8 +278,8 @@ class SkFontMgr_OHOS : public SkFontMgr {
 public:
     using BuildFamilyMapCallback = std::function<void(SkTArray<NameToFamily, true>&,
                                                         SkTArray<NameToFamily, true>&,
-                                                        SkTArray<sk_sp<SkFontStyleSet_OHOS>>&)>;
-    using GetAliasesCallback = std::function<void(std::map<std::string, FamilyAliasObj>&)>;
+                                                        SkTArray<sk_sp<SkFontStyleSet_OHOS>>&,
+                                                        std::map<std::string, FamilyAliasObj>&)>;
 
     SkFontMgr_OHOS();
     ~SkFontMgr_OHOS() override = default;
@@ -274,12 +290,14 @@ public:
                                                     int bcp47Count,
                                                     SkUnichar character);
 
+  SkString onMatchFamilyStyleCharacterHwFont(const char familyName[],
+                                           const SkFontStyle& style,
+                                           const char* bcp47[],
+                                           int bcp47Count,
+                                           SkUnichar character);
+
     static void setBuildFamilyMapCallback(BuildFamilyMapCallback&& callback) {
         buildFamilyMapCallback = std::move(callback);
-    }
-
-    static void setGetAliasesCallback(GetAliasesCallback&& callback) {
-        getAliasesCallback = std::move(callback);
     }
 
 protected:
@@ -316,8 +334,12 @@ private:
     void buildNameToFamilyMap();
     void findDefaultStyleSet();
     static BuildFamilyMapCallback buildFamilyMapCallback;
-    static GetAliasesCallback getAliasesCallback;
     SkString find_family_style_character_ohos(
+        const SkString& familyName,
+        const SkTArray<NameToFamily, true>& fallbackNameToFamilyMap,
+        const SkFontStyle& style, bool elegant,
+        const SkString& langTag, SkUnichar character);
+    SkString find_family_style_character_hwfont(
         const SkString& familyName,
         const SkTArray<NameToFamily, true>& fallbackNameToFamilyMap,
         const SkFontStyle& style, bool elegant,
@@ -326,13 +348,19 @@ private:
     SkString findFromCache(const SkString& familyName, const SkFontStyle& style, bool elegant,
                            const SkString& langTag, SkUnichar character);
 
+    void addToHwFontCache(const NameToFamily* item);
+    SkString findFromHwFontCache(const SkString& familyName, const SkFontStyle& style, bool elegant,
+                           const SkString& langTag, SkUnichar character);
+
     SkTArray<sk_sp<SkFontStyleSet_OHOS>> fStyleSets;
     sk_sp<SkFontStyleSet> fDefaultStyleSet;
 
     std::mutex mutexCache;
     SkTArray<const NameToFamily*, true> familyMapCache;
+    SkTArray<const NameToFamily*, true> hwFontFamilyMapCache;
     SkTArray<NameToFamily, true> fNameToFamilyMap;
     SkTArray<NameToFamily, true> fFallbackNameToFamilyMap;
+    std::map<std::string, FamilyAliasObj> fAliasMap;
 
     typedef SkFontMgr INHERITED;
 };

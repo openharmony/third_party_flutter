@@ -66,6 +66,7 @@ std::unique_ptr<Surface> OhosSurfaceSoftware::CreateGPUSurface()
 
 bool OhosSurfaceSoftware::OnScreenSurfaceResize(const SkISize& size)
 {
+    FML_LOG(INFO) << "OhosSurfaceSoftware::OnScreenSurfaceResize, software surface do noting";
     requestConfig_.width = size.fWidth;
     requestConfig_.height = size.fHeight;
     return true;
@@ -122,7 +123,6 @@ bool OhosSurfaceSoftware::PresentBackingStore(
     if (!backing_store->peekPixels(&pixmap)) {
         return false;
     }
-
 
     if (surface_ == nullptr) {
         FML_LOG(ERROR) << "OhosSurfaceSoftware surface is nullptr";

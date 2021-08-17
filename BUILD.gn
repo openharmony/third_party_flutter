@@ -355,6 +355,7 @@ template("flutter_engine_flow") {
       "engine/flutter/flow/layers/container_layer.cc",
       "engine/flutter/flow/layers/layer.cc",
       "engine/flutter/flow/layers/layer_tree.cc",
+      "engine/flutter/flow/layers/mask_layer.cc",
       "engine/flutter/flow/layers/opacity_layer.cc",
       "engine/flutter/flow/layers/performance_overlay_layer.cc",
       "engine/flutter/flow/layers/physical_shape_layer.cc",
@@ -2113,6 +2114,12 @@ ohos_source_set("ace_skia_core") {
 config("ace_skia_ext_config") {
   visibility = [ ":*" ]
   include_dirs = [
+    "//third_party/aosp/external/skia/src/core",
+    "//third_party/aosp/external/skia/src/opts",
+    "//third_party/aosp/external/skia/src/shaders",
+    "//third_party/aosp/external/skia/src/gpu",
+    "$libs_root/shared_library/${target_os}_${target_cpu}/include/frameworks/native/libs/nativewindow/include",
+    "$libs_root/shared_library/${target_os}_${target_cpu}/include/frameworks/native/libs/arect/include",
     "$flutter_root",
     "skia",
     "engine",
@@ -2127,11 +2134,11 @@ ohos_source_set("ace_skia_ext") {
 
   sources = [
     # enable ext utils
-    "skia/src/core/SkArenaAlloc.cpp",
-    "skia/src/core/SkOpts.cpp",
-    "skia/src/core/SkTSearch.cpp",
-    "skia/src/utils/SkBase64.cpp",
-    "skia/src/utils/SkParsePath.cpp",
+    "//third_party/aosp/external/skia/src/core/SkArenaAlloc.cpp",
+    "//third_party/aosp/external/skia/src/core/SkOpts.cpp",
+    "//third_party/aosp/external/skia/src/core/SkTSearch.cpp",
+    "//third_party/aosp/external/skia/src/utils/SkBase64.cpp",
+    "//third_party/aosp/external/skia/src/utils/SkParsePath.cpp",
 
     # use ohos fontmgr
     "skia/src/ports/SkFontMgr_ohos.cpp",

@@ -34,6 +34,8 @@ source_set("flow") {
     "layers/layer.h",
     "layers/layer_tree.cc",
     "layers/layer_tree.h",
+    "layers/mask_layer.cc",
+    "layers/mask_layer.h",
     "layers/opacity_layer.cc",
     "layers/opacity_layer.h",
     "layers/performance_overlay_layer.cc",
@@ -122,8 +124,8 @@ executable("flow_unittests") {
     ":flow",
     ":flow_fixtures",
     "$flutter_root/fml",
+    "$flutter_root/third_party/skia",
     "//third_party/dart/runtime:libdart_jit",  # for tracing
     "//third_party/googletest:gtest",
-    "$flutter_root/third_party/skia",
   ]
 }

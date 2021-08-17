@@ -18,6 +18,13 @@ use_system_skia = !is_standard_system
 # Better to change "use_system_skia" to false, otherwise may missing some commands
 enable_dump_drawcmd = false
 
+use_flutter_icu = true
+
+aosp_libs_dir = "//prebuilts/aosp_prebuilt_libs/asdk_libs"
+libs_root = "${aosp_libs_dir}/sdk"
+
+ace_root = "//foundation/ace/ace_engine"
+ace_flutter_engine_root = "$ace_root/flutter_engine"
 flutter_root = "//third_party/flutter"
 ace_wearable_defines = [ "WEARABLE_PRODUCT" ]
 
