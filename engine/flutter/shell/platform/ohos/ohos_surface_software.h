@@ -26,7 +26,7 @@ class OhosSurfaceSoftware final : public OhosSurface,
 
   bool OnScreenSurfaceResize(const SkISize& size) override;
 
-  void SetPlatformWindow(OHOS::Window* window) override;
+  void SetPlatformWindow(const OHOS::sptr<OHOS::Window> &window) override;
 
   sk_sp<SkSurface> AcquireBackingStore(const SkISize& size) override;
 
@@ -44,7 +44,7 @@ class OhosSurfaceSoftware final : public OhosSurface,
   SkColorType target_color_type_;
   SkAlphaType target_alpha_type_;
 
-  OHOS::Window* window_ = nullptr;
+  OHOS::sptr<OHOS::Window> window_ = nullptr;
   OHOS::BufferRequestConfig requestConfig_;
   OHOS::sptr<OHOS::Surface> surface_ = nullptr;
 

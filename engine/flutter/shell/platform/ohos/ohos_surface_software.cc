@@ -71,19 +71,25 @@ bool OhosSurfaceSoftware::OnScreenSurfaceResize(const SkISize& size)
     return true;
 }
 
-void OhosSurfaceSoftware::SetPlatformWindow(OHOS::Window* window)
+void OhosSurfaceSoftware::SetPlatformWindow(const OHOS::sptr<OHOS::Window> &window)
 {
     if (window == nullptr) {
         FML_LOG(ERROR) << "OhosSurfaceSoftware::SetPlatformWindow, window is nullptr";
         return;
     }
     window_ = window;
-    window_->GetRequestConfig(requestConfig_);
     surface_ = window->GetSurface();
     if (surface_ == nullptr) {
         FML_LOG(ERROR) << "OhosSurfaceSoftware::SetPlatformWindow, surface_ is nullptr";
         return;
     }
+    requestConfig_ = {
+        .width = surface_->GetDefaultWidth(),
+        .height = surface_->GetDefaultHeight(),
+        .strideAlignment = 0x8,
+        .format = PIXEL_FMT_RGBA_8888,
+        .usage = surface_->GetDefaultUsage(),
+    };
     // Set buffer size to 5 for enough buffer
     surface_->SetQueueSize(5);
 }

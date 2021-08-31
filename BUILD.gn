@@ -445,7 +445,7 @@ template("flutter_engine_shell") {
       defines += [ "UNICODE" ]
     } else if (is_standard_system) {
       include_dirs = [ "//utils/native/base/include" ]
-      deps += [ "//foundation/graphic/standard:libwms_client" ]
+      deps += [ "//foundation/graphic/standard:libwmclient" ]
       sources += [
         "engine/flutter/shell/platform/ohos/ohos_shell_holder.cc",
         "engine/flutter/shell/platform/ohos/ohos_surface_software.cc",
