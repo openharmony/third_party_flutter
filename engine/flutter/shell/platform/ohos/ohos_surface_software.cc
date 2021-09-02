@@ -126,10 +126,11 @@ bool OhosSurfaceSoftware::PresentBackingStore(
     int32_t PIXEL_BASE = 16;
     int32_t convertWidth = requestConfig_.width % PIXEL_BASE == 0 ? requestConfig_.width
         : (requestConfig_.width / PIXEL_BASE + 1) * PIXEL_BASE;
+    int32_t alignment = 8;
     OHOS::BufferRequestConfig requestConfig = {
         .width = convertWidth,
         .height = requestConfig_.height,
-        .strideAlignment = 8,
+        .strideAlignment = alignment,
         .format = PIXEL_FMT_RGBA_8888,
         .usage = HBM_USE_CPU_READ | HBM_USE_CPU_WRITE | HBM_USE_MEM_DMA,
         .timeout = 0,
