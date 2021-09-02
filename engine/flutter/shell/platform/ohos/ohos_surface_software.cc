@@ -122,8 +122,12 @@ bool OhosSurfaceSoftware::PresentBackingStore(
         return false;
     }
 
+
+    int32_t PIXEL_BASE = 16;
+    int32_t convertWidth = requestConfig_.width % PIXEL_BASE == 0 ? requestConfig_.width
+        : (requestConfig_.width / PIXEL_BASE + 1) * PIXEL_BASE;
     OHOS::BufferRequestConfig requestConfig = {
-        .width = requestConfig_.width,
+        .width = convertWidth,
         .height = requestConfig_.height,
         .strideAlignment = 8,
         .format = PIXEL_FMT_RGBA_8888,
