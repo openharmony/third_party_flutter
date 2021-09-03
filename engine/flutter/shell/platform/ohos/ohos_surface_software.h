@@ -48,7 +48,6 @@ class OhosSurfaceSoftware final : public OhosSurface,
 
   FML_DISALLOW_COPY_AND_ASSIGN(OhosSurfaceSoftware);
 };
-
 }  // namespace flutter
 
 #endif  // FLUTTER_SHELL_PLATFORM_OHOS_OHOS_SURFACE_SOFTWARE_H_
