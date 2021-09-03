@@ -32,6 +32,11 @@ class OhosSurfaceSoftware final : public OhosSurface,
 
   bool PresentBackingStore(sk_sp<SkSurface> backing_store) override;
 
+  void SurfaceDrawBuffer(
+    OHOS::BufferRequestConfig& requestConfig, OHOS::sptr<OHOS::SurfaceBuffer> surfaceBuffer, SkPixmap& pixmap);
+
+  void SurfaceFlushBuffer(OHOS::sptr<OHOS::SurfaceBuffer>);
+
   ExternalViewEmbedder* GetExternalViewEmbedder() override;
 
  private:
@@ -45,7 +50,6 @@ class OhosSurfaceSoftware final : public OhosSurface,
 
   FML_DISALLOW_COPY_AND_ASSIGN(OhosSurfaceSoftware);
 };
-
 }  // namespace flutter
 
 #endif  // FLUTTER_SHELL_PLATFORM_OHOS_OHOS_SURFACE_SOFTWARE_H_
