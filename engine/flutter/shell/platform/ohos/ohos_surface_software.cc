@@ -123,9 +123,10 @@ bool OhosSurfaceSoftware::PresentBackingStore(
     }
 
 
-    int32_t PIXEL_BASE = 16;
-    int32_t convertWidth = requestConfig_.width % PIXEL_BASE == 0 ? requestConfig_.width
-        : (requestConfig_.width / PIXEL_BASE + 1) * PIXEL_BASE;
+    int32_t pixelBase = 16;
+    int32_t upperBase = 1;
+    int32_t convertWidth = requestConfig_.width % pixelBase == 0 ? requestConfig_.width
+        : (requestConfig_.width / pixelBase + upperBase) * pixelBase;
     int32_t alignment = 8;
     OHOS::BufferRequestConfig requestConfig = {
         .width = convertWidth,
