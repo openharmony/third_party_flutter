@@ -109,11 +109,13 @@ bool OhosSurfaceSoftware::PresentBackingStore(
     if (!IsValid() || backing_store == nullptr) {
         return false;
     }
+
     FML_LOG(INFO) << "OhosSurfaceSoftware peek pixels";
     SkPixmap pixmap;
     if (!backing_store->peekPixels(&pixmap)) {
         return false;
     }
+
     if (surface_ == nullptr) {
         FML_LOG(ERROR) << "OhosSurfaceSoftware surface is nullptr";
         return false;
@@ -121,7 +123,6 @@ bool OhosSurfaceSoftware::PresentBackingStore(
     int32_t pixelBase = 16;
     int32_t convertWidth = requestConfig_.width % pixelBase == 0 ? requestConfig_.width
         : (requestConfig_.width / pixelBase + 1) * pixelBase;
-    int32_t alignment = 8;
     OHOS::BufferRequestConfig requestConfig = {
         .width = convertWidth,
         .height = requestConfig_.height,
@@ -132,11 +133,13 @@ bool OhosSurfaceSoftware::PresentBackingStore(
     };
     OHOS::sptr<OHOS::SurfaceBuffer> surfaceBuffer;
     int32_t releaseFence;
+
     OHOS::SurfaceError ret = surface_->RequestBuffer(surfaceBuffer, releaseFence, requestConfig);
     if (ret != OHOS::SURFACE_ERROR_OK || surfaceBuffer == nullptr || surfaceBuffer->GetSize() == 0) {
         FML_LOG(ERROR) << "OhosSurfaceSoftware request surfaceBuffer fail";
         return false;
     }
+
     SurfaceDrawBuffer(requestConfig, surfaceBuffer);
     SurfaceFlushBuffer(surfaceBuffer);
 
@@ -151,9 +154,11 @@ bool OhosSurfaceSoftware::SurfaceDrawBuffer(
     if (GetSkColorType(requestConfig.format, &color_type, &alpha_type)) {
         SkImageInfo native_image_info = SkImageInfo::Make(
             requestConfig.width, requestConfig.height, color_type, alpha_type);
+
         std::unique_ptr<SkCanvas> canvas = SkCanvas::MakeRasterDirect(
             native_image_info, surfaceBuffer->GetVirAddr(),
             surfaceBuffer->GetSize() / requestConfig.height);
+
         if (canvas) {
             SkBitmap bitmap;
             if (bitmap.installPixels(pixmap)) {
