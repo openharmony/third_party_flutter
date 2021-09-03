@@ -30,6 +30,10 @@ class OhosSurfaceSoftware final : public OhosSurface,
 
   bool PresentBackingStore(sk_sp<SkSurface> backing_store) override;
 
+  void SurfaceDrawBuffer(OHOS::BufferRequestConfig& requestConfig, OHOS::sptr<OHOS::SurfaceBuffer> surfaceBuffer);
+
+  void SurfaceFlushBuffer(OHOS::sptr<OHOS::SurfaceBuffer>);
+
   ExternalViewEmbedder* GetExternalViewEmbedder() override;
 
  private:

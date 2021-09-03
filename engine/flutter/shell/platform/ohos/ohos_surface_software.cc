@@ -109,62 +109,51 @@ bool OhosSurfaceSoftware::PresentBackingStore(
     if (!IsValid() || backing_store == nullptr) {
         return false;
     }
-
     FML_LOG(INFO) << "OhosSurfaceSoftware peek pixels";
     SkPixmap pixmap;
     if (!backing_store->peekPixels(&pixmap)) {
         return false;
     }
-
-
     if (surface_ == nullptr) {
         FML_LOG(ERROR) << "OhosSurfaceSoftware surface is nullptr";
         return false;
     }
-
-
     int32_t pixelBase = 16;
-    int32_t upperBase = 1;
     int32_t convertWidth = requestConfig_.width % pixelBase == 0 ? requestConfig_.width
-        : (requestConfig_.width / pixelBase + upperBase) * pixelBase;
+        : (requestConfig_.width / pixelBase + 1) * pixelBase;
     int32_t alignment = 8;
     OHOS::BufferRequestConfig requestConfig = {
         .width = convertWidth,
         .height = requestConfig_.height,
-        .strideAlignment = alignment,
+        .strideAlignment = 8,
         .format = PIXEL_FMT_RGBA_8888,
         .usage = HBM_USE_CPU_READ | HBM_USE_CPU_WRITE | HBM_USE_MEM_DMA,
         .timeout = 0,
     };
     OHOS::sptr<OHOS::SurfaceBuffer> surfaceBuffer;
     int32_t releaseFence;
-
     OHOS::SurfaceError ret = surface_->RequestBuffer(surfaceBuffer, releaseFence, requestConfig);
-    if (ret != OHOS::SURFACE_ERROR_OK) {
-        FML_LOG(ERROR) << "OhosSurfaceSoftware RequestBuffer failed";
+    if (ret != OHOS::SURFACE_ERROR_OK || surfaceBuffer == nullptr || surfaceBuffer->GetSize() == 0) {
+        FML_LOG(ERROR) << "OhosSurfaceSoftware request surfaceBuffer fail";
         return false;
     }
+    SurfaceDrawBuffer(requestConfig, surfaceBuffer);
+    SurfaceFlushBuffer(surfaceBuffer);
 
-    if (surfaceBuffer == nullptr) {
-        FML_LOG(ERROR) << "OhosSurfaceSoftware surfaceBuffer is nullptr";
-        return false;
-    }
+    return true;
+}
 
-    if (surfaceBuffer->GetSize() == 0) {
-        FML_LOG(ERROR) << "OhosSurfaceSoftware surfaceBuffer size error";
-        return false;
-    }
-
+bool OhosSurfaceSoftware::SurfaceDrawBuffer(
+    OHOS::BufferRequestConfig& requestConfig, OHOS::sptr<OHOS::SurfaceBuffer> surfaceBuffer)
+{
     SkColorType color_type;
     SkAlphaType alpha_type;
     if (GetSkColorType(requestConfig.format, &color_type, &alpha_type)) {
         SkImageInfo native_image_info = SkImageInfo::Make(
             requestConfig.width, requestConfig.height, color_type, alpha_type);
-
         std::unique_ptr<SkCanvas> canvas = SkCanvas::MakeRasterDirect(
             native_image_info, surfaceBuffer->GetVirAddr(),
             surfaceBuffer->GetSize() / requestConfig.height);
-
         if (canvas) {
             SkBitmap bitmap;
             if (bitmap.installPixels(pixmap)) {
@@ -172,7 +161,10 @@ bool OhosSurfaceSoftware::PresentBackingStore(
             }
         }
     }
+}
 
+void OhosSurfaceSoftware::SurfaceFlushBuffer(OHOS::sptr<OHOS::SurfaceBuffer> surfaceBuffer)
+{
     FML_LOG(INFO) << "OhosSurfaceSoftware flush buffer";
     OHOS::BufferFlushConfig flushConfig = {
         .damage = {
@@ -184,13 +176,10 @@ bool OhosSurfaceSoftware::PresentBackingStore(
         .timestamp = 0
     };
     surface_->FlushBuffer(surfaceBuffer, -1, flushConfig);
-
-    return true;
 }
 
 ExternalViewEmbedder* OhosSurfaceSoftware::GetExternalViewEmbedder()
 {
     return nullptr;
 }
-
 }  // namespace flutter
