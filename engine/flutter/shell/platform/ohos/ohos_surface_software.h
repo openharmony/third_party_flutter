@@ -30,7 +30,8 @@ class OhosSurfaceSoftware final : public OhosSurface,
 
   bool PresentBackingStore(sk_sp<SkSurface> backing_store) override;
 
-  void SurfaceDrawBuffer(OHOS::BufferRequestConfig& requestConfig, OHOS::sptr<OHOS::SurfaceBuffer> surfaceBuffer);
+  void SurfaceDrawBuffer(
+    OHOS::BufferRequestConfig& requestConfig, OHOS::sptr<OHOS::SurfaceBuffer> surfaceBuffer, SkPixmap& pixmap);
 
   void SurfaceFlushBuffer(OHOS::sptr<OHOS::SurfaceBuffer>);
 
