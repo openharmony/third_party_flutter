@@ -146,7 +146,7 @@ bool OhosSurfaceSoftware::PresentBackingStore(
     return true;
 }
 
-bool OhosSurfaceSoftware::SurfaceDrawBuffer(
+void OhosSurfaceSoftware::SurfaceDrawBuffer(
     OHOS::BufferRequestConfig& requestConfig, OHOS::sptr<OHOS::SurfaceBuffer> surfaceBuffer)
 {
     SkColorType color_type;
