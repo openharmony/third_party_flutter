@@ -17,7 +17,6 @@
 namespace flutter {
 
 namespace {
-
 bool GetSkColorType(int32_t buffer_format,
                     SkColorType* color_type,
                     SkAlphaType* alpha_type)

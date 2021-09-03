@@ -12,7 +12,6 @@
 #include "flutter/shell/platform/ohos/ohos_surface.h"
 
 namespace flutter {
-
 class OhosSurfaceSoftware final : public OhosSurface,
                                      public GPUSurfaceSoftwareDelegate {
  public:
