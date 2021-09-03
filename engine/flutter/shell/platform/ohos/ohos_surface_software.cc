@@ -140,14 +140,14 @@ bool OhosSurfaceSoftware::PresentBackingStore(
         return false;
     }
 
-    SurfaceDrawBuffer(requestConfig, surfaceBuffer);
+    SurfaceDrawBuffer(requestConfig, surfaceBuffer, pixmap);
     SurfaceFlushBuffer(surfaceBuffer);
 
     return true;
 }
 
 void OhosSurfaceSoftware::SurfaceDrawBuffer(
-    OHOS::BufferRequestConfig& requestConfig, OHOS::sptr<OHOS::SurfaceBuffer> surfaceBuffer)
+    OHOS::BufferRequestConfig& requestConfig, OHOS::sptr<OHOS::SurfaceBuffer> surfaceBuffer, SkPixmap& pixmap)
 {
     SkColorType color_type;
     SkAlphaType alpha_type;
