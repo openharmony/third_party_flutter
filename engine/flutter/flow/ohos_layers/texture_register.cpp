@@ -40,7 +40,7 @@ void SetTextureLayerAlpha(JNIEnv* env, jobject obj, jint alpha)
 bool AceTextureLayer::Register(JNIEnv* env)
 {
     g_layerTextureClass = new fml::jni::ScopedJavaGlobalRef<jclass>(
-      env, env->FindClass("ohos/ace/adapter/texture/AceLayerTexture"));
+      env, env->FindClass("ohos/ace/capability/texture/AceLayerTexture"));
     if (g_layerTextureClass->is_null()) {
         FML_LOG(ERROR) << "Could not locate AceLayerTexture class";
         return false;
@@ -68,7 +68,24 @@ void AceTextureLayer::setAlpha(int32_t alpha)
 void TextureRegistry::RegisterTexture(int64_t id, long textureHandle,
     const fml::jni::JavaObjectWeakGlobalRef& layerTexture)
 {
-    mapping_[id] = { id, textureHandle, layerTexture };
+    if (mapping_.find(id) == mapping_.end()) {
+        mapping_[id] = { id, textureHandle, layerTexture };
+    } else {
+        mapping_[id].id_ = id;
+        mapping_[id].handle_ = textureHandle;
+        mapping_[id].layerTexture_ = layerTexture;
+    }
+}
+
+void TextureRegistry::RegisterNativeWindow(int64_t id, const void* nativeWindow)
+{
+    if (mapping_.find(id) == mapping_.end()) {
+        mapping_[id] = {
+            .nativeWindow_ = const_cast<void*>(nativeWindow)
+        };
+    } else {
+        mapping_[id].nativeWindow_ = const_cast<void*>(nativeWindow);
+    }
 }
 
 void TextureRegistry::UnregisterTexture(int64_t id)

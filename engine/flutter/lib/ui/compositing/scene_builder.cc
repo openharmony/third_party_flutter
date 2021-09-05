@@ -10,8 +10,10 @@
 #include "flutter/flow/layers/clip_rrect_layer.h"
 #include "flutter/flow/layers/color_filter_layer.h"
 #include "flutter/flow/layers/container_layer.h"
+#include "flutter/flow/layers/filter_layer.h"
 #include "flutter/flow/layers/layer.h"
 #include "flutter/flow/layers/layer_tree.h"
+#include "flutter/flow/layers/mask_layer.h"
 #include "flutter/flow/layers/opacity_layer.h"
 #include "flutter/flow/layers/performance_overlay_layer.h"
 #include "flutter/flow/layers/physical_shape_layer.h"
@@ -168,6 +170,40 @@ fml::RefPtr<EngineLayer> SceneBuilder::pushPhysicalShape(const CanvasPath* path,
           UIDartState::Current()->window()->viewport_metrics().physical_depth),
       static_cast<float>(elevation), path->path(),
       static_cast<flutter::Clip>(clipBehavior));
+  PushLayer(layer);
+  return EngineLayer::MakeRetained(layer);
+}
+
+fml::RefPtr<EngineLayer> SceneBuilder::PushGradientColorMask(const SkPaint& maskPaint)
+{
+  auto layer =
+      std::make_shared<flutter::MaskLayer>(maskPaint);
+  PushLayer(layer);
+  return EngineLayer::MakeRetained(layer);
+}
+
+fml::RefPtr<EngineLayer> SceneBuilder::PushSvgMask(const sk_sp<SkSVGDOM>& svgDom,
+                                                   double x,
+                                                   double y,
+                                                   double scaleX,
+                                                   double scaleY)
+{
+  auto layer =
+      std::make_shared<flutter::MaskLayer>(x, y, scaleX, scaleY, svgDom);
+  PushLayer(layer);
+  return EngineLayer::MakeRetained(layer);
+}
+
+fml::RefPtr<EngineLayer> SceneBuilder::PushPathMask(const SkPaint& maskPaint, const SkPath& maskPath) {
+  auto layer =
+      std::make_shared<flutter::MaskLayer>(maskPaint, maskPath);
+  PushLayer(layer);
+  return EngineLayer::MakeRetained(layer);
+}
+
+fml::RefPtr<EngineLayer> SceneBuilder::PushFilter(const SkPaint& filterPaint) {
+  auto layer =
+      std::make_shared<flutter::FilterLayer>(filterPaint);
   PushLayer(layer);
   return EngineLayer::MakeRetained(layer);
 }

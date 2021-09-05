@@ -15,6 +15,7 @@ import("//third_party/dart/sdk/lib/io/io_sources.gni")
 import("//third_party/dart/sdk/lib/isolate/isolate_sources.gni")
 import("//third_party/dart/sdk/lib/math/math_sources.gni")
 import("//third_party/dart/sdk/lib/typed_data/typed_data_sources.gni")
+import("$flutter_root/build/dart/rules.gni")
 import("$flutter_root/lib/ui/dart_ui.gni")
 
 if (!is_fuchsia) {

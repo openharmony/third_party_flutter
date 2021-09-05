@@ -26,16 +26,11 @@ class OhosSurfaceSoftware final : public OhosSurface,
 
   bool OnScreenSurfaceResize(const SkISize& size) override;
 
-  void SetPlatformWindow(OHOS::Window* window) override;
+  void SetPlatformWindow(const OHOS::sptr<OHOS::Window> &window) override;
 
   sk_sp<SkSurface> AcquireBackingStore(const SkISize& size) override;
 
   bool PresentBackingStore(sk_sp<SkSurface> backing_store) override;
-
-  void SurfaceDrawBuffer(
-    OHOS::BufferRequestConfig& requestConfig, OHOS::sptr<OHOS::SurfaceBuffer> surfaceBuffer, SkPixmap& pixmap);
-
-  void SurfaceFlushBuffer(OHOS::sptr<OHOS::SurfaceBuffer>);
 
   ExternalViewEmbedder* GetExternalViewEmbedder() override;
 
@@ -44,12 +39,13 @@ class OhosSurfaceSoftware final : public OhosSurface,
   SkColorType target_color_type_;
   SkAlphaType target_alpha_type_;
 
-  OHOS::Window* window_ = nullptr;
+  OHOS::sptr<OHOS::Window> window_ = nullptr;
   OHOS::BufferRequestConfig requestConfig_;
   OHOS::sptr<OHOS::Surface> surface_ = nullptr;
 
   FML_DISALLOW_COPY_AND_ASSIGN(OhosSurfaceSoftware);
 };
+
 }  // namespace flutter
 
 #endif  // FLUTTER_SHELL_PLATFORM_OHOS_OHOS_SURFACE_SOFTWARE_H_

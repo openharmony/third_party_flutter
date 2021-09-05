@@ -25,6 +25,10 @@
 #include "flutter/lib/ui/compositing/scene_host.h"
 #endif
 
+#include "experimental/svg/model/SkSVGDOM.h"
+#include "third_party/skia/include/core/SkPaint.h"
+#include "third_party/skia/include/core/SkPath.h"
+
 namespace flutter {
 
 class SceneBuilder : public RefCountedDartWrappable<SceneBuilder> {
@@ -62,6 +66,10 @@ class SceneBuilder : public RefCountedDartWrappable<SceneBuilder> {
                                              int color,
                                              int shadowColor,
                                              int clipBehavior);
+  fml::RefPtr<EngineLayer> PushGradientColorMask(const SkPaint& maskPaint);
+  fml::RefPtr<EngineLayer> PushSvgMask(const sk_sp<SkSVGDOM>& svgDom, double x, double y, double scaleX, double scaleY);
+  fml::RefPtr<EngineLayer> PushPathMask(const SkPaint& maskPaint, const SkPath& maskPath);
+  fml::RefPtr<EngineLayer> PushFilter(const SkPaint& filterPaint);
 
   void addRetained(fml::RefPtr<EngineLayer> retainedLayer);
 

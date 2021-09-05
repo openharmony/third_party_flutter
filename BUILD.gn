@@ -59,6 +59,7 @@ template("make_skia_deps") {
     deps = [
       ":ace_fontmgr_$platform",
       ":ace_gif",
+      #":ace_gpu",
       ":ace_heif",
       ":ace_jpeg",
       ":ace_libexpat",
@@ -161,9 +162,10 @@ config("flutter_config") {
     "-fvisibility-inlines-hidden",
     "-Os",
   ]
+  defines = []
 
   if (use_mingw_win || use_mac) {
-    defines = ace_common_defines
+    defines += ace_common_defines
 
     cflags_cc += [
       "-std=c++17",
@@ -177,7 +179,7 @@ config("flutter_config") {
       "-Wno-thread-safety-attributes",
       "-Wno-thread-safety-analysis",
     ]
-    defines = [ "SK_BUILD_FOR_UNIX" ]
+    defines += [ "SK_BUILD_FOR_UNIX" ]
   }
 }
 
@@ -353,8 +355,10 @@ template("flutter_engine_flow") {
       "engine/flutter/flow/layers/clip_rrect_layer.cc",
       "engine/flutter/flow/layers/color_filter_layer.cc",
       "engine/flutter/flow/layers/container_layer.cc",
+      "engine/flutter/flow/layers/filter_layer.cc",
       "engine/flutter/flow/layers/layer.cc",
       "engine/flutter/flow/layers/layer_tree.cc",
+      "engine/flutter/flow/layers/mask_layer.cc",
       "engine/flutter/flow/layers/opacity_layer.cc",
       "engine/flutter/flow/layers/performance_overlay_layer.cc",
       "engine/flutter/flow/layers/physical_shape_layer.cc",
@@ -416,6 +420,7 @@ template("flutter_engine_shell") {
       "engine/flutter/shell/common/vsync_waiter_fallback.cc",
 
       # only support gl and software
+      "engine/flutter/shell/gpu/gpu_surface_gl.cc",
       "engine/flutter/shell/gpu/gpu_surface_gl_delegate.cc",
       "engine/flutter/shell/gpu/gpu_surface_software.cc",
       "engine/flutter/shell/gpu/gpu_surface_software_delegate.cc",
@@ -445,7 +450,7 @@ template("flutter_engine_shell") {
       defines += [ "UNICODE" ]
     } else if (is_standard_system) {
       include_dirs = [ "//utils/native/base/include" ]
-      deps += [ "//foundation/graphic/standard:libwms_client" ]
+      deps += [ "//foundation/graphic/standard:libwmclient" ]
       sources += [
         "engine/flutter/shell/platform/ohos/ohos_shell_holder.cc",
         "engine/flutter/shell/platform/ohos/ohos_surface_software.cc",
@@ -2113,6 +2118,12 @@ ohos_source_set("ace_skia_core") {
 config("ace_skia_ext_config") {
   visibility = [ ":*" ]
   include_dirs = [
+    "//third_party/aosp/external/skia/src/core",
+    "//third_party/aosp/external/skia/src/opts",
+    "//third_party/aosp/external/skia/src/shaders",
+    "//third_party/aosp/external/skia/src/gpu",
+    "$libs_root/shared_library/${target_os}_${target_cpu}/include/frameworks/native/libs/nativewindow/include",
+    "$libs_root/shared_library/${target_os}_${target_cpu}/include/frameworks/native/libs/arect/include",
     "$flutter_root",
     "skia",
     "engine",
@@ -2127,11 +2138,11 @@ ohos_source_set("ace_skia_ext") {
 
   sources = [
     # enable ext utils
-    "skia/src/core/SkArenaAlloc.cpp",
-    "skia/src/core/SkOpts.cpp",
-    "skia/src/core/SkTSearch.cpp",
-    "skia/src/utils/SkBase64.cpp",
-    "skia/src/utils/SkParsePath.cpp",
+    "//third_party/aosp/external/skia/src/core/SkArenaAlloc.cpp",
+    "//third_party/aosp/external/skia/src/core/SkOpts.cpp",
+    "//third_party/aosp/external/skia/src/core/SkTSearch.cpp",
+    "//third_party/aosp/external/skia/src/utils/SkBase64.cpp",
+    "//third_party/aosp/external/skia/src/utils/SkParsePath.cpp",
 
     # use ohos fontmgr
     "skia/src/ports/SkFontMgr_ohos.cpp",
