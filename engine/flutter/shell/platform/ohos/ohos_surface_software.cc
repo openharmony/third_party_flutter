@@ -35,7 +35,6 @@ bool GetSkColorType(int32_t buffer_format,
     }
     return false;
 }
-
 }  // anonymous namespace
 
 OhosSurfaceSoftware::OhosSurfaceSoftware()
