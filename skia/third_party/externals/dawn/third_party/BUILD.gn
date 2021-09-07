@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("../scripts/dawn_overrides_with_defaults.gni")
-import("../scripts/dawn_features.gni")
 import("//build_overrides/build.gni")
+import("../scripts/dawn_features.gni")
+import("../scripts/dawn_overrides_with_defaults.gni")
 
 is_msvc = is_win && !is_clang
 
@@ -147,9 +147,7 @@ source_set("vulkan_headers") {
 }
 
 source_set("khronos_platform") {
-  sources = [
-    "khronos/KHR/khrplatform.h",
-  ]
+  sources = [ "khronos/KHR/khrplatform.h" ]
 
   public_configs = [ ":khronos_headers_public" ]
 }
@@ -177,9 +175,7 @@ if (!build_with_chromium) {
 
   static_library("gtest") {
     testonly = true
-    sources = [
-      "${googletest_dir}/googletest/src/gtest-all.cc",
-    ]
+    sources = [ "${googletest_dir}/googletest/src/gtest-all.cc" ]
     public_configs = [ ":gtest_config" ]
   }
 
@@ -193,9 +189,7 @@ if (!build_with_chromium) {
 
   static_library("gmock") {
     testonly = true
-    sources = [
-      "${googletest_dir}/googlemock/src/gmock-all.cc",
-    ]
+    sources = [ "${googletest_dir}/googlemock/src/gmock-all.cc" ]
     public_configs = [ ":gmock_config" ]
   }
 

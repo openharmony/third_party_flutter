@@ -14,9 +14,7 @@ executable("testing") {
     "$flutter_root:export_dynamic_symbols",
   ]
 
-  sources = [
-    "tester_main.cc",
-  ]
+  sources = [ "tester_main.cc" ]
 
   deps = [
     "$flutter_root/assets",

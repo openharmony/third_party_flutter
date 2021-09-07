@@ -59,20 +59,14 @@ template("angle_tests_main") {
   source_set(target_name) {
     testonly = true
     public_deps = googletest_deps
-    deps = [
-      "${angle_root}:includes",
-    ]
+    deps = [ "${angle_root}:includes" ]
 
     main = invoker.main
 
     if (build_with_chromium) {
-      sources = [
-        "//gpu/$main.cc",
-      ]
+      sources = [ "//gpu/$main.cc" ]
     } else {
-      sources = [
-        "$main.cpp",
-      ]
+      sources = [ "$main.cpp" ]
     }
   }
 }
@@ -93,9 +87,7 @@ angle_tests_main("angle_perftests_main") {
 angle_test("angle_unittests_helper") {
   sources = angle_unittests_helper_sources
 
-  deps = [
-    "${angle_root}:angle_common",
-  ]
+  deps = [ "${angle_root}:angle_common" ]
 }
 
 test_expectations_sources = [
@@ -148,9 +140,7 @@ angle_test("angle_unittests") {
   if (!is_android && !is_fuchsia) {
     # SystemUtils.RunApp, the only unittest using a helper binary, is not supported on these
     # platforms yet.
-    data_deps = [
-      ":angle_unittests_helper",
-    ]
+    data_deps = [ ":angle_unittests_helper" ]
   }
 }
 
@@ -612,9 +602,11 @@ if (build_angle_deqp_tests && !is_fuchsia) {
       # TODO(jmadill): Remove this once we fix dEQP.
       cflags_c = [ "-Wno-unused-local-typedef" ]
       cflags_cc = [
-        "-Wno-string-conversion",  # implicit conversion turns string literal into bool
+        "-Wno-string-conversion",  # implicit conversion turns string literal
+                                   # into bool
         "-Wno-unused-local-typedef",
-        "-Wno-unused-result",  # ignoring return value of function declared with 'nodiscard' attribute
+        "-Wno-unused-result",  # ignoring return value of function declared with
+                               # 'nodiscard' attribute
       ]
     }
 
@@ -734,9 +726,7 @@ if (build_angle_deqp_tests && !is_fuchsia) {
       ":angle_deqp_support",
     ]
 
-    public_deps = [
-      ":angle_deqp_framework_debase",
-    ]
+    public_deps = [ ":angle_deqp_framework_debase" ]
   }
 
   config("angle_deqp_framework_common_config") {
@@ -767,9 +757,7 @@ if (build_angle_deqp_tests && !is_fuchsia) {
   angle_deqp_source_set("angle_deqp_framework_opengl") {
     sources = deqp_framework_opengl_sources
     public_configs = [ ":angle_deqp_framework_opengl_config" ]
-    public_deps = [
-      ":angle_deqp_framework_common",
-    ]
+    public_deps = [ ":angle_deqp_framework_common" ]
   }
 
   config("angle_deqp_framework_egl_config") {
@@ -782,9 +770,7 @@ if (build_angle_deqp_tests && !is_fuchsia) {
   angle_deqp_source_set("angle_deqp_framework_egl") {
     sources = deqp_framework_egl_sources
     public_configs = [ ":angle_deqp_framework_egl_config" ]
-    public_deps = [
-      ":angle_deqp_framework_opengl",
-    ]
+    public_deps = [ ":angle_deqp_framework_opengl" ]
   }
 
   config("angle_deqp_framework_qphelper_config") {
@@ -806,9 +792,7 @@ if (build_angle_deqp_tests && !is_fuchsia) {
 
   angle_deqp_source_set("angle_deqp_glshared") {
     sources = deqp_glshared_sources
-    public_deps = [
-      ":angle_deqp_framework_opengl",
-    ]
+    public_deps = [ ":angle_deqp_framework_opengl" ]
     public_configs = [ ":angle_deqp_glshared_config" ]
   }
 
@@ -886,12 +870,8 @@ if (build_angle_deqp_tests && !is_fuchsia) {
 
     if (!build_with_chromium) {
       angle_executable("angle_deqp_${_api}_no_gtest") {
-        sources = [
-          "deqp_support/angle_deqp_tests_main.cpp",
-        ]
-        deps = [
-          ":$shared_library_name",
-        ]
+        sources = [ "deqp_support/angle_deqp_tests_main.cpp" ]
+        deps = [ ":$shared_library_name" ]
       }
     }
 
@@ -902,9 +882,7 @@ if (build_angle_deqp_tests && !is_fuchsia) {
       ]
 
       # Must be included outside of the source set for the define
-      sources = [
-        "deqp_support/angle_deqp_gtest.cpp",
-      ]
+      sources = [ "deqp_support/angle_deqp_gtest.cpp" ]
 
       data = [
         "deqp_support/deqp_${_api}_test_expectations.txt",
@@ -931,9 +909,7 @@ if (build_angle_deqp_tests && !is_fuchsia) {
       defines += [ "ANGLE_DEQP_DATA_DIR=\"data\"" ]
 
       mustpass_name = "${_api}-master.txt"
-      data = [
-        "$deqp_path/data/",
-      ]
+      data = [ "$deqp_path/data/" ]
     }
   }
 
@@ -974,7 +950,8 @@ if (build_angle_deqp_tests && !is_fuchsia) {
       "$deqp_path/external/openglcts/modules/glesext",
     ]
     if (is_clang) {
-      cflags = [ "-Wno-header-hygiene" ]  # using namespace directive in global context in header
+      cflags = [ "-Wno-header-hygiene" ]  # using namespace directive in global
+                                          # context in header
     }
   }
 
@@ -1023,9 +1000,7 @@ if (build_angle_deqp_tests && !is_fuchsia) {
 
       mustpass_dir = _khronos_mustpass
 
-      data = [
-        "$root_out_dir/$angle_data_dir/gl_cts/",
-      ]
+      data = [ "$root_out_dir/$angle_data_dir/gl_cts/" ]
     }
   }
 

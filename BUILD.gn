@@ -80,9 +80,7 @@ template("make_skia_deps") {
       ":ace_xml_$platform",
     ]
 
-    public_configs += [
-      ":ace_svg_model_config",
-    ]
+    public_configs += [ ":ace_svg_model_config" ]
 
     if (is_standard_system) {
       deps += [ ":make_third_party_skia_include_dir" ]
@@ -90,11 +88,14 @@ template("make_skia_deps") {
   }
 }
 
-make_skia_deps("ohos") {}
+make_skia_deps("ohos") {
+}
 
-make_skia_deps("windows") {}
+make_skia_deps("windows") {
+}
 
-make_skia_deps("mac") {}
+make_skia_deps("mac") {
+}
 
 # ------------------------------------------------
 #       Main block end of skia
@@ -2633,9 +2634,7 @@ config("ace_gpu_config") {
 }
 
 ohos_source_set("ace_gpu") {
-  configs = [
-    ":ace_gpu_config",
-  ]
+  configs = [ ":ace_gpu_config" ]
   configs += [ ":reduce_eh_frame_config" ]
 
   sources = [
@@ -3238,9 +3237,7 @@ template("ace_xml") {
   forward_variables_from(invoker, "*")
 
   ohos_source_set(target_name) {
-    configs = [
-      ":ace_xml_config",
-    ]
+    configs = [ ":ace_xml_config" ]
     configs += [ ":reduce_eh_frame_config" ]
 
     defines += invoker.defines

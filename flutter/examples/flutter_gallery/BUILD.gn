@@ -41,5 +41,4 @@ flutter_app("flutter_gallery") {
     "//third_party/dart-pkg/pub/video_player",
     "//third_party/dart/third_party/pkg/intl",
   ]
-
 }

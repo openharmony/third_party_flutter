@@ -6,31 +6,21 @@ import("//build/fuchsia/sdk.gni")
 
 group("platform") {
   if (is_mac || is_ios) {
-    deps = [
-      "darwin",
-    ]
+    deps = [ "darwin" ]
   } else if (is_android) {
-    deps = [
-      "android",
-    ]
+    deps = [ "android" ]
   } else if (is_linux) {
     if (is_fuchsia_host) {
       # The linux build is not supported as part of the Fuchsia host build.
       deps = []
     } else {
-      deps = [
-        "linux",
-      ]
+      deps = [ "linux" ]
     }
   } else if (is_win) {
-    deps = [
-      "windows",
-    ]
+    deps = [ "windows" ]
   } else if (is_fuchsia) {
     if (using_fuchsia_sdk) {
-      deps = [
-        "fuchsia",
-      ]
+      deps = [ "fuchsia" ]
     }
   } else {
     assert(false, "Unknown/Unsupported platform.")
