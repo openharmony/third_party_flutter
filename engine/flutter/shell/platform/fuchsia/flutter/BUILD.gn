@@ -282,9 +282,7 @@ template("aot_runner") {
   }
 
   package_dir(target_name) {
-    deps = [
-      ":aot${product_suffix}",
-    ]
+    deps = [ ":aot${product_suffix}" ]
 
     if (!product) {
       deps += [ observatory_target ]

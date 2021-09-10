@@ -68,9 +68,7 @@ source_set("client_wrapper_library_stubs_glfw") {
 
   defines = [ "FLUTTER_DESKTOP_LIBRARY" ]
 
-  public_deps = [
-    "$flutter_root/shell/platform/glfw:flutter_glfw_headers",
-  ]
+  public_deps = [ "$flutter_root/shell/platform/glfw:flutter_glfw_headers" ]
 }
 
 test_fixtures("client_wrapper_glfw_fixtures") {
@@ -81,9 +79,7 @@ executable("client_wrapper_glfw_unittests") {
   testonly = true
 
   # TODO: Add more unit tests.
-  sources = [
-    "flutter_window_controller_unittests.cc",
-  ]
+  sources = [ "flutter_window_controller_unittests.cc" ]
 
   deps = [
     ":client_wrapper_glfw",

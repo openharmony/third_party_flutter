@@ -122,8 +122,8 @@ executable("flow_unittests") {
     ":flow",
     ":flow_fixtures",
     "$flutter_root/fml",
+    "$flutter_root/third_party/skia",
     "//third_party/dart/runtime:libdart_jit",  # for tracing
     "//third_party/googletest:gtest",
-    "$flutter_root/third_party/skia",
   ]
 }

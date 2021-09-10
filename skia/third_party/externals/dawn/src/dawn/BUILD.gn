@@ -14,8 +14,8 @@
 
 import("../../scripts/dawn_overrides_with_defaults.gni")
 
-import("${dawn_root}/scripts/dawn_component.gni")
 import("${dawn_root}/generator/dawn_generator.gni")
+import("${dawn_root}/scripts/dawn_component.gni")
 
 ###############################################################################
 # Dawn headers
@@ -35,9 +35,7 @@ dawn_json_generator("dawn_headers_gen") {
 
 source_set("dawn_headers") {
   all_dependent_configs = [ "${dawn_root}/src/common:dawn_public_include_dirs" ]
-  deps = [
-    ":dawn_headers_gen",
-  ]
+  deps = [ ":dawn_headers_gen" ]
 
   sources = get_target_outputs(":dawn_headers_gen")
   sources += [
@@ -62,12 +60,8 @@ dawn_json_generator("libdawn_gen") {
 dawn_component("libdawn") {
   DEFINE_PREFIX = "DAWN"
 
-  public_deps = [
-    ":dawn_headers",
-  ]
+  public_deps = [ ":dawn_headers" ]
 
-  deps = [
-    ":libdawn_gen",
-  ]
+  deps = [ ":libdawn_gen" ]
   sources = get_target_outputs(":libdawn_gen")
 }

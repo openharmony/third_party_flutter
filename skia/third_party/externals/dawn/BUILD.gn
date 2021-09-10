@@ -62,9 +62,7 @@ if (dawn_enable_opengl) {
 # Public libdawn_native headers so they can be publically visible for
 # dependencies of libdawn_native
 source_set("libdawn_native_headers") {
-  public_deps = [
-    "${dawn_root}/src/dawn:dawn_headers",
-  ]
+  public_deps = [ "${dawn_root}/src/dawn:dawn_headers" ]
   all_dependent_configs = [ "${dawn_root}/src/common:dawn_public_include_dirs" ]
   sources = [
     "src/include/dawn_native/DawnNative.h",
@@ -386,17 +384,13 @@ dawn_component("libdawn_native") {
   DEFINE_PREFIX = "DAWN_NATIVE"
 
   #Make headers publically visible
-  public_deps = [
-    ":libdawn_native_headers",
-  ]
+  public_deps = [ ":libdawn_native_headers" ]
 
   deps = [
     ":libdawn_native_sources",
     "${dawn_root}/src/common",
   ]
-  sources = [
-    "src/dawn_native/DawnNative.cpp",
-  ]
+  sources = [ "src/dawn_native/DawnNative.cpp" ]
   configs = [ ":libdawn_native_internal" ]
 
   if (dawn_enable_d3d12) {
@@ -478,9 +472,7 @@ dawn_component("libdawn_wire") {
   ]
 
   # Make headers publically visible
-  public_deps = [
-    "${dawn_root}/src/dawn_wire:libdawn_wire_headers",
-  ]
+  public_deps = [ "${dawn_root}/src/dawn_wire:libdawn_wire_headers" ]
 }
 
 ###############################################################################
@@ -503,9 +495,7 @@ static_library("dawn_utils") {
     "src/utils/TerribleCommandBuffer.h",
   ]
 
-  public_deps = [
-    "${dawn_root}/src/dawn:dawn_headers",
-  ]
+  public_deps = [ "${dawn_root}/src/dawn:dawn_headers" ]
 
   deps = [
     ":libdawn_native",
@@ -719,16 +709,12 @@ test("dawn_end2end_tests") {
 # Temporary groups to make a 5-way patch to fix crbug.com/913171
 group("dawn_unittests_temp_group") {
   testonly = true
-  deps = [
-    ":dawn_unittests",
-  ]
+  deps = [ ":dawn_unittests" ]
 }
 
 group("dawn_end2end_tests_temp_group") {
   testonly = true
-  deps = [
-    ":dawn_end2end_tests",
-  ]
+  deps = [ ":dawn_end2end_tests" ]
 }
 
 ###############################################################################
@@ -758,9 +744,7 @@ if (dawn_standalone) {
   # Template for samples to avoid listing dawn_sample_utils as a dep every time
   template("dawn_sample") {
     executable(target_name) {
-      deps = [
-        ":dawn_sample_utils",
-      ]
+      deps = [ ":dawn_sample_utils" ]
       forward_variables_from(invoker, "*", [ "deps" ])
 
       if (defined(invoker.deps)) {
@@ -770,39 +754,25 @@ if (dawn_standalone) {
   }
 
   dawn_sample("CppHelloTriangle") {
-    sources = [
-      "examples/CppHelloTriangle.cpp",
-    ]
+    sources = [ "examples/CppHelloTriangle.cpp" ]
   }
 
   dawn_sample("CHelloTriangle") {
-    sources = [
-      "examples/CHelloTriangle.cpp",
-    ]
+    sources = [ "examples/CHelloTriangle.cpp" ]
   }
 
   dawn_sample("ComputeBoids") {
-    sources = [
-      "examples/ComputeBoids.cpp",
-    ]
-    deps = [
-      "third_party:glm",
-    ]
+    sources = [ "examples/ComputeBoids.cpp" ]
+    deps = [ "third_party:glm" ]
   }
 
   dawn_sample("Animometer") {
-    sources = [
-      "examples/Animometer.cpp",
-    ]
+    sources = [ "examples/Animometer.cpp" ]
   }
 
   dawn_sample("CubeReflection") {
-    sources = [
-      "examples/CubeReflection.cpp",
-    ]
-    deps = [
-      "third_party:glm",
-    ]
+    sources = [ "examples/CubeReflection.cpp" ]
+    deps = [ "third_party:glm" ]
   }
 
   group("dawn_samples") {

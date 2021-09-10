@@ -4,9 +4,7 @@ template("spirv_core_tables") {
   version = invoker.version
   action("spirv_core_tables_" + target_name) {
     script = "../externals/spirv-tools/utils/generate_grammar_tables.py"
-    sources = [
-      "../externals/spirv-headers/include/spirv/$version/spirv.core.grammar.json",
-    ]
+    sources = [ "../externals/spirv-headers/include/spirv/$version/spirv.core.grammar.json" ]
     outputs = [
       "$root_out_dir/spirv-tools/core.insts-$version.inc",
       "$root_out_dir/spirv-tools/operand.kinds-$version.inc",
@@ -43,9 +41,7 @@ action("spirv_glsl_tables") {
     "../externals/spirv-headers/include/spirv/1.0/extinst.glsl.std.450.grammar.json",
     "../externals/spirv-headers/include/spirv/1.0/spirv.core.grammar.json",
   ]
-  outputs = [
-    "$root_out_dir/spirv-tools/glsl.std.450.insts-1.0.inc",
-  ]
+  outputs = [ "$root_out_dir/spirv-tools/glsl.std.450.insts-1.0.inc" ]
   args = [
     "--spirv-core-grammar=" + rebase_path(
             "../externals/spirv-headers/include/spirv/1.0/spirv.core.grammar.json",
@@ -66,9 +62,7 @@ action("spirv_extension_enum") {
     "../externals/spirv-headers/include/spirv/1.0/extinst.glsl.std.450.grammar.json",
     "../externals/spirv-headers/include/spirv/1.0/spirv.core.grammar.json",
   ]
-  outputs = [
-    "$root_out_dir/spirv-tools/extension_enum.inc",
-  ]
+  outputs = [ "$root_out_dir/spirv-tools/extension_enum.inc" ]
   args = [
     "--spirv-core-grammar=" + rebase_path(
             "../externals/spirv-headers/include/spirv/1.0/spirv.core.grammar.json",
@@ -88,9 +82,7 @@ action("spirv_opencl_tables") {
     "../externals/spirv-headers/include/spirv/1.0/extinst.opencl.std.100.grammar.json",
     "../externals/spirv-headers/include/spirv/1.0/spirv.core.grammar.json",
   ]
-  outputs = [
-    "$root_out_dir/spirv-tools/opencl.std.insts-1.0.inc",
-  ]
+  outputs = [ "$root_out_dir/spirv-tools/opencl.std.insts-1.0.inc" ]
   args = [
     "--spirv-core-grammar=" + rebase_path(
             "../externals/spirv-headers/include/spirv/1.0/spirv.core.grammar.json",
@@ -109,12 +101,9 @@ template("spirv_vendor_tables") {
   vendor_table = invoker.vendor_table
   action("spirv_vendor_tables_" + target_name) {
     script = "../externals/spirv-tools/utils/generate_grammar_tables.py"
-    sources = [
-      "../externals/spirv-tools/source/extinst.$vendor_table.grammar.json",
-    ]
-    outputs = [
-      "$root_out_dir/spirv-tools/$vendor_table.insts.inc",
-    ]
+    sources =
+        [ "../externals/spirv-tools/source/extinst.$vendor_table.grammar.json" ]
+    outputs = [ "$root_out_dir/spirv-tools/$vendor_table.insts.inc" ]
     args = [
       "--extinst-vendor-grammar=" + rebase_path(
               "../externals/spirv-tools/source/extinst.$vendor_table.grammar.json",
@@ -144,12 +133,8 @@ spirv_vendor_tables("amd_shader_ballot") {
 
 action("spirv_build_version") {
   script = "../externals/spirv-tools/utils/update_build_version.py"
-  sources = [
-    "../externals/spirv-tools/CHANGES",
-  ]
-  outputs = [
-    "$root_out_dir/spirv-tools/build-version.inc",
-  ]
+  sources = [ "../externals/spirv-tools/CHANGES" ]
+  outputs = [ "$root_out_dir/spirv-tools/build-version.inc" ]
   args = [
     rebase_path("../externals/spirv-tools", root_build_dir),
     rebase_path("$root_out_dir/spirv-tools/build-version.inc", root_build_dir),
@@ -158,12 +143,8 @@ action("spirv_build_version") {
 
 action("spirv_generators") {
   script = "../externals/spirv-tools/utils/generate_registry_tables.py"
-  sources = [
-    "../externals/spirv-headers/include/spirv/spir-v.xml",
-  ]
-  outputs = [
-    "$root_out_dir/spirv-tools/generators.inc",
-  ]
+  sources = [ "../externals/spirv-headers/include/spirv/spir-v.xml" ]
+  outputs = [ "$root_out_dir/spirv-tools/generators.inc" ]
   args = [
     "--xml=" +
         rebase_path("../externals/spirv-headers/include/spirv/spir-v.xml",

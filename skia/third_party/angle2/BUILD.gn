@@ -8,9 +8,9 @@ declare_args() {
 
 angle_root = "../externals/angle2"
 
-import("../third_party.gni")
 import("$angle_root/src/compiler.gni")
 import("$angle_root/src/libGLESv2.gni")
+import("../third_party.gni")
 
 third_party("angle2") {
   public_include_dirs = [ "$angle_root/include" ]
@@ -71,12 +71,8 @@ config("common") {
 }
 
 copy("commit_id") {
-  sources = [
-    "$angle_root/src/commit.h",
-  ]
-  outputs = [
-    "$root_gen_dir/angle2/id/commit.h",
-  ]
+  sources = [ "$angle_root/src/commit.h" ]
+  outputs = [ "$root_gen_dir/angle2/id/commit.h" ]
 }
 
 shared_library("libGLESv2") {
@@ -86,9 +82,7 @@ shared_library("libGLESv2") {
     "LIBANGLE_IMPLEMENTATION",
     "LIBGLESV2_IMPLEMENTATION",
   ]
-  deps = [
-    ":commit_id",
-  ]
+  deps = [ ":commit_id" ]
   libs = []
   sources =
       rebase_path(
@@ -137,9 +131,7 @@ shared_library("libEGL") {
   configs += [ ":common" ]
   configs -= [ "//gn:warnings" ]
   defines = [ "LIBEGL_IMPLEMENTATION" ]
-  deps = [
-    ":libGLESv2",
-  ]
+  deps = [ ":libGLESv2" ]
   sources = rebase_path(libegl_sources, ".", angle_root)
   if (is_win) {
     sources += [ "$angle_root/src/libEGL/libEGL.def" ]

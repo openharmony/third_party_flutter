@@ -87,9 +87,7 @@ if (use_arm_neon_optimizations) {
       if (is_android) {
         import("//build/config/android/config.gni")
         if (defined(android_ndk_root) && android_ndk_root != "") {
-          deps = [
-            "//third_party/android_tools:cpu_features",
-          ]
+          deps = [ "//third_party/android_tools:cpu_features" ]
         }
       }
 
@@ -194,9 +192,7 @@ static_library("zlib_x86_simd") {
       ]
     }
   } else {
-    sources = [
-      "simd_stub.c",
-    ]
+    sources = [ "simd_stub.c" ]
   }
 
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -313,9 +309,7 @@ static_library("minizip") {
     defines = [ "USE_FILE32API" ]
   }
 
-  deps = [
-    ":zlib",
-  ]
+  deps = [ ":zlib" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
@@ -331,9 +325,7 @@ static_library("minizip") {
 executable("zlib_bench") {
   include_dirs = [ "." ]
 
-  sources = [
-    "contrib/bench/zlib_bench.cc",
-  ]
+  sources = [ "contrib/bench/zlib_bench.cc" ]
 
   if (!is_debug) {
     configs -= [ "//build/config/compiler:default_optimization" ]
@@ -343,7 +335,5 @@ executable("zlib_bench") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 
-  deps = [
-    ":zlib",
-  ]
+  deps = [ ":zlib" ]
 }

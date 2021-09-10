@@ -61,9 +61,7 @@ source_set("vulkan_headers") {
 }
 
 source_set("khronos_platform") {
-  sources = [
-    "khronos/KHR/khrplatform.h",
-  ]
+  sources = [ "khronos/KHR/khrplatform.h" ]
   public_configs = [ ":khronos_headers_public" ]
 }
 
@@ -90,9 +88,7 @@ template("spvtools_core_tables") {
     operand_kinds_file = "${target_gen_dir}/operand.kinds-$version.inc"
     extinst_file = "${spirv_tools}/source/extinst.debuginfo.grammar.json"
 
-    sources = [
-      core_json_file,
-    ]
+    sources = [ core_json_file ]
     outputs = [
       core_insts_file,
       operand_kinds_file,
@@ -134,9 +130,7 @@ template("spvtools_core_enums") {
       "--enum-string-mapping-output",
       rebase_path(extension_map_file, root_build_dir),
     ]
-    inputs = [
-      core_json_file,
-    ]
+    inputs = [ core_json_file ]
     outputs = [
       extension_enum_file,
       extension_map_file,
@@ -172,9 +166,7 @@ template("spvtools_glsl_tables") {
       core_json_file,
       glsl_json_file,
     ]
-    outputs = [
-      glsl_insts_file,
-    ]
+    outputs = [ glsl_insts_file ]
   }
 }
 
@@ -206,9 +198,7 @@ template("spvtools_opencl_tables") {
       core_json_file,
       opengl_json_file,
     ]
-    outputs = [
-      opencl_insts_file,
-    ]
+    outputs = [ opencl_insts_file ]
   }
 }
 
@@ -230,12 +220,8 @@ template("spvtools_language_header") {
       "--extinst-output-base",
       rebase_path(extinst_output_base, root_build_dir),
     ]
-    inputs = [
-      debug_insts_file,
-    ]
-    outputs = [
-      "${extinst_output_base}.h",
-    ]
+    inputs = [ debug_insts_file ]
+    outputs = [ "${extinst_output_base}.h" ]
   }
 }
 
@@ -256,12 +242,8 @@ template("spvtools_vendor_table") {
       "--vendor-insts-output",
       rebase_path(extinst_file, root_build_dir),
     ]
-    inputs = [
-      extinst_vendor_grammar,
-    ]
-    outputs = [
-      extinst_file,
-    ]
+    inputs = [ extinst_vendor_grammar ]
+    outputs = [ extinst_file ]
   }
 }
 
@@ -272,12 +254,8 @@ action("spvtools_generators_inc") {
   xml_file = "${spirv_headers}/include/spirv/spir-v.xml"
   inc_file = "${target_gen_dir}/generators.inc"
 
-  sources = [
-    xml_file,
-  ]
-  outputs = [
-    inc_file,
-  ]
+  sources = [ xml_file ]
+  outputs = [ inc_file ]
   args = [
     "--xml",
     rebase_path(xml_file, root_build_dir),
@@ -292,9 +270,7 @@ action("spvtools_build_version") {
   src_dir = "${spirv_tools}"
   inc_file = "${target_gen_dir}/build-version.inc"
 
-  outputs = [
-    inc_file,
-  ]
+  outputs = [ inc_file ]
   args = [
     rebase_path(src_dir, root_build_dir),
     rebase_path(inc_file, root_build_dir),
@@ -437,9 +413,7 @@ static_library("spvtools") {
                         ".",
                         "$dawn_thirdparty_root/SPIRV-Tools")
 
-  public_deps = [
-    ":spvtools_headers",
-  ]
+  public_deps = [ ":spvtools_headers" ]
 
   configs += [ ":spvtools_internal_config" ]
 }
@@ -491,12 +465,8 @@ static_library("spvtools_val") {
                         ".",
                         "${spirv_tools}")
 
-  deps = [
-    ":spvtools",
-  ]
-  public_deps = [
-    ":spvtools_headers",
-  ]
+  deps = [ ":spvtools" ]
+  public_deps = [ ":spvtools_headers" ]
 
   configs += [ ":spvtools_internal_config" ]
 }
@@ -677,12 +647,8 @@ static_library("spvtools_opt") {
                   ".",
                   "${spirv_tools}")
 
-  deps = [
-    ":spvtools",
-  ]
-  public_deps = [
-    ":spvtools_headers",
-  ]
+  deps = [ ":spvtools" ]
+  public_deps = [ ":spvtools_headers" ]
 
   configs += [ ":spvtools_internal_config" ]
 }

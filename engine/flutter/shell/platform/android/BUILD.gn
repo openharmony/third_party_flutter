@@ -96,9 +96,7 @@ action("gen_android_build_config_java") {
 
   build_config_java = "$target_gen_dir/io/flutter/BuildConfig.java"
 
-  outputs = [
-    build_config_java,
-  ]
+  outputs = [ build_config_java ]
 
   args = [
     "--out",
@@ -249,9 +247,7 @@ action("flutter_shell_java") {
     source_jar_path,
     source_jar_path + ".md5.stamp",
   ]
-  inputs = [
-    android_sdk_jar,
-  ]
+  inputs = [ android_sdk_jar ]
   inputs += android_support_jars
 
   _rebased_current_path = rebase_path(".")
@@ -273,9 +269,7 @@ action("flutter_shell_java") {
 
   args += rebase_path(sources, root_build_dir)
 
-  deps = [
-    ":gen_android_build_config_java",
-  ]
+  deps = [ ":gen_android_build_config_java" ]
 }
 
 action("icudtl_object") {
@@ -284,13 +278,9 @@ action("icudtl_object") {
   icudtl_input = "//third_party/icu/flutter/icudtl.dat"
   icudtl_output = "$root_build_dir/flutter_icu/icudtl.o"
 
-  inputs = [
-    "$icudtl_input",
-  ]
+  inputs = [ "$icudtl_input" ]
 
-  outputs = [
-    "$icudtl_output",
-  ]
+  outputs = [ "$icudtl_output" ]
 
   args = [
     "--objcopy",
@@ -346,16 +336,12 @@ action("android") {
 action("pom_libflutter") {
   script = "$flutter_root/tools/android_support/generate_pom_file.py"
 
-  inputs = [
-    "$flutter_root/tools/android_support/files.json",
-  ]
+  inputs = [ "$flutter_root/tools/android_support/files.json" ]
 
   artifact_id =
       string_replace(android_app_abi, "-", "_") + "_" + flutter_runtime_mode
 
-  outputs = [
-    "$root_build_dir/$artifact_id-1.0.0-$engine_version.pom",
-  ]
+  outputs = [ "$root_build_dir/$artifact_id-1.0.0-$engine_version.pom" ]
 
   args = [
     "--destination",
@@ -370,15 +356,11 @@ action("pom_libflutter") {
 action("pom_embedding") {
   script = "$flutter_root/tools/android_support/generate_pom_file.py"
 
-  inputs = [
-    "$flutter_root/tools/android_support/files.json",
-  ]
+  inputs = [ "$flutter_root/tools/android_support/files.json" ]
 
   artifact_id = "flutter_embedding_$flutter_runtime_mode"
 
-  outputs = [
-    "$root_build_dir/$artifact_id-1.0.0-$engine_version.pom",
-  ]
+  outputs = [ "$root_build_dir/$artifact_id-1.0.0-$engine_version.pom" ]
 
   args = [
     "--destination",

@@ -27,7 +27,7 @@ class OhosSurface {
 
     virtual bool OnScreenSurfaceResize(const SkISize& size) = 0;
 
-    virtual void SetPlatformWindow(::OHOS::Window* window) = 0;
+    virtual void SetPlatformWindow(const ::OHOS::sptr<::OHOS::Window> &window) = 0;
 };
 
 }  // namespace flutter
