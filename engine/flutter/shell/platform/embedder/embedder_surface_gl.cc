@@ -49,8 +49,12 @@ bool EmbedderSurfaceGL::GLContextPresent() {
 }
 
 // |GPUSurfaceGLDelegate|
-bool EmbedderSurfaceGL::GLContextSendSurface(const void* pixels, size_t size) {
-  return gl_dispatch_table_.gl_send_surface_callback(pixels, size);
+bool EmbedderSurfaceGL::GLContextSendSurface(const void* pixels,
+                                             const size_t size,
+                                             const int32_t width,
+                                             const int32_t height) {
+  return gl_dispatch_table_.gl_send_surface_callback(pixels, size, width,
+                                                     height);
 }
 
 // |GPUSurfaceGLDelegate|

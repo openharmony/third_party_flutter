@@ -49,13 +49,15 @@ angle_perf_tests_sources = _angle_perf_test_common_sources + [
                              "test_utils/draw_call_perf_utils.h",
                            ]
 
-angle_white_box_perf_tests_sources = _angle_perf_test_common_sources + [
-                                       "angle_unittests_utils.h",
-                                       "perf_tests/BitSetIteratorPerf.cpp",
-                                       "perf_tests/CompilerPerf.cpp",
-                                       "perf_tests/EGLInitializePerf.cpp",  # Uses ANGLEGetDisplayPlatform, a non-standard EP.
-                                       "perf_tests/ResultPerf.cpp",
-                                     ]
+angle_white_box_perf_tests_sources =
+    _angle_perf_test_common_sources + [
+      "angle_unittests_utils.h",
+      "perf_tests/BitSetIteratorPerf.cpp",
+      "perf_tests/CompilerPerf.cpp",
+      "perf_tests/EGLInitializePerf.cpp",  # Uses ANGLEGetDisplayPlatform, a
+                                           # non-standard EP.
+      "perf_tests/ResultPerf.cpp",
+    ]
 
 angle_white_box_perf_tests_win_sources =
     [ "perf_tests/IndexDataManagerTest.cpp" ]

@@ -53,7 +53,7 @@ protected:
     bool setSVGColorAndOpacity(
         SkDOM::Attr* attr, const char name[], const char value[], const SkColorEx& svgThemeColor) {
         if (svgThemeColor.valid && (((strcmp(name, "fill") == 0) && (strcmp(value, "none") != 0)) ||
-            ((strcmp(name, "stroke") == 0) && (strcmp(value, "none") != 0)))) {
+            ((strcmp(name, "stroke") == 0) && (strcmp(value, "none") != 0))) && isPureColor(value)) {
             char colorBuffer[8];
             int res = snprintf(colorBuffer, sizeof(colorBuffer), "#%06x", (svgThemeColor.color & 0xFFFFFF));
             attr->fValue = dupstr(fAlloc, (res < 0) ? value : colorBuffer);
@@ -122,11 +122,29 @@ protected:
         return false;
     }
 
+    bool isPureColor(const char value[]) const {
+        std::string color(value);
+        if (color.empty()) {
+            return true;
+        }
+
+        auto pos = color.find_first_not_of(' ');
+        if (pos != std::string::npos) {
+            color = color.substr(pos);
+        }
+
+        if (color.length() > urlLength && color.substr(0, urlLength - 1) == "url(#") {
+            return false;
+        }
+        return true;
+    }
+
 private:
     // for parse css style svg files.
     bool fProcessingStyle = false;
     CssStyleParser fStyleParser;
     uint64_t fSvgThemeColor = 0;
+    static const int urlLength = 6;
 };
 
 

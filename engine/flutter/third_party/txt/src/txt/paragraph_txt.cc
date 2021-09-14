@@ -293,6 +293,7 @@ bool ParagraphTxt::ComputeLineBreaks() {
     memcpy(breaker_.buffer(), text_.data() + block_start,
            block_size * sizeof(text_[0]));
     breaker_.setText();
+    breaker_.setIndents(indents_);
 
     // Add the runs that include this line to the LineBreaker.
     double block_total_width = 0;
@@ -1191,7 +1192,11 @@ double ParagraphTxt::GetLineXOffset(double line_total_advance,
   } else if (align == TextAlign::center) {
     return (width_ - line_total_advance) / 2;
   } else {
-    return 0;
+    if (line_number < indents_.size()) {
+      return indents_[line_number];
+    } else {
+      return indents_.size() > 0 ? indents_.back() : 0;
+    }
   }
 }
 
@@ -1211,6 +1216,10 @@ double ParagraphTxt::GetIdeographicBaseline() {
 
 double ParagraphTxt::GetMaxIntrinsicWidth() {
   return max_intrinsic_width_;
+}
+
+void ParagraphTxt::SetIndents(const std::vector<float>& indents) {
+  indents_ = indents;
 }
 
 double ParagraphTxt::GetMinIntrinsicWidth() {
@@ -1825,6 +1834,89 @@ Paragraph::PositionWithAffinity ParagraphTxt::GetGlyphPositionAtCoordinate(
     return PositionWithAffinity(gp->code_units.start, DOWNSTREAM);
   } else {
     return PositionWithAffinity(gp->code_units.end, UPSTREAM);
+  }
+}
+
+Paragraph::PositionWithAffinity ParagraphTxt::GetGlyphPositionAtCoordinateWithCluster(
+    double dx,
+    double dy) {
+  if (line_heights_.empty())
+    return PositionWithAffinity(0, DOWNSTREAM);
+
+  size_t y_index;
+  for (y_index = 0; y_index < line_heights_.size() - 1; ++y_index) {
+    if (dy < line_heights_[y_index])
+      break;
+  }
+
+  const std::vector<GlyphPosition>& line_glyph_position =
+      glyph_lines_[y_index].positions;
+  if (line_glyph_position.empty()) {
+    int line_start_index =
+        std::accumulate(glyph_lines_.begin(), glyph_lines_.begin() + y_index, 0,
+                        [](const int a, const GlyphLine& b) {
+                          return a + static_cast<int>(b.total_code_units);
+                        });
+    return PositionWithAffinity(line_start_index, DOWNSTREAM);
+  }
+
+  size_t x_index;
+  const GlyphPosition* gp = nullptr;
+  for (x_index = 0; x_index < line_glyph_position.size(); ++x_index) {
+    double glyph_end = (x_index < line_glyph_position.size() - 1)
+                           ? line_glyph_position[x_index + 1].x_pos.start
+                           : line_glyph_position[x_index].x_pos.end;
+    if (dx < glyph_end) {
+      gp = &line_glyph_position[x_index];
+      break;
+    }
+  }
+
+  if (gp == nullptr) {
+    gp = &line_glyph_position.back();
+  }
+
+  bool is_cluster_start_setted = false;
+  size_t cluster_start = 0;
+  size_t cluster_end = 0;
+  for (size_t index = 0; index < line_glyph_position.size(); ++index) {
+    if (line_glyph_position[index].cluster == gp->cluster) {
+      if (!is_cluster_start_setted) {
+        cluster_start = index;
+        cluster_end = index;
+        is_cluster_start_setted = true;
+      } else {
+        cluster_end = index;
+      }
+    }
+  }
+
+  // Find the direction of the run that contains this glyph.
+  TextDirection direction = TextDirection::ltr;
+  for (const CodeUnitRun& run : code_unit_runs_) {
+    if (gp->code_units.start >= run.code_units.start &&
+        gp->code_units.end <= run.code_units.end) {
+      direction = run.direction;
+      break;
+    }
+  }
+
+  double glyph_center = (gp->x_pos.start + gp->x_pos.end) / 2;
+  if (cluster_start == cluster_end) {
+    if ((direction == TextDirection::ltr && dx < glyph_center) ||
+      (direction == TextDirection::rtl && dx >= glyph_center)) {
+        return PositionWithAffinity(gp->code_units.start, DOWNSTREAM);
+    } else {
+      return PositionWithAffinity(gp->code_units.end, UPSTREAM);
+    }
+  } else {
+    glyph_center = (line_glyph_position[cluster_start].x_pos.start + line_glyph_position[cluster_end].x_pos.end) / 2;
+    if ((direction == TextDirection::ltr && dx < glyph_center) ||
+      (direction == TextDirection::rtl && dx >= glyph_center)) {
+        return PositionWithAffinity(line_glyph_position[cluster_start].code_units.start, DOWNSTREAM);
+    } else {
+      return PositionWithAffinity(line_glyph_position[cluster_end].code_units.end, UPSTREAM);
+    }
   }
 }
 

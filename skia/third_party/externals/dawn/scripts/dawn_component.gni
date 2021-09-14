@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("dawn_overrides_with_defaults.gni")
 import("dawn_features.gni")
+import("dawn_overrides_with_defaults.gni")
 
 ###############################################################################
 # Template to produce a component for one of Dawn's libraries.
@@ -125,13 +125,9 @@ template("dawn_component") {
 
   group(libname) {
     if (is_component_build) {
-      public_deps = [
-        ":${libname}_shared",
-      ]
+      public_deps = [ ":${libname}_shared" ]
     } else {
-      public_deps = [
-        ":${libname}_static",
-      ]
+      public_deps = [ ":${libname}_static" ]
     }
   }
 }

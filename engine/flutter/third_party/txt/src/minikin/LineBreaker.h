@@ -235,7 +235,7 @@ class LineBreaker {
 
   // layout parameters
   BreakStrategy mStrategy = kBreakStrategy_Greedy;
-  WordBreakType mWordBreakType = WordBreakType::kWordBreakType_Normal;
+  WordBreakType mWordBreakType = WordBreakType::kWordBreakType_BreakWord;
   HyphenationFrequency mHyphenationFrequency = kHyphenationFrequency_Normal;
   bool mJustified;
   LineWidths mLineWidths;

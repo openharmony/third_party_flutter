@@ -19,7 +19,8 @@ class EmbedderSurfaceGL final : public EmbedderSurface,
     std::function<bool(void)> gl_make_current_callback;           // required
     std::function<bool(void)> gl_clear_current_callback;          // required
     std::function<bool(void)> gl_present_callback;                // required
-    std::function<bool(const void*, size_t)> gl_send_surface_callback;           // for PC preview, optional
+    // for PC preview, optional
+    std::function<bool(const void*, const size_t, const int32_t, const int32_t)> gl_send_surface_callback;
     std::function<intptr_t(void)> gl_fbo_callback;                // required
     std::function<bool(void)> gl_make_resource_current_callback;  // optional
     std::function<SkMatrix(void)>
@@ -60,7 +61,7 @@ class EmbedderSurfaceGL final : public EmbedderSurface,
   bool GLContextPresent() override;
 
   // |GPUSurfaceGLDelegate|
-  bool GLContextSendSurface(const void* pixels, size_t size) override;
+  bool GLContextSendSurface(const void* pixels, size_t size, int32_t width, int32_t height) override;
 
   // |GPUSurfaceGLDelegate|
   intptr_t GLContextFBO() const override;
