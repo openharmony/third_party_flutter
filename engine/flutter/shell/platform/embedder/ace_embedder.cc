@@ -153,8 +153,10 @@ InferOpenGLPlatformViewCreationCallback(
   };
 
   auto gl_send_surface = [ptr = config->open_gl.send_current_surface,
-                          user_data](const void* pixels, size_t size) -> bool {
-    return ptr(pixels, size);
+                          user_data](const void* pixels, const size_t size,
+                                     const int32_t width,
+                                     const int32_t height) -> bool {
+    return ptr(pixels, size, width, height);
   };
 
   auto gl_fbo_callback = [ptr = config->open_gl.fbo_callback,

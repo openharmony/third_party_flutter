@@ -27,9 +27,7 @@ template("fixtures_location") {
 
   source_set(target_name) {
     public = []
-    sources = [
-      location_source_path,
-    ]
+    sources = [ location_source_path ]
   }
 }
 
@@ -62,13 +60,9 @@ template("dart_snapshot_kernel") {
 
     script = "$root_out_dir/frontend_server.dart.snapshot"
 
-    inputs = [
-      invoker.dart_main,
-    ]
+    inputs = [ invoker.dart_main ]
 
-    outputs = [
-      invoker.dart_kernel,
-    ]
+    outputs = [ invoker.dart_kernel ]
 
     snapshot_depfile = "$target_gen_dir/snapshot_$target_name.depfile.d"
     depfile = snapshot_depfile
@@ -117,9 +111,7 @@ template("dart_snapshot_aot") {
 
     tool = "//third_party/dart/runtime/bin:gen_snapshot"
 
-    inputs = [
-      invoker.dart_kernel,
-    ]
+    inputs = [ invoker.dart_kernel ]
 
     vm_snapshot_data = "$target_gen_dir/assets/vm_snapshot_data"
     vm_snapshot_instr = "$target_gen_dir/assets/vm_snapshot_instr"
@@ -172,9 +164,7 @@ template("dart_snapshot") {
     dart_snapshot_aot_target_name = "dart_snapshot_aot_$target_name"
     dart_snapshot_aot(dart_snapshot_aot_target_name) {
       dart_kernel = dart_snapshot_kernel_path
-      deps = [
-        ":$dart_snapshot_kernel_target_name",
-      ]
+      deps = [ ":$dart_snapshot_kernel_target_name" ]
     }
     snapshot_deps += [ ":$dart_snapshot_aot_target_name" ]
   }
@@ -205,9 +195,7 @@ template("copy_fixtures") {
   if (has_fixtures) {
     copy(target_name) {
       sources = invoker.fixtures
-      outputs = [
-        "$target_gen_dir/assets/{{source_file_part}}",
-      ]
+      outputs = [ "$target_gen_dir/assets/{{source_file_part}}" ]
     }
   } else {
     group(target_name) {

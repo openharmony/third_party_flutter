@@ -298,6 +298,27 @@ const std::shared_ptr<FontFamily>& FontCollection::getFamilyForChar(
     uint32_t vs,
     uint32_t langListId,
     int variant) const {
+  // First find font in hw theme.
+  for (size_t k = 0; k < mFamilies.size(); k++) {
+    if (NULL == mFamilies[k]) {
+      continue;
+    }
+    if (mFamilies[k]->getHwFontFamilyType() > 0) {
+      if(mFamilies[k] ->getCoverage().get(ch)) {
+        return mFamilies[k];
+      }
+    }
+  }
+
+  if (mFallbackFontProvider) {
+    const std::shared_ptr<FontFamily>& fallback =
+        mFallbackFontProvider->matchFallbackFontFromHwFont(ch,
+                                                           GetFontLocale(langListId));
+    if (fallback) {
+      return fallback;
+    }
+  }
+
   if (ch >= mMaxChar) {
     // libtxt: check if the fallback font provider can match this character
     if (mFallbackFontProvider) {
@@ -309,6 +330,13 @@ const std::shared_ptr<FontFamily>& FontCollection::getFamilyForChar(
       }
     }
     return mFamilies[0];
+  }
+
+  // 0x1000 to 0x109f is range of Burmese, force ch to 0x1000 or 0x1050 to match Z-encoding and U-encoding of Burmese.
+  if (ch >= 0x1000 && ch <= 0x109f) {
+    const uint32_t ZAWGYI_START_CODE = 0x1000;
+    const uint32_t UNICODE_START_CODE = 0x1050;
+    ch = mIsZawgyiMyanmar ? ZAWGYI_START_CODE : UNICODE_START_CODE; // 0x1050 is exist in U-encoding of Burmese only.
   }
 
   Range range = mRanges[ch >> kLogCharsPerPage];

@@ -23,6 +23,7 @@ struct AceTextureLayer {
     int64_t id_ = -1;
     long handle_ = 0;
     fml::jni::JavaObjectWeakGlobalRef layerTexture_;
+    void* nativeWindow_ = nullptr;
     int32_t alpha_ = 255;
 };
 
@@ -33,6 +34,9 @@ public:
 
     // Called from Platform thread.
     void RegisterTexture(int64_t id, long textureHandle, const fml::jni::JavaObjectWeakGlobalRef& layerTexture);
+
+    // Called from Platform thread.
+    void RegisterNativeWindow(int64_t id, const void* nativeWindow);
 
     // Called from Platform thread.
     void UnregisterTexture(int64_t id);
