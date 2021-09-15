@@ -89,4 +89,5 @@ float VsyncWaiterEmbedder::GetDisplayRefreshRate() const
 {
     return 60.0f;
 }
+
 } // namespace flutter

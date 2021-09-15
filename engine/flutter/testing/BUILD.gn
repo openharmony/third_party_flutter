@@ -27,9 +27,7 @@ source_set("testing") {
     "$flutter_root/testing/thread_test.h",
   ]
 
-  public_deps = [
-    ":testing_lib",
-  ]
+  public_deps = [ ":testing_lib" ]
 }
 
 source_set("dart") {

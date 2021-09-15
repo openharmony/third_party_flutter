@@ -92,7 +92,7 @@ class ParagraphTxt : public Paragraph {
   // Currently, calculated similarly to as GetLayoutWidth(), however this is not
   // necessarily 100% correct in all cases.
   double GetMinIntrinsicWidth() override;
-
+  void SetIndents(const std::vector<float>& indents);
   std::vector<TextBox> GetRectsForRange(
       size_t start,
       size_t end,
@@ -101,6 +101,9 @@ class ParagraphTxt : public Paragraph {
 
   PositionWithAffinity GetGlyphPositionAtCoordinate(double dx,
                                                     double dy) override;
+
+  PositionWithAffinity GetGlyphPositionAtCoordinateWithCluster(double dx,
+                                                               double dy) override;
 
   std::vector<Paragraph::TextBox> GetRectsForPlaceholders() override;
 
@@ -153,6 +156,7 @@ class ParagraphTxt : public Paragraph {
 
   // Starting data to layout.
   std::vector<uint16_t> text_;
+  std::vector<float> indents_;
   // A vector of PlaceholderRuns, which detail the sizes, positioning and break
   // behavior of the empty spaces to leave. Each placeholder span corresponds to
   // a 0xFFFC (object replacement character) in text_, which indicates the

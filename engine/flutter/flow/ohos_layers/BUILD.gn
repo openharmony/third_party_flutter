@@ -11,7 +11,7 @@ template("flutter_ohos_layers_set") {
   forward_variables_from(invoker, "*")
   ohos_source_set(target_name) {
     defines += invoker.defines
-    configs = [ "$flutter_root:flutter_config" ]
+    configs = [ "$ace_flutter_engine_root:flutter_config" ]
 
     sources = [
       "backdrop_filter_layer.cpp",
@@ -19,8 +19,10 @@ template("flutter_ohos_layers_set") {
       "clip_rect_layer.cpp",
       "clip_rrect_layer.cpp",
       "container_layer.cpp",
+      "filter_layer.cpp",
       "layer_tree.cpp",
       "layer_tree_builder.cpp",
+      "mask_layer.cpp",
       "opacity_layer.cpp",
       "picture_layer.cpp",
       "shader_mask_layer.cpp",
@@ -29,7 +31,7 @@ template("flutter_ohos_layers_set") {
       "transform_layer.cpp",
     ]
 
-    deps = [ "$flutter_root:ace_skia_$platform" ]
+    deps = [ "$ace_flutter_engine_root:ace_skia_$platform" ]
   }
 }
 

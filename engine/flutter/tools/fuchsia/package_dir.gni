@@ -58,12 +58,8 @@ template("package_dir") {
   cmx_target = "$pkg_target_name.copy_cmx"
 
   copy("$cmx_target") {
-    sources = [
-      "${meta_dir}/${pkg_target_name}.cmx",
-    ]
-    outputs = [
-      "$far_base_dir/meta/{{source_file_part}}",
-    ]
+    sources = [ "${meta_dir}/${pkg_target_name}.cmx" ]
+    outputs = [ "$far_base_dir/meta/{{source_file_part}}" ]
   }
 
   action(target_name) {

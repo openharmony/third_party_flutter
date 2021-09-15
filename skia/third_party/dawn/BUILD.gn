@@ -13,8 +13,8 @@
 # limitations under the License.
 
 dawn_root = "../externals/dawn"
-import("$dawn_root/scripts/dawn_features.gni")
 import("$dawn_root/generator/dawn_generator.gni")
+import("$dawn_root/scripts/dawn_features.gni")
 
 ###############################################################################
 # Template to wrap the Dawn code generator
@@ -108,9 +108,7 @@ static_library("dawn_common") {
                         "$dawn_root")
 
   configs += [ ":dawn_internal" ]
-  deps = [
-    ":dawn_headers",
-  ]
+  deps = [ ":dawn_headers" ]
 }
 
 ###############################################################################
@@ -127,9 +125,7 @@ dawn_json_generator("dawn_headers_gen") {
 
 source_set("dawn_headers") {
   public_configs = [ ":libdawn_public" ]
-  deps = [
-    ":dawn_headers_gen",
-  ]
+  deps = [ ":dawn_headers_gen" ]
 
   sources = get_target_outputs(":dawn_headers_gen")
   sources += [
@@ -148,14 +144,10 @@ dawn_json_generator("libdawn_gen") {
 }
 
 static_library("libdawn") {
-  public_deps = [
-    ":dawn_headers",
-  ]
+  public_deps = [ ":dawn_headers" ]
 
   defines = [ "DAWN_IMPLEMENTATION" ]
-  deps = [
-    ":libdawn_gen",
-  ]
+  deps = [ ":libdawn_gen" ]
   sources = get_target_outputs(":libdawn_gen")
 }
 
@@ -202,9 +194,7 @@ if (dawn_enable_opengl) {
 # Public libdawn_native headers so they can be publically visible for
 # dependencies of libdawn_native
 source_set("libdawn_native_headers") {
-  public_deps = [
-    ":dawn_headers",
-  ]
+  public_deps = [ ":dawn_headers" ]
   sources = rebase_path(
           [
             "src/include/dawn_native/DawnNative.h",
@@ -236,9 +226,7 @@ source_set("libdawn_native_sources") {
   public_configs = [ ":libdawn_native_internal" ]
 
   # Set the headers as a public dependency so they are visible to unittests
-  public_deps = [
-    ":libdawn_native_headers",
-  ]
+  public_deps = [ ":libdawn_native_headers" ]
 
   libs = []
 
@@ -551,14 +539,10 @@ source_set("libdawn_native_sources") {
 
 # The shared library for libdawn_native for use by samples, tests, etc.
 shared_library("libdawn_native") {
-  deps = [
-    ":libdawn_native_sources",
-  ]
+  deps = [ ":libdawn_native_sources" ]
 
   #Make headers publically visible
-  public_deps = [
-    ":libdawn_native_headers",
-  ]
+  public_deps = [ ":libdawn_native_headers" ]
   public_configs = [ ":libdawn_public" ]
 
   # Tell dependents where to find this shared library

@@ -26,7 +26,7 @@ PlatformViewOhos::PlatformViewOhos(
     }
 }
 
-void PlatformViewOhos::NotifyCreated(::OHOS::Window* window)
+void PlatformViewOhos::NotifyCreated(const ::OHOS::sptr<::OHOS::Window> &window)
 {
     if (surface_) {
         surface_->SetPlatformWindow(window);

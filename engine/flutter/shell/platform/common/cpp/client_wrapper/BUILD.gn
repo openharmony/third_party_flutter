@@ -34,9 +34,8 @@ source_set("client_wrapper_library_stubs") {
 
   defines = [ "FLUTTER_DESKTOP_LIBRARY" ]
 
-  public_deps = [
-    "$flutter_root/shell/platform/common/cpp:common_cpp_library_headers",
-  ]
+  public_deps =
+      [ "$flutter_root/shell/platform/common/cpp:common_cpp_library_headers" ]
 }
 
 test_fixtures("client_wrapper_fixtures") {

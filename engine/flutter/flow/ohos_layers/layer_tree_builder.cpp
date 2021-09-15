@@ -20,7 +20,9 @@
 #include "flutter/flow/ohos_layers/clip_rrect_layer.h"
 #include "flutter/flow/ohos_layers/color_filter_layer.h"
 #include "flutter/flow/ohos_layers/container_layer.h"
+#include "flutter/flow/ohos_layers/filter_layer.h"
 #include "flutter/flow/ohos_layers/layer.h"
+#include "flutter/flow/ohos_layers/mask_layer.h"
 #include "flutter/flow/ohos_layers/opacity_layer.h"
 #include "flutter/flow/ohos_layers/picture_layer.h"
 #include "flutter/flow/ohos_layers/shader_mask_layer.h"
@@ -57,6 +59,13 @@ void LayerTreeBuilder::PushClipRRect(const SkRRect& skRRect, int32_t clipBehavio
     PushLayer(layer);
 }
 
+void LayerTreeBuilder::PushClipPath(const SkPath& skPath, int32_t clipBehavior)
+{
+    Clip clip_behavior = static_cast<Clip>(clipBehavior);
+    auto layer = std::make_shared<ClipPathLayer>(skPath, clip_behavior);
+    PushLayer(layer);
+}
+
 void LayerTreeBuilder::PushOpacity(int32_t alpha, double dx, double dy)
 {
     auto layer = std::make_shared<OpacityLayer>(alpha, SkPoint::Make(dx, dy));
@@ -74,6 +83,30 @@ void LayerTreeBuilder::PushShaderMask(sk_sp<SkShader> shader, double maskRectLef
 {
     SkRect rect = SkRect::MakeLTRB(maskRectLeft, maskRectTop, maskRectRight, maskRectBottom);
     auto layer = std::make_shared<ShaderMaskLayer>(shader, rect, static_cast<SkBlendMode>(blendMode));
+    PushLayer(layer);
+}
+
+void LayerTreeBuilder::PushSvgMask(const sk_sp<SkSVGDOM>& svgDom, double x, double y, double scaleX, double scaleY)
+{
+    auto layer = std::make_shared<MaskLayer>(x, y, scaleX, scaleY, svgDom);
+    PushLayer(layer);
+}
+
+void LayerTreeBuilder::PushGradientColorMask(const SkPaint& maskPaint)
+{
+    auto layer = std::make_shared<MaskLayer>(maskPaint);
+    PushLayer(layer);
+}
+
+void LayerTreeBuilder::PushPathMask(const SkPaint& maskPaint, const SkPath& maskPath)
+{
+    auto layer = std::make_shared<MaskLayer>(maskPaint, maskPath);
+    PushLayer(layer);
+}
+
+void LayerTreeBuilder::PushFilter(const SkPaint& filterPaint)
+{
+    auto layer = std::make_shared<FilterLayer>(filterPaint);
     PushLayer(layer);
 }
 

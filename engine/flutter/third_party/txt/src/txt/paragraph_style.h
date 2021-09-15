@@ -81,7 +81,7 @@ class ParagraphStyle {
       minikin::BreakStrategy::kBreakStrategy_Greedy;
 
   minikin::WordBreakType word_break_type =
-      minikin::WordBreakType::kWordBreakType_Normal;
+      minikin::WordBreakType::kWordBreakType_BreakWord;
 
   TextStyle GetTextStyle() const;
 

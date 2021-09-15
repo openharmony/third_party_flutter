@@ -11,9 +11,7 @@ source_set("test_font") {
     "test_font_data.cc",
     "test_font_data.h",
   ]
-  deps = [
-    "//third_party/skia",
-  ]
+  deps = [ "//third_party/skia" ]
   public_configs = [ "$flutter_root:config" ]
   defines = []
   if (flutter_runtime_mode == "debug" || current_toolchain == host_toolchain) {
@@ -87,9 +85,7 @@ source_set("runtime") {
     "//third_party/tonic",
   ]
 
-  public_deps = [
-    "//third_party/rapidjson",
-  ]
+  public_deps = [ "//third_party/rapidjson" ]
 
   public_configs = [ "$flutter_root:config" ]
 
@@ -142,7 +138,5 @@ executable("runtime_unittests") {
     "dart_vm_unittests.cc",
   ]
 
-  deps = [
-    ":runtime_unittests_common",
-  ]
+  deps = [ ":runtime_unittests_common" ]
 }

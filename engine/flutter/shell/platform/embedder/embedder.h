@@ -118,7 +118,7 @@ typedef struct {
 
 // ACE PC preivew
 using IdleCallback = std::function<void(int64_t)>;
-typedef bool (*UserBoolCallback)(const void*, size_t);
+typedef bool (*UserBoolCallback)(const void*, const size_t, const int32_t, const int32_t);
 #ifdef USE_GLFW_WINDOW
 namespace flutter {
   class PointerDataPacket;

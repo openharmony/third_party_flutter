@@ -619,6 +619,30 @@ void FlutterDesktopWindowSetFrame(FlutterDesktopWindowRef flutter_window,
                     height - frame_top - frame_bottom);
 }
 
+void FlutterDesktopGetWindowSize(FlutterDesktopWindowRef flutter_window,
+                                 int* width,
+                                 int* height) {
+  glfwGetWindowSize(flutter_window->window, width, height);
+}
+
+void FlutterDesktopSetWindowSize(FlutterDesktopWindowRef flutter_window,
+                                 int& width,
+                                 int& height) {
+  glfwSetWindowSize(flutter_window->window, width, height);
+#ifdef USE_GLFW_WINDOW
+  int width_px, height_px;
+  glfwGetFramebufferSize(flutter_window->window, &width_px, &height_px);
+  width = width_px;
+  height = height_px;
+#endif
+  GLFWFramebufferSizeCallback(flutter_window->window, width, height);
+
+  // Set up GLFW callbacks for the window.
+  glfwSetFramebufferSizeCallback(flutter_window->window, GLFWFramebufferSizeCallback);
+  glfwSetWindowRefreshCallback(flutter_window->window, GLFWWindowRefreshCallback);
+  GLFWAssignEventCallbacks(flutter_window->window);
+}
+
 double FlutterDesktopWindowGetScaleFactor(
     FlutterDesktopWindowRef flutter_window) {
   return flutter_window->pixels_per_screen_coordinate;

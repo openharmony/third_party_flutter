@@ -118,9 +118,7 @@ source_set("ui") {
     "//third_party/tonic",
   ]
 
-  public_deps = [
-    "$flutter_root/third_party/txt",
-  ]
+  public_deps = [ "$flutter_root/third_party/txt" ]
 
   if (flutter_enable_skshaper) {
     defines = [ "FLUTTER_ENABLE_SKSHAPER" ]
@@ -156,9 +154,7 @@ if (current_toolchain == host_toolchain) {
   executable("ui_unittests") {
     testonly = true
 
-    sources = [
-      "painting/image_decoder_unittests.cc",
-    ]
+    sources = [ "painting/image_decoder_unittests.cc" ]
 
     deps = [
       ":ui",
