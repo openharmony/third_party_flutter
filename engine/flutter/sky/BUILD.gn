@@ -5,9 +5,7 @@
 group("sky") {
   testonly = true
 
-  deps = [
-    "$flutter_root/sky/packages",
-  ]
+  deps = [ "$flutter_root/sky/packages" ]
 
   if (!is_fuchsia) {
     deps += [ "$flutter_root/shell" ]

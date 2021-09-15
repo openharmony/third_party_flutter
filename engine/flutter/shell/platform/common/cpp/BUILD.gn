@@ -57,7 +57,5 @@ source_set("common_cpp") {
 
 copy("publish_headers") {
   sources = _public_headers
-  outputs = [
-    "$root_out_dir/{{source_file_part}}",
-  ]
+  outputs = [ "$root_out_dir/{{source_file_part}}" ]
 }

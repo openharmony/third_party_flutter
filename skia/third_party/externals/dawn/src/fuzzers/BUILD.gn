@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("../../scripts/dawn_overrides_with_defaults.gni")
 import("//build_overrides/build.gni")
+import("../../scripts/dawn_overrides_with_defaults.gni")
 
 # We only have libfuzzer in Chromium builds but if we build fuzzer targets only
 # there, we would risk breaking fuzzer targets all the time when making changes
@@ -74,21 +74,15 @@ static_library("dawn_spirv_cross_fuzzer_common") {
     "DawnSPIRVCrossFuzzer.cpp",
     "DawnSPIRVCrossFuzzer.h",
   ]
-  public_deps = [
-    "${dawn_shaderc_dir}:libshaderc_spvc",
-  ]
+  public_deps = [ "${dawn_shaderc_dir}:libshaderc_spvc" ]
 }
 
 # TODO(rharrison): Remove asan_options once signal trap is no longer
 #                  needed.
 # Uses Dawn specific options and varies input data
 dawn_fuzzer_test("dawn_spirv_cross_glsl_fast_fuzzer") {
-  sources = [
-    "DawnSPIRVCrossGLSLFastFuzzer.cpp",
-  ]
-  deps = [
-    ":dawn_spirv_cross_fuzzer_common",
-  ]
+  sources = [ "DawnSPIRVCrossGLSLFastFuzzer.cpp" ]
+  deps = [ ":dawn_spirv_cross_fuzzer_common" ]
   asan_options = [ "allow_user_segv_handler=1" ]
 }
 
@@ -96,12 +90,8 @@ dawn_fuzzer_test("dawn_spirv_cross_glsl_fast_fuzzer") {
 #                  needed.
 # Uses Dawn specific options and varies input data
 dawn_fuzzer_test("dawn_spirv_cross_hlsl_fast_fuzzer") {
-  sources = [
-    "DawnSPIRVCrossHLSLFastFuzzer.cpp",
-  ]
-  deps = [
-    ":dawn_spirv_cross_fuzzer_common",
-  ]
+  sources = [ "DawnSPIRVCrossHLSLFastFuzzer.cpp" ]
+  deps = [ ":dawn_spirv_cross_fuzzer_common" ]
   asan_options = [ "allow_user_segv_handler=1" ]
 }
 
@@ -109,19 +99,13 @@ dawn_fuzzer_test("dawn_spirv_cross_hlsl_fast_fuzzer") {
 #                  needed.
 # Uses Dawn specific options and varies input data
 dawn_fuzzer_test("dawn_spirv_cross_msl_fast_fuzzer") {
-  sources = [
-    "DawnSPIRVCrossMSLFastFuzzer.cpp",
-  ]
-  deps = [
-    ":dawn_spirv_cross_fuzzer_common",
-  ]
+  sources = [ "DawnSPIRVCrossMSLFastFuzzer.cpp" ]
+  deps = [ ":dawn_spirv_cross_fuzzer_common" ]
   asan_options = [ "allow_user_segv_handler=1" ]
 }
 
 dawn_fuzzer_test("dawn_wire_server_and_frontend_fuzzer") {
-  sources = [
-    "DawnWireServerAndFrontendFuzzer.cpp",
-  ]
+  sources = [ "DawnWireServerAndFrontendFuzzer.cpp" ]
 
   deps = [
     "${dawn_root}/:libdawn_native_static",

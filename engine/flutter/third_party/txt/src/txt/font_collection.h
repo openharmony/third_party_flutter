@@ -69,7 +69,11 @@ class FontCollection : public std::enable_shared_from_this<FontCollection> {
   void ClearFontFamilyCache();
 
   // Vary font collection with font weight scale.
-  void VaryFontCollectionWithFontWeightScale(float fontWeightScale);
+  void VaryFontCollectionWithFontWeightScale(float font_weight_scale);
+
+  void LoadSystemFont();
+
+  void SetIsZawgyiMyanmar(bool is_zawgyi_myanmar);
 
 #if FLUTTER_ENABLE_SKSHAPER
 
@@ -110,10 +114,12 @@ class FontCollection : public std::enable_shared_from_this<FontCollection> {
   std::unordered_map<std::string, std::set<std::string>>
       fallback_fonts_for_locale_;
   bool enable_font_fallback_;
-  float fontWeightScale_ = 1.0f;
-  std::vector<FamilyKey> variedFonts_;
+  bool is_zawgyi_myanmar_ = false; // whether encoding of Burmese is zawgyi, not unicode.
+  float font_weight_scale_ = 1.0f;
+  std::vector<FamilyKey> varied_fonts_;
 
   std::mutex mutex_;
+  mutable std::mutex fontManagerMutex_;
 
   // Performs the actual work of MatchFallbackFont. The result is cached in
   // fallback_match_cache_.
@@ -133,6 +139,8 @@ class FontCollection : public std::enable_shared_from_this<FontCollection> {
   const std::shared_ptr<minikin::FontFamily>& GetFallbackFontFamily(
       const sk_sp<SkFontMgr>& manager,
       const std::string& family_name);
+
+  sk_sp<SkFontMgr> GetDefaultFontManagerSafely() const;
 
   FML_DISALLOW_COPY_AND_ASSIGN(FontCollection);
 };

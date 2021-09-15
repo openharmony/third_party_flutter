@@ -12,7 +12,10 @@
 #include <memory>
 #include <stack>
 
+#include "experimental/svg/model/SkSVGDOM.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkShader.h"
@@ -38,10 +41,15 @@ public:
     void PushOffset(double dx, double dy);
     void PushClipRect(double left, double right, double top, double bottom, int32_t clipBehavior);
     void PushClipRRect(const SkRRect& skRRect, int32_t clipBehavior);
+    void PushClipPath(const SkPath& skPath, int32_t clipBehavior);
     void PushOpacity(int32_t alpha, double dx = 0, double dy = 0);
     void PushBackdropFilter(sk_sp<SkImageFilter> filter);
     void PushShaderMask(sk_sp<SkShader> shader, double maskRectLeft, double maskRectRight, double maskRectTop,
         double maskRectBottom, int32_t blendMode);
+    void PushGradientColorMask(const SkPaint& maskPaint);
+    void PushSvgMask(const sk_sp<SkSVGDOM>& svgDom, double x, double y, double scaleX, double scaleY);
+    void PushPathMask(const SkPaint& maskPaint, const SkPath& maskPath);
+    void PushFilter(const SkPaint& filterPaint);
 
     void Pop();
     std::unique_ptr<LayerTree> GetLayerTree() const;

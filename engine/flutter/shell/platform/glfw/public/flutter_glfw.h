@@ -27,7 +27,7 @@ typedef struct FlutterDesktopEngineState* FlutterDesktopEngineRef;
 
 // For PC preivew
 using IdleCallback = std::function<void(int64_t)>;
-using SurfacePresentCallback = bool (*)(const void*, size_t);
+using SurfacePresentCallback = bool (*)(const void*, const size_t, const int32_t, const int32_t);
 
 // Sets up the library's graphic context. Must be called before any other
 // methods.
@@ -79,6 +79,16 @@ FLUTTER_EXPORT void FlutterDesktopGetFramebufferSize(
     FlutterDesktopWindowRef flutter_window,
     int* width,
     int* height);
+
+FLUTTER_EXPORT void FlutterDesktopGetWindowSize(
+    FlutterDesktopWindowRef flutter_window,
+    int* width,
+    int* height);
+
+FLUTTER_EXPORT void FlutterDesktopSetWindowSize(
+    FlutterDesktopWindowRef flutter_window,
+    int& width,
+    int& height);
 
 // Loops on Flutter window events until the window is closed.
 //

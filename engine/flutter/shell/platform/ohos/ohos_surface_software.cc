@@ -66,24 +66,31 @@ std::unique_ptr<Surface> OhosSurfaceSoftware::CreateGPUSurface()
 
 bool OhosSurfaceSoftware::OnScreenSurfaceResize(const SkISize& size)
 {
+    FML_LOG(INFO) << "OhosSurfaceSoftware::OnScreenSurfaceResize, software surface do noting";
     requestConfig_.width = size.fWidth;
     requestConfig_.height = size.fHeight;
     return true;
 }
 
-void OhosSurfaceSoftware::SetPlatformWindow(OHOS::Window* window)
+void OhosSurfaceSoftware::SetPlatformWindow(const OHOS::sptr<OHOS::Window> &window)
 {
     if (window == nullptr) {
         FML_LOG(ERROR) << "OhosSurfaceSoftware::SetPlatformWindow, window is nullptr";
         return;
     }
     window_ = window;
-    window_->GetRequestConfig(requestConfig_);
     surface_ = window->GetSurface();
     if (surface_ == nullptr) {
         FML_LOG(ERROR) << "OhosSurfaceSoftware::SetPlatformWindow, surface_ is nullptr";
         return;
     }
+    requestConfig_ = {
+        .width = surface_->GetDefaultWidth(),
+        .height = surface_->GetDefaultHeight(),
+        .strideAlignment = 0x8,
+        .format = PIXEL_FMT_RGBA_8888,
+        .usage = surface_->GetDefaultUsage(),
+    };
     // Set buffer size to 5 for enough buffer
     surface_->SetQueueSize(5);
 }
@@ -127,14 +134,11 @@ bool OhosSurfaceSoftware::PresentBackingStore(
         FML_LOG(ERROR) << "OhosSurfaceSoftware surface is nullptr";
         return false;
     }
-    int32_t pixelBase = 16;
-    int32_t convertWidth = requestConfig_.width % pixelBase == 0 ? requestConfig_.width
-        : (requestConfig_.width / pixelBase + 1) * pixelBase;
-    int32_t alignment = 8;
+
     OHOS::BufferRequestConfig requestConfig = {
-        .width = convertWidth,
+        .width = requestConfig_.width,
         .height = requestConfig_.height,
-        .strideAlignment = alignment,
+        .strideAlignment = 8,
         .format = PIXEL_FMT_RGBA_8888,
         .usage = HBM_USE_CPU_READ | HBM_USE_CPU_WRITE | HBM_USE_MEM_DMA,
         .timeout = 0,
@@ -143,20 +147,28 @@ bool OhosSurfaceSoftware::PresentBackingStore(
     int32_t releaseFence;
 
     OHOS::SurfaceError ret = surface_->RequestBuffer(surfaceBuffer, releaseFence, requestConfig);
-    if (ret != OHOS::SURFACE_ERROR_OK || surfaceBuffer == nullptr || surfaceBuffer->GetSize() == 0) {
-        FML_LOG(ERROR) << "OhosSurfaceSoftware request surfaceBuffer fail";
+    if (ret != OHOS::SURFACE_ERROR_OK) {
+        FML_LOG(ERROR) << "OhosSurfaceSoftware RequestBuffer failed";
         return false;
     }
 
-    SurfaceDrawBuffer(requestConfig, surfaceBuffer, pixmap);
-    SurfaceFlushBuffer(surfaceBuffer);
+    if (surfaceBuffer == nullptr) {
+        FML_LOG(ERROR) << "OhosSurfaceSoftware surfaceBuffer is nullptr";
+        return false;
+    }
 
-    return true;
-}
+    if (surfaceBuffer->GetVirAddr() == nullptr) {
+        FML_LOG(ERROR) << "OhosSurfaceSoftware surfaceBuffer addr is nullptr";
+        return false;
+    }
 
-void OhosSurfaceSoftware::SurfaceDrawBuffer(
-    OHOS::BufferRequestConfig& requestConfig, OHOS::sptr<OHOS::SurfaceBuffer> surfaceBuffer, SkPixmap& pixmap)
-{
+    if (surfaceBuffer->GetSize() == 0) {
+        FML_LOG(ERROR) << "OhosSurfaceSoftware surfaceBuffer size error";
+        return false;
+    }
+
+    memset(surfaceBuffer->GetVirAddr(), 0, surfaceBuffer->GetSize());
+
     SkColorType color_type;
     SkAlphaType alpha_type;
     if (GetSkColorType(requestConfig.format, &color_type, &alpha_type)) {
@@ -174,10 +186,7 @@ void OhosSurfaceSoftware::SurfaceDrawBuffer(
             }
         }
     }
-}
 
-void OhosSurfaceSoftware::SurfaceFlushBuffer(OHOS::sptr<OHOS::SurfaceBuffer> surfaceBuffer)
-{
     FML_LOG(INFO) << "OhosSurfaceSoftware flush buffer";
     OHOS::BufferFlushConfig flushConfig = {
         .damage = {
@@ -189,10 +198,13 @@ void OhosSurfaceSoftware::SurfaceFlushBuffer(OHOS::sptr<OHOS::SurfaceBuffer> sur
         .timestamp = 0
     };
     surface_->FlushBuffer(surfaceBuffer, -1, flushConfig);
+
+    return true;
 }
 
 ExternalViewEmbedder* OhosSurfaceSoftware::GetExternalViewEmbedder()
 {
     return nullptr;
 }
+
 }  // namespace flutter

@@ -301,7 +301,7 @@ bool GPUSurfaceGL::PresentSurface(SkCanvas* canvas) {
     SkPixmap data(info, pixelBuffer.get(), width * pixelSize);
 
     if (onscreen_surface_->readPixels(data, 0, 0)) {
-        delegate_->GLContextSendSurface(data.addr(), data.rowBytes() * data.height());
+        delegate_->GLContextSendSurface(data.addr(), data.rowBytes() * data.height(), width, height);
     } else {
         FML_LOG(ERROR) << "GLContextSendSurface failed";
     }

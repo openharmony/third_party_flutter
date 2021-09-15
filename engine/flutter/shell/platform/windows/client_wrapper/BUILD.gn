@@ -56,9 +56,8 @@ source_set("client_wrapper_library_stubs_windows") {
 
   defines = [ "FLUTTER_DESKTOP_LIBRARY" ]
 
-  public_deps = [
-    "$flutter_root/shell/platform/windows:flutter_windows_headers",
-  ]
+  public_deps =
+      [ "$flutter_root/shell/platform/windows:flutter_windows_headers" ]
 }
 
 test_fixtures("client_wrapper_windows_fixtures") {
@@ -69,9 +68,7 @@ executable("client_wrapper_windows_unittests") {
   testonly = true
 
   # TODO: Add more unit tests.
-  sources = [
-    "flutter_window_controller_unittests.cc",
-  ]
+  sources = [ "flutter_window_controller_unittests.cc" ]
 
   deps = [
     ":client_wrapper_library_stubs_windows",
