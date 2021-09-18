@@ -2912,6 +2912,19 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////////
 
+#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC)
+#include "src/ports/SkFontMgr_preview.h"
+bool SkFontMgr::physicalDeviceFonts = false;
+sk_sp<SkFontMgr> SkFontMgr::Factory()
+{
+    if (SkFontMgr::physicalDeviceFonts) {
+        return SkFontMgr_New_Preview();
+    } else {
+        return sk_make_sp<SkFontMgr_Mac>();
+    }
+}
+#else
 sk_sp<SkFontMgr> SkFontMgr::Factory() { return sk_make_sp<SkFontMgr_Mac>(); }
+#endif//defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC)
 
 #endif//defined(SK_BUILD_FOR_MAC) || defined(SK_BUILD_FOR_IOS)

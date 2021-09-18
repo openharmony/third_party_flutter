@@ -15,7 +15,7 @@
 
 #if OS_MACOSX
 #include "flutter/fml/platform/darwin/message_loop_darwin.h"
-#elif OHOS_PLATFORM
+#elif OHOS_STANDARD_SYSTEM
 #include "flutter/fml/platform/linux/message_loop_linux.h"
 #elif OS_ANDROID
 #include "flutter/fml/platform/android/message_loop_android.h"
@@ -30,7 +30,7 @@ namespace fml {
 fml::RefPtr<MessageLoopImpl> MessageLoopImpl::Create() {
 #if OS_MACOSX
   return fml::MakeRefCounted<MessageLoopDarwin>();
-#elif OHOS_PLATFORM
+#elif OHOS_STANDARD_SYSTEM
   return fml::MakeRefCounted<MessageLoopLinux>();
 #elif OS_ANDROID
   return fml::MakeRefCounted<MessageLoopAndroid>();

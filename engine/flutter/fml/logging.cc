@@ -9,7 +9,7 @@
 #include "flutter/fml/log_settings.h"
 #include "flutter/fml/logging.h"
 
-#if defined(OHOS_PLATFORM)
+#if defined(OHOS_STANDARD_SYSTEM)
 #include "hilog/log.h"
 #elif defined(OS_ANDROID)
 #include <android/log.h>
@@ -64,7 +64,7 @@ LogMessage::LogMessage(LogSeverity severity,
 
 LogMessage::~LogMessage() {
   stream_ << std::endl;
-#if defined(OHOS_PLATFORM)
+#if defined(OHOS_STANDARD_SYSTEM)
   LogLevel priority = LogLevel::LOG_DEBUG;
   switch (severity_) {
     case LOG_INFO:
