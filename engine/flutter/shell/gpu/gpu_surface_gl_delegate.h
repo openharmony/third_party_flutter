@@ -26,7 +26,12 @@ class GPUSurfaceGLDelegate {
   virtual bool GLContextPresent() = 0;
 
   // For PC preivew
-  virtual bool GLContextSendSurface(const void* pixels, size_t size) { return false; };
+  virtual bool GLContextSendSurface(const void* pixels,
+                                    const size_t size,
+                                    const int32_t width,
+                                    const int32_t height) {
+    return false;
+  };
 
   // The ID of the main window bound framebuffer. Typically FBO0.
   virtual intptr_t GLContextFBO() const = 0;

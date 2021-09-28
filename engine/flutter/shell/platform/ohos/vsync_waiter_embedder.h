@@ -4,10 +4,17 @@
 // 2021.2.10 Framework adapted to ACE.
 //           Copyright (c) 2021 Huawei Device Co., Ltd. All rights reserved.
 
-#ifndef SHELL_PLATFORM_OHOS_VSYNC_WAITER_EMBEDDER_H_
-#define SHELL_PLATFORM_OHOS_VSYNC_WAITER_EMBEDDER_H_
+#ifndef SHELL_PLATFORM_OHOS_VSYNC_WAITER_OHOS_H_
+#define SHELL_PLATFORM_OHOS_VSYNC_WAITER_OHOS_H_
 
+#ifndef OHOS_STANDARD_SYSTEM
+#include <jni.h>
+#endif
 #include <memory>
+
+#ifndef OHOS_STANDARD_SYSTEM
+#include "platform/vsync/agp_vsync_scheduler.h"
+#endif
 
 #include "flutter/fml/macros.h"
 #include "flutter/shell/common/vsync_waiter.h"
@@ -16,6 +23,10 @@ namespace flutter {
 
 class VsyncWaiterEmbedder final : public VsyncWaiter {
 public:
+#ifndef OHOS_STANDARD_SYSTEM
+    static bool Register(JNIEnv* env);
+#endif
+
     static std::unique_ptr<VsyncWaiter> Create(flutter::TaskRunners);
     static void VSyncCallback(int64_t nanoTimestamp, void* userdata);
 
@@ -28,6 +39,10 @@ public:
 private:
     // |VsyncWaiter|
     void AwaitVSync() override;
+
+#ifndef OHOS_STANDARD_SYSTEM
+    std::shared_ptr<::OHOS::AGP::VsyncScheduler> vsync_scheduler_;
+#endif
 
     float fps_ = kUnknownRefreshRateFPS;
 

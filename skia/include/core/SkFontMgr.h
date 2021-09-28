@@ -41,6 +41,14 @@ public:
     void getFamilyName(int index, SkString* familyName) const;
     SkFontStyleSet* createStyleSet(int index) const;
 
+#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_WIN) || (SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC)
+    /**
+     * Whether to use the physical device font for previewer flag.
+     * If true, use physical device font collecton.
+     * If false, use the font collection installed in users' pc.
+     */
+    static bool physicalDeviceFonts;
+#endif
     /**
      *  The caller must call unref() on the returned object.
      *  Never returns NULL; will return an empty set if the name is not found.
@@ -125,6 +133,14 @@ public:
 
     /** Return the default fontmgr. */
     static sk_sp<SkFontMgr> RefDefault();
+
+#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_WIN) || (SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC)
+    /** Set the whether to use physical device font in previwer */
+    static void setPhysicalDeviceFonts(bool& physicalDeviceFontsEnabled)
+    {
+        physicalDeviceFonts = physicalDeviceFontsEnabled;
+    }
+#endif
 
 protected:
     virtual int onCountFamilies() const = 0;

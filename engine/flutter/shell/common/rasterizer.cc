@@ -18,6 +18,12 @@
 
 namespace flutter {
 
+#ifndef OHOS_STANDARD_SYSTEM
+// The rasterizer will tell Skia to purge cached resources that have not been
+// used within this interval.
+static constexpr std::chrono::milliseconds kSkiaCleanupExpiration(15000);
+#endif
+
 // TODO(dnfield): Remove this once internal embedders have caught up.
 static Rasterizer::DummyDelegate dummy_delegate_;
 Rasterizer::Rasterizer(
@@ -259,6 +265,11 @@ RasterStatus Rasterizer::DrawToSurface(flutter::LayerTree& layer_tree) {
     }
 
     FireNextFrameCallbackIfPresent();
+#ifndef OHOS_STANDARD_SYSTEM
+    if (surface_->GetContext()) {
+      surface_->GetContext()->performDeferredCleanup(kSkiaCleanupExpiration);
+    }
+#endif
     return raster_status;
   }
 
@@ -440,6 +451,14 @@ void Rasterizer::SetResourceCacheMaxBytes(size_t max_bytes, bool from_user) {
   if (!surface_) {
     return;
   }
+#ifndef OHOS_STANDARD_SYSTEM
+  GrContext* context = surface_->GetContext();
+  if (context) {
+    int max_resources;
+    context->getResourceCacheLimits(&max_resources, nullptr);
+    context->setResourceCacheLimits(max_resources, max_bytes);
+  }
+#endif
 }
 
 std::optional<size_t> Rasterizer::GetResourceCacheMaxBytes() const {

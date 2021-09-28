@@ -82,6 +82,12 @@ class FontCollection : public std::enable_shared_from_this<FontCollection> {
 
 #endif  // FLUTTER_ENABLE_SKSHAPER
 
+#if defined(OHOS_PLATFORM) && !defined(OHOS_STANDARD_SYSTEM)
+    const std::shared_ptr<minikin::FontFamily>& MatchFallbackFontFromHwFont(
+            uint32_t ch,
+            std::string locale);
+#endif
+
  private:
   struct FamilyKey {
     FamilyKey(const std::vector<std::string>& families, const std::string& loc);
@@ -141,6 +147,49 @@ class FontCollection : public std::enable_shared_from_this<FontCollection> {
       const std::string& family_name);
 
   sk_sp<SkFontMgr> GetDefaultFontManagerSafely() const;
+
+#if defined(OHOS_PLATFORM) && !defined(OHOS_STANDARD_SYSTEM)
+  std::shared_ptr<minikin::FontCollection>
+  GetMinikinFontCollectionForFamiliesWithVariation(
+      const std::vector<std::string>& font_families,
+      const std::string& locale);
+
+  std::vector<std::pair<sk_sp<SkFontMgr>, txt::FontManagerType>>
+  GetFontManagerOrderWithType() const;
+
+  std::shared_ptr<minikin::FontFamily> FindFontFamilyInManagersWithType(
+      const std::string& family_name);
+
+  std::shared_ptr<minikin::FontFamily> CreateMinikinFontFamilyForOHOS(
+      const sk_sp<SkFontMgr>& manager,
+      const std::string& family_name);
+
+  std::shared_ptr<minikin::FontFamily> CreateMinikinFontFamilyExceptOHOS(
+      const sk_sp<SkFontMgr>& manager,
+      const std::string& family_name);
+
+  void VaryTypeface(sk_sp<SkTypeface>& typeface, float wght);
+
+  // Provides a FontFamily that contains glyphs for ch. This caches previously
+  // matched fonts. Also see FontCollection::DoMatchFallbackFontWithVariation.
+  const std::shared_ptr<minikin::FontFamily>& MatchFallbackFontWithVariation(
+      uint32_t ch,
+      std::string locale);
+
+  // Performs the actual work of MatchFallbackFont. The result is cached in
+  // fallback_match_cache_.
+  const std::shared_ptr<minikin::FontFamily>& DoMatchFallbackFontWithVariation(
+      uint32_t ch,
+      std::string locale);
+
+  const std::shared_ptr<minikin::FontFamily>& GetFallbackFontFamilyForOHOS(
+      const sk_sp<SkFontMgr>& manager,
+      const std::string& family_name);
+
+  const std::shared_ptr<minikin::FontFamily>& DoMatchFallbackFontFromHwFont(
+      uint32_t ch,
+      std::string locale);
+#endif
 
   FML_DISALLOW_COPY_AND_ASSIGN(FontCollection);
 };
