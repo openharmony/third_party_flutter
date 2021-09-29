@@ -12,6 +12,9 @@
 #include "flutter/fml/time/time_point.h"
 #include "flutter/lib/ui/window/pointer_data_packet.h"
 #include "flutter/lib/ui/window/viewport_metrics.h"
+#ifdef ACE_ENABLE_GPU
+#include "third_party/flutter/skia/include/gpu/GrContext.h"
+#endif
 #include "flutter/lib/ui/window/platform_message.h"
 
 namespace flutter {

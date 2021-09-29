@@ -59,8 +59,6 @@ template("make_skia_deps") {
     deps = [
       ":ace_fontmgr_$platform",
       ":ace_gif",
-
-      #":ace_gpu",
       ":ace_heif",
       ":ace_jpeg",
       ":ace_libexpat",
@@ -86,6 +84,9 @@ template("make_skia_deps") {
 
     if (is_standard_system) {
       deps += [ ":make_third_party_skia_include_dir" ]
+      if (ace_enable_gpu) {
+        deps += [ ":ace_gpu" ]
+      }
     }
   }
 }
@@ -164,7 +165,12 @@ config("flutter_config") {
     "-fvisibility-inlines-hidden",
     "-Os",
   ]
-  defines = []
+
+  if (ace_enable_gpu) {
+    defines = [ "ACE_ENABLE_GPU" ]
+  } else {
+    defines = []
+  }
 
   if (use_mingw_win || use_mac) {
     defines += ace_common_defines
@@ -177,6 +183,9 @@ config("flutter_config") {
     ]
   }
   if (is_standard_system) {
+    if (ace_enable_gpu) {
+      cflags += [ "-DEGL_NO_X11" ]
+    }
     cflags_cc += [
       "-Wno-thread-safety-attributes",
       "-Wno-thread-safety-analysis",
@@ -459,6 +468,9 @@ template("flutter_engine_shell") {
         "engine/flutter/shell/platform/ohos/platform_task_runner_adapter.cc",
         "engine/flutter/shell/platform/ohos/platform_view_ohos.cc",
       ]
+      if (ace_enable_gpu) {
+        sources += [ "engine/flutter/shell/platform/ohos/ohos_surface_gl.cc" ]
+      }
       external_deps = [
         "appexecfwk_standard:libeventhandler",
         "ipc:ipc_core",
@@ -2045,10 +2057,17 @@ ohos_source_set("ace_skia_core") {
   ]
 
   if (is_standard_system) {
-    defines += [
-      "SK_SUPPORT_ATLAS_TEXT=0",
-      "SK_SUPPORT_GPU=0",
-    ]
+    if (ace_enable_gpu) {
+      defines += [
+        "SK_SUPPORT_ATLAS_TEXT=1",
+        "SK_GL"
+      ]
+    } else {
+      defines += [
+        "SK_SUPPORT_ATLAS_TEXT=0",
+        "SK_SUPPORT_GPU=0",
+      ]
+    }
   } else {
     defines += [
       "SK_SUPPORT_ATLAS_TEXT=1",
@@ -2555,6 +2574,10 @@ config("ace_gpu_config") {
   visibility = [ ":*" ]
   include_dirs = [ "skia" ]
 
+  if (ace_enable_gpu) {
+    include_dirs += [ "//third_party/weston/include" ]
+  }
+
   if (use_mingw_win) {
     include_dirs += [ "skia/third_party/externals/angle2/include" ]
   }
@@ -2637,6 +2660,11 @@ config("ace_gpu_config") {
     "-fvisibility=hidden",
     "-Wno-extra-semi",
   ]
+
+  if (ace_enable_gpu) {
+    cflags += [ "-DEGL_NO_X11" ]
+  }
+
   if (use_mingw_win) {
     cflags_cc += [
       "-Wno-unknown-pragmas",
@@ -2948,6 +2976,10 @@ ohos_source_set("ace_gpu") {
 
     sources -= [ "skia/src/gpu/gl/egl/GrGLMakeNativeInterface_egl.cpp" ]
     sources += [ "skia/src/gpu/gl/mac/GrGLMakeNativeInterface_mac.cpp" ]
+  }
+
+  if (ace_enable_gpu) {
+    deps = [ "//device/rockchip/hardware/gpu:mali-bifrost-g52-g2p0-wayland" ]
   }
 }
 

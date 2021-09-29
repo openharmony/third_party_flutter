@@ -18,6 +18,12 @@
 
 namespace flutter {
 
+#ifdef ACE_ENABLE_GPU
+// The rasterizer will tell Skia to purge cached resources that have not been
+// used within this interval.
+static constexpr std::chrono::milliseconds kSkiaCleanupExpiration(15000);
+#endif
+
 // TODO(dnfield): Remove this once internal embedders have caught up.
 static Rasterizer::DummyDelegate dummy_delegate_;
 Rasterizer::Rasterizer(
@@ -259,6 +265,12 @@ RasterStatus Rasterizer::DrawToSurface(flutter::LayerTree& layer_tree) {
     }
 
     FireNextFrameCallbackIfPresent();
+#ifdef ACE_ENABLE_GPU
+    if (surface_->GetContext()) {
+        surface_->GetContext()->performDeferredCleanup(kSkiaCleanupExpiration);
+    }
+#endif
+
     return raster_status;
   }
 
@@ -440,19 +452,29 @@ void Rasterizer::SetResourceCacheMaxBytes(size_t max_bytes, bool from_user) {
   if (!surface_) {
     return;
   }
+#ifdef ACE_ENABLE_GPU
+    GrContext* context = surface_->GetContext();
+    if (context) {
+        int max_resources;
+        context->getResourceCacheLimits(&max_resources, nullptr);
+        context->setResourceCacheLimits(max_resources, max_bytes);
+    }
+#endif
 }
 
 std::optional<size_t> Rasterizer::GetResourceCacheMaxBytes() const {
-  if (!surface_) {
+    if (!surface_) {
+        return std::nullopt;
+    }
+#ifdef ACE_ENABLE_GPU
+    GrContext* context = surface_->GetContext();
+    if (context) {
+        size_t max_bytes;
+        context->getResourceCacheLimits(nullptr, &max_bytes);
+        return max_bytes;
+    }
+#endif
     return std::nullopt;
-  }
-  GrContext* context = surface_->GetContext();
-  if (context) {
-    size_t max_bytes;
-    context->getResourceCacheLimits(nullptr, &max_bytes);
-    return max_bytes;
-  }
-  return std::nullopt;
 }
 
 Rasterizer::Screenshot::Screenshot() {}
