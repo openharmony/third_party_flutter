@@ -17,7 +17,6 @@
 namespace flutter {
 
 namespace {
-
 bool GetSkColorType(int32_t buffer_format,
                     SkColorType* color_type,
                     SkAlphaType* alpha_type)
@@ -41,6 +40,7 @@ bool GetSkColorType(int32_t buffer_format,
 
 OhosSurfaceSoftware::OhosSurfaceSoftware()
 {
+    FML_LOG(ERROR) << "OhosSurfaceSoftware Constructor";
     GetSkColorType(PIXEL_FMT_RGBA_8888, &target_color_type_, &target_alpha_type_);
 }
 
@@ -72,7 +72,7 @@ bool OhosSurfaceSoftware::OnScreenSurfaceResize(const SkISize& size)
     return true;
 }
 
-void OhosSurfaceSoftware::SetPlatformWindow(const OHOS::sptr<OHOS::Window> &window)
+void OhosSurfaceSoftware::SetPlatformWindow(const OHOS::sptr<OHOS::Window>& window)
 {
     if (window == nullptr) {
         FML_LOG(ERROR) << "OhosSurfaceSoftware::SetPlatformWindow, window is nullptr";
@@ -95,8 +95,7 @@ void OhosSurfaceSoftware::SetPlatformWindow(const OHOS::sptr<OHOS::Window> &wind
     surface_->SetQueueSize(5);
 }
 
-sk_sp<SkSurface> OhosSurfaceSoftware::AcquireBackingStore(
-    const SkISize& size)
+sk_sp<SkSurface> OhosSurfaceSoftware::AcquireBackingStore(const SkISize& size)
 {
     TRACE_EVENT0("flutter", "OhosSurfaceSoftware::AcquireBackingStore");
     if (!IsValid()) {
@@ -108,8 +107,8 @@ sk_sp<SkSurface> OhosSurfaceSoftware::AcquireBackingStore(
         return sk_surface_;
     }
 
-    SkImageInfo image_info = SkImageInfo::Make(
-        size.fWidth, size.fHeight, target_color_type_, target_alpha_type_, SkColorSpace::MakeSRGB());
+    SkImageInfo image_info =
+        SkImageInfo::Make(size.fWidth, size.fHeight, target_color_type_, target_alpha_type_, SkColorSpace::MakeSRGB());
 
     sk_surface_ = SkSurface::MakeRaster(image_info);
 
@@ -205,6 +204,23 @@ bool OhosSurfaceSoftware::PresentBackingStore(
 ExternalViewEmbedder* OhosSurfaceSoftware::GetExternalViewEmbedder()
 {
     return nullptr;
+}
+
+bool OhosSurfaceSoftware::ResourceContextMakeCurrent()
+{
+    // implement in ohos surface gl
+    return false;
+}
+
+bool OhosSurfaceSoftware::ResourceContextClearCurrent()
+{
+    // implement in ohos surface gl
+    return false;
+}
+
+void OhosSurfaceSoftware::TeardownOnScreenContext()
+{
+    // implement in ohos surface gl
 }
 
 }  // namespace flutter

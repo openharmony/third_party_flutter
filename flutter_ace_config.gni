@@ -60,6 +60,12 @@ if (enable_glfw_window) {
   ace_common_defines += [ "USE_GLFW_WINDOW" ]
 }
 
+if ("${product_name}" == "rk3566" || "${product_name}" == "rk3568") {
+  ace_enable_gpu = false  # temporary cpu
+} else {
+  ace_enable_gpu = false
+}
+
 enable_native_view =
     use_system_skia && (!only_wearable_enable || is_wearable_product) &&
     !use_mingw_win && !use_mac

@@ -28,6 +28,12 @@ class OhosSurface {
     virtual bool OnScreenSurfaceResize(const SkISize& size) = 0;
 
     virtual void SetPlatformWindow(const ::OHOS::sptr<::OHOS::Window> &window) = 0;
+
+    virtual bool ResourceContextMakeCurrent() = 0;
+
+    virtual bool ResourceContextClearCurrent() = 0;
+
+    virtual void TeardownOnScreenContext() = 0;
 };
 
 }  // namespace flutter
