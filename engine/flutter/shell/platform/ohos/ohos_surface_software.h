@@ -13,39 +13,42 @@
 
 namespace flutter {
 
-class OhosSurfaceSoftware final : public OhosSurface,
-                                     public GPUSurfaceSoftwareDelegate {
- public:
-  OhosSurfaceSoftware();
+class OhosSurfaceSoftware final : public OhosSurface, public GPUSurfaceSoftwareDelegate {
+public:
+    OhosSurfaceSoftware();
 
-  ~OhosSurfaceSoftware() override = default;
+    ~OhosSurfaceSoftware() override = default;
 
-  bool IsValid() const override;
+    bool IsValid() const override;
 
-  std::unique_ptr<Surface> CreateGPUSurface() override;
+    std::unique_ptr<Surface> CreateGPUSurface() override;
 
-  bool OnScreenSurfaceResize(const SkISize& size) override;
+    bool OnScreenSurfaceResize(const SkISize& size) override;
 
-  void SetPlatformWindow(const OHOS::sptr<OHOS::Window> &window) override;
+    void SetPlatformWindow(const OHOS::sptr<OHOS::Window> &window) override;
 
-  sk_sp<SkSurface> AcquireBackingStore(const SkISize& size) override;
+    sk_sp<SkSurface> AcquireBackingStore(const SkISize& size) override;
 
-  bool PresentBackingStore(sk_sp<SkSurface> backing_store) override;
+    bool PresentBackingStore(sk_sp<SkSurface> backing_store) override;
 
-  ExternalViewEmbedder* GetExternalViewEmbedder() override;
+    void SurfaceDrawBuffer(
+        OHOS::BufferRequestConfig& requestConfig, OHOS::sptr<OHOS::SurfaceBuffer> surfaceBuffer, SkPixmap& pixmap);
 
- private:
-  sk_sp<SkSurface> sk_surface_;
-  SkColorType target_color_type_;
-  SkAlphaType target_alpha_type_;
+    void SurfaceFlushBuffer(OHOS::sptr<OHOS::SurfaceBuffer>);
 
-  OHOS::sptr<OHOS::Window> window_ = nullptr;
-  OHOS::BufferRequestConfig requestConfig_;
-  OHOS::sptr<OHOS::Surface> surface_ = nullptr;
+    ExternalViewEmbedder* GetExternalViewEmbedder() override;
 
-  FML_DISALLOW_COPY_AND_ASSIGN(OhosSurfaceSoftware);
+private:
+    sk_sp<SkSurface> sk_surface_;
+    SkColorType target_color_type_;
+    SkAlphaType target_alpha_type_;
+
+    OHOS::sptr<OHOS::Window> window_ = nullptr;
+    OHOS::BufferRequestConfig requestConfig_;
+    OHOS::sptr<OHOS::Surface> surface_ = nullptr;
+
+    FML_DISALLOW_COPY_AND_ASSIGN(OhosSurfaceSoftware);
 };
-
 }  // namespace flutter
 
 #endif  // FLUTTER_SHELL_PLATFORM_OHOS_OHOS_SURFACE_SOFTWARE_H_

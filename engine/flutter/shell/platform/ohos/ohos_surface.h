@@ -16,7 +16,7 @@
 namespace flutter {
 
 class OhosSurface {
- public:
+public:
     OhosSurface() = default;
 
     virtual ~OhosSurface() = default;
