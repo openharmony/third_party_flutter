@@ -13,6 +13,7 @@
 #include "vsync_helper.h"
 #else
 #include "flutter/fml/platform/android/jni_util.h"
+#include "flutter/shell/common/ace_display_manager_jni.h"
 #endif
 namespace flutter {
 
@@ -22,10 +23,6 @@ constexpr float ONE_SECOND_IN_NANO = 1000000000.0f;
 constexpr float TOLERATE_PERCENT = 0.96f;
 
 } // namespace
-
-#ifndef OHOS_STANDARD_SYSTEM
-static fml::jni::ScopedJavaGlobalRef<jclass>* g_vsync_waiter_class = nullptr;
-#endif
 
 std::unique_ptr<VsyncWaiter> VsyncWaiterEmbedder::Create(flutter::TaskRunners task_runners)
 {
@@ -116,10 +113,11 @@ float VsyncWaiterEmbedder::GetDisplayRefreshRate() const
 {
 #ifndef OHOS_STANDARD_SYSTEM
     JNIEnv* env = fml::jni::AttachCurrentThread();
-    if (g_vsync_waiter_class == nullptr) {
+    auto displayManagerClass = AceDisplayManagerJni::GetClass();
+    if (displayManagerClass == nullptr) {
         return kUnknownRefreshRateFPS;
     }
-    jclass clazz = g_vsync_waiter_class->obj();
+    jclass clazz = displayManagerClass->obj();
     if (clazz == nullptr) {
         return kUnknownRefreshRateFPS;
     }
@@ -129,21 +127,5 @@ float VsyncWaiterEmbedder::GetDisplayRefreshRate() const
     return 60.0f;
 #endif
 }
-
-
-// static
-#ifndef OHOS_STANDARD_SYSTEM
-bool VsyncWaiterEmbedder::Register(JNIEnv* env)
-{
-    jclass clazz = env->FindClass("ohos/ace/AceDisplayManager");
-    if (clazz == nullptr) {
-        return false;
-    }
-
-    g_vsync_waiter_class = new fml::jni::ScopedJavaGlobalRef<jclass>(env, clazz);
-    FML_CHECK(!g_vsync_waiter_class->is_null());
-    return true;
-}
-#endif
 
 } // namespace flutter
