@@ -23,10 +23,6 @@ namespace flutter {
 
 class VsyncWaiterEmbedder final : public VsyncWaiter {
 public:
-#ifndef OHOS_STANDARD_SYSTEM
-    static bool Register(JNIEnv* env);
-#endif
-
     static std::unique_ptr<VsyncWaiter> Create(flutter::TaskRunners);
     static void VSyncCallback(int64_t nanoTimestamp, void* userdata);
 
