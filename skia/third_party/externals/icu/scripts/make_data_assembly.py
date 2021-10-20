@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python
 
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -7,6 +7,7 @@
 import binascii
 import optparse
 import sys
+import os
 
 parser = optparse.OptionParser()
 parser.add_option("--mac",
@@ -39,7 +40,7 @@ else:
   step = -1
 
 input_data = open(input_file, 'rb').read()
-n = input_data.find("icudt")
+n = input_data.find(b"icudt")
 if n == -1:
   sys.exit("Cannot find a version number in %s." % input_file)
 
@@ -69,30 +70,31 @@ else:
                "#if defined(__linux__) && defined(__ELF__)\n"
                "\t.type icudt%s_dat,%%object\n"
                "#endif\n"
-               "icudt%s_dat:\n" % tuple([version_number] * 4))
+               "icudt%s_dat:\n" % tuple([version_number.decode()] * 4))
 
-split = [binascii.hexlify(input_data[i:i + 4][::step]).upper().lstrip('0')
+split = [binascii.hexlify(input_data[i:i + 4][::step]).upper().lstrip(b'0')
         for i in range(0, len(input_data), 4)]
 
 for i in range(len(split)):
   if (len(split[i]) == 0):
-    value = '0'
+    value = b'0'
   elif (len(split[i]) == 1):
-    if not any((c in '123456789') for c in split[i]):
-      value = '0x0' + split[i]
+    if not any((c in b'123456789') for c in split[i]):
+      value = b'0x0' + split[i]
     else:
       value = split[i]
   elif (len(split[i]) % 2 == 1):
-    value = '0x0' + split[i]
+    value = b'0x0' + split[i]
   else:
-    value = '0x' + split[i]
+    value = b'0x' + split[i]
 
   if (i % 32 == 0):
     output.write("\n.long ")
   else:
     output.write(",")
-  output.write(value)
+  output.write(value.decode())
 
 output.write("\n")
 output.close()
-print "Generated " + output_file
+sys.stdout.write("Generated " + output_file)
+sys.stdout.write(os.linesep)
