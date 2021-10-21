@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -56,7 +56,7 @@ if options.mac:
                "\t.data\n"
                "\t.const\n"
                "\t.align 4\n"
-               "_icudt%s_dat:\n" %tuple([version_number] * 3))
+               "_icudt%s_dat:\n" %tuple([version_number.decode()] * 3))
 else:
   output.write(".globl icudt%s_dat\n"
                "#if defined(__linux__) && defined(__ELF__)\n"
