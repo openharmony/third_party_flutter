@@ -6,9 +6,6 @@
 
 #include "flutter/shell/platform/ohos/platform_view_ohos.h"
 
-#include <memory>
-#include <utility>
-
 #include "flutter/common/settings.h"
 #ifndef GPU_DISABLED
 #include "flutter/shell/platform/ohos/ohos_surface_gl.h"

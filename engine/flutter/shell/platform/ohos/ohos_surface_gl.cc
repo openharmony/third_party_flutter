@@ -6,8 +6,6 @@
 
 #include "flutter/shell/platform/ohos/ohos_surface_gl.h"
 
-#include <utility>
-
 #include "flutter/fml/logging.h"
 #include "flutter/fml/memory/ref_ptr.h"
 
