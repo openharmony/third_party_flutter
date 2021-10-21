@@ -22,7 +22,7 @@ public:
     std::unique_ptr<VsyncWaiter> CreateVSyncWaiter(int32_t platform);
 
 private:
-    std::unique_ptr<OhosSurface> surface_;
+    std::shared_ptr<OhosSurface> surface_;
     FML_DISALLOW_COPY_AND_ASSIGN(PlatformViewOhos);
 };
 

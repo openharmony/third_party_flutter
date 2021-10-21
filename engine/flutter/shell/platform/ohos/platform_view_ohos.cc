@@ -10,6 +10,9 @@
 #include <utility>
 
 #include "flutter/common/settings.h"
+#ifndef GPU_DISABLED
+#include "flutter/shell/platform/ohos/ohos_surface_gl.h"
+#endif
 #include "flutter/shell/platform/ohos/ohos_surface_software.h"
 #include "flutter/shell/platform/ohos/vsync_waiter_embedder.h"
 
@@ -21,15 +24,28 @@ PlatformViewOhos::PlatformViewOhos(
     bool use_software_rendering)
     : PlatformView(delegate, std::move(task_runners))
 {
-    if (use_software_rendering) {
-        surface_ = std::make_unique<OhosSurfaceSoftware>();
-    }
+#ifndef GPU_DISABLED
+    surface_ = std::make_shared<OhosSurfaceGL>();
+#else
+    surface_ = std::make_shared<OhosSurfaceSoftware>();
+#endif
 }
 
 void PlatformViewOhos::NotifyCreated(const ::OHOS::sptr<::OHOS::Window> &window)
 {
     if (surface_) {
+#ifndef GPU_DISABLED
+        fml::AutoResetWaitableEvent latch;
+        fml::TaskRunner::RunNowOrPostTask(
+            task_runners_.GetGPUTaskRunner(),
+            [&latch, surface = surface_.get(), &window]() mutable {
+                surface->SetPlatformWindow(window);
+                latch.Signal();
+            });
+        latch.Wait();
+#else
         surface_->SetPlatformWindow(window);
+#endif
     }
 
     PlatformView::NotifyCreated();
@@ -38,7 +54,18 @@ void PlatformViewOhos::NotifyCreated(const ::OHOS::sptr<::OHOS::Window> &window)
 void PlatformViewOhos::NotifyChanged(const SkISize& size)
 {
     if (surface_) {
+#ifndef GPU_DISABLED
+        fml::AutoResetWaitableEvent latch;
+        fml::TaskRunner::RunNowOrPostTask(
+            task_runners_.GetGPUTaskRunner(),
+            [&latch, surface = surface_.get(), &size]() mutable {
+                surface->OnScreenSurfaceResize(size);
+                latch.Signal();
+            });
+        latch.Wait();
+#else
         surface_->OnScreenSurfaceResize(size);
+#endif
     }
 }
 

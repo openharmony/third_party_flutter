@@ -38,6 +38,15 @@ public:
 
     ExternalViewEmbedder* GetExternalViewEmbedder() override;
 
+    // |OhosSurface|
+    virtual bool ResourceContextMakeCurrent() override;
+
+    // |OhosSurface|
+    virtual bool ResourceContextClearCurrent() override;
+
+    // |OhosSurface|
+    virtual void TeardownOnScreenContext() override;
+
 private:
     sk_sp<SkSurface> sk_surface_;
     SkColorType target_color_type_;

@@ -41,6 +41,7 @@ bool GetSkColorType(int32_t buffer_format,
 
 OhosSurfaceSoftware::OhosSurfaceSoftware()
 {
+    FML_LOG(ERROR) << "OhosSurfaceSoftware Constructor";
     GetSkColorType(PIXEL_FMT_RGBA_8888, &target_color_type_, &target_alpha_type_);
 }
 
@@ -202,4 +203,22 @@ ExternalViewEmbedder* OhosSurfaceSoftware::GetExternalViewEmbedder()
 {
     return nullptr;
 }
+
+bool OhosSurfaceSoftware::ResourceContextMakeCurrent()
+{
+    // implement in ohos surface gl
+    return false;
+}
+
+bool OhosSurfaceSoftware::ResourceContextClearCurrent()
+{
+    // implement in ohos surface gl
+    return false;
+}
+
+void OhosSurfaceSoftware::TeardownOnScreenContext()
+{
+    // implement in ohos surface gl
+}
+
 }  // namespace flutter
