@@ -29,7 +29,7 @@ public:
     std::unique_ptr<Surface> CreateGPUSurface() override;
 
     // |OhosSurface|
-    void SetPlatformWindow(const ::OHOS::sptr<OHOS::Window>& window) override;
+    void SetPlatformWindow(const ::OHOS::sptr<OHOS::Rosen::Window>& window) override;
 
     // |OhosSurface|
     bool OnScreenSurfaceResize(const SkISize& size) override;
@@ -68,7 +68,7 @@ public:
     ExternalViewEmbedder* GetExternalViewEmbedder() override;
 
 private:
-    OHOS::sptr<OHOS::Window> window_;
+    OHOS::sptr<OHOS::Rosen::Window> window_;
     OHOS::sptr<OHOS::EglRenderSurface> eglRenderSurface_;
     EGLDisplay eglDisplay_;
     EGLContext eglContext_;

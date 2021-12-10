@@ -25,7 +25,7 @@ public:
 
     bool OnScreenSurfaceResize(const SkISize& size) override;
 
-    void SetPlatformWindow(const OHOS::sptr<OHOS::Window> &window) override;
+    void SetPlatformWindow(const OHOS::sptr<OHOS::Rosen::Window> &window) override;
 
     sk_sp<SkSurface> AcquireBackingStore(const SkISize& size) override;
 
@@ -52,7 +52,7 @@ private:
     SkColorType target_color_type_;
     SkAlphaType target_alpha_type_;
 
-    OHOS::sptr<OHOS::Window> window_ = nullptr;
+    OHOS::sptr<OHOS::Rosen::Window> window_ = nullptr;
     OHOS::BufferRequestConfig requestConfig_;
     OHOS::sptr<OHOS::Surface> surface_ = nullptr;
 

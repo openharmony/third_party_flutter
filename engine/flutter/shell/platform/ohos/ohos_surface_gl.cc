@@ -32,7 +32,7 @@ std::unique_ptr<Surface> OhosSurfaceGL::CreateGPUSurface()
     return surface->IsValid() ? std::move(surface) : nullptr;
 }
 
-void OhosSurfaceGL::SetPlatformWindow(const OHOS::sptr<OHOS::Window>& window)
+void OhosSurfaceGL::SetPlatformWindow(const OHOS::sptr<OHOS::Rosen::Window>& window)
 {
     if (window == nullptr) {
         FML_LOG(ERROR) << "Ohos window is nullptr";
@@ -128,7 +128,7 @@ SkMatrix OhosSurfaceGL::GLContextSurfaceTransformation() const
     SkMatrix matrix;
     matrix.setIdentity();
     // Mirror flip
-    double y = window_->GetHeight() / 2.0;
+    double y = window_->GetRect().height_ / 2.0; // get middle of height for flip mirror
     matrix.postTranslate(0, -y);
     matrix.postScale(1, -1);
     matrix.postTranslate(0, y);
@@ -188,7 +188,17 @@ bool OhosSurfaceGL::InitRenderSurface()
         return false;
     }
 
-    OHOS::sptr<OHOS::IBufferProducer> bufferProducer = window_->GetProducer();
+    auto surfaceNode = window_->GetSurfaceNode();
+    if (!surfaceNode) {
+        FML_LOG(ERROR) << "surface node is null";
+        return;
+    }
+    auto surface = surfaceNode->GetSurface();
+    if (!surface) {
+        FML_LOG(ERROR) << "surface is null";
+        return;
+    }
+    OHOS::sptr<OHOS::IBufferProducer> bufferProducer = surface->GetProducer();
     if (bufferProducer == nullptr) {
         FML_LOG(ERROR) << "bufferProducer is nullptr";
         return false;
