@@ -191,12 +191,12 @@ bool OhosSurfaceGL::InitRenderSurface()
     auto surfaceNode = window_->GetSurfaceNode();
     if (!surfaceNode) {
         FML_LOG(ERROR) << "surface node is null";
-        return;
+        return false;
     }
     auto surface = surfaceNode->GetSurface();
     if (!surface) {
         FML_LOG(ERROR) << "surface is null";
-        return;
+        return false;
     }
     OHOS::sptr<OHOS::IBufferProducer> bufferProducer = surface->GetProducer();
     if (bufferProducer == nullptr) {
