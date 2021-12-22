@@ -35,16 +35,19 @@ void MaskLayer::Paint(PaintContext& context) const {
   mask_filter.setColorFilter(filter);
   skCanvas->saveLayer(maskBounds, &mask_filter);
   if (isSvgMask_) {
-      SkAutoCanvasRestore maskSave(skCanvas, true);
-      skCanvas->translate(maskBounds.fLeft + svgX_, maskBounds.fTop + svgY_);
-      skCanvas->scale(scaleX_, scaleY_);
-      svgDom_->render(skCanvas);
+    SkAutoCanvasRestore maskSave(skCanvas, true);
+    skCanvas->translate(maskBounds.fLeft + svgX_, maskBounds.fTop + svgY_);
+    skCanvas->scale(scaleX_, scaleY_);
+    svgDom_->render(skCanvas);
   } else if (isGradientMask_) {
-      skCanvas->drawRect(maskBounds, maskPaint_);
+    SkAutoCanvasRestore maskSave(skCanvas, true);
+    skCanvas->translate(maskBounds.fLeft, maskBounds.fTop);
+    SkRect skRect = SkRect::MakeIWH(maskBounds.fRight - maskBounds.fLeft, maskBounds.fBottom - maskBounds.fTop);
+    skCanvas->drawRect(skRect, maskPaint_);
   } else if (isPathMask_) {
-      SkAutoCanvasRestore maskSave(skCanvas, true);
-      skCanvas->translate(maskBounds.fLeft, maskBounds.fTop);
-      skCanvas->drawPath(maskPath_, maskPaint_);
+    SkAutoCanvasRestore maskSave(skCanvas, true);
+    skCanvas->translate(maskBounds.fLeft, maskBounds.fTop);
+    skCanvas->drawPath(maskPath_, maskPaint_);
   }
 
   // back to mask layer
