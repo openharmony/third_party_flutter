@@ -28,7 +28,7 @@ PlatformViewOhos::PlatformViewOhos(
 #endif
 }
 
-void PlatformViewOhos::NotifyCreated(const ::OHOS::sptr<::OHOS::Window> &window)
+void PlatformViewOhos::NotifyCreated(const ::OHOS::sptr<::OHOS::Rosen::Window> &window)
 {
     if (surface_) {
 #ifndef GPU_DISABLED

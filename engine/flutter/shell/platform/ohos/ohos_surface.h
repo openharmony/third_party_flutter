@@ -11,7 +11,7 @@
 
 #include "flutter/fml/macros.h"
 #include "flutter/shell/common/surface.h"
-#include "window_manager.h"
+#include "window.h"
 
 namespace flutter {
 
@@ -27,7 +27,7 @@ public:
 
     virtual bool OnScreenSurfaceResize(const SkISize& size) = 0;
 
-    virtual void SetPlatformWindow(const ::OHOS::sptr<::OHOS::Window> &window) = 0;
+    virtual void SetPlatformWindow(const ::OHOS::sptr<::OHOS::Rosen::Window> &window) = 0;
 
     virtual bool ResourceContextMakeCurrent() = 0;
 
