@@ -69,7 +69,11 @@ OhosShellHolder::OhosShellHolder(
     io_runner = single_task_runner;
   } else {
     gpu_runner = thread_host_.gpu_thread->GetTaskRunner();
-    ui_runner = thread_host_.ui_thread->GetTaskRunner();
+    if (settings_.platform_as_ui_thread) {
+      ui_runner = platform_runner;
+    } else {
+      ui_runner = thread_host_.ui_thread->GetTaskRunner();
+    }
     io_runner = thread_host_.io_thread->GetTaskRunner();
   }
   flutter::TaskRunners task_runners(thread_label,     // label
