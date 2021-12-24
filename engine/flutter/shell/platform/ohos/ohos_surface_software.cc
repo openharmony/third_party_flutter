@@ -173,7 +173,7 @@ void OhosSurfaceSoftware::SurfaceDrawBuffer(
 
         std::unique_ptr<SkCanvas> canvas = SkCanvas::MakeRasterDirect(
             native_image_info, surfaceBuffer->GetVirAddr(),
-            surfaceBuffer->GetSize() / requestConfig.height);
+            surfaceBuffer->GetBufferHandle()->stride);
 
         if (canvas) {
             SkBitmap bitmap;

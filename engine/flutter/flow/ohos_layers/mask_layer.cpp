@@ -41,7 +41,10 @@ void MaskLayer::Paint(const PaintContext& paintContext) const
         skCanvas_->scale(scaleX_, scaleY_);
         svgDom_->render(skCanvas_);
     } else if (isGradientMask_) {
-        skCanvas_->drawRect(maskBounds, maskPaint_);
+        SkAutoCanvasRestore maskSave(paintContext.skCanvas, true);
+        skCanvas_->translate(maskBounds.fLeft, maskBounds.fTop);
+        SkRect skRect = SkRect::MakeIWH(maskBounds.fRight - maskBounds.fLeft, maskBounds.fBottom - maskBounds.fTop);
+        skCanvas_->drawRect(skRect, maskPaint_);
     } else if (isPathMask_) {
         SkAutoCanvasRestore maskSave(paintContext.skCanvas, true);
         skCanvas_->translate(maskBounds.fLeft, maskBounds.fTop);
