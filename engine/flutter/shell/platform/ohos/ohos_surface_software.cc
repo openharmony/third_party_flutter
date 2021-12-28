@@ -156,6 +156,7 @@ bool OhosSurfaceSoftware::PresentBackingStore(
         return false;
     }
 
+    memset(surfaceBuffer->GetVirAddr(), 0, surfaceBuffer->GetSize());
     SurfaceDrawBuffer(requestConfig, surfaceBuffer, pixmap);
     SurfaceFlushBuffer(surfaceBuffer);
 
