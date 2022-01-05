@@ -16,7 +16,7 @@ class PlatformViewOhos final : public PlatformView {
 public:
     PlatformViewOhos(PlatformView::Delegate& delegate, flutter::TaskRunners task_runners, bool use_software_rendering);
 
-    void NotifyCreated(const ::OHOS::sptr<::OHOS::Window> &window);
+    void NotifyCreated(const ::OHOS::sptr<::OHOS::Rosen::Window> &window);
     void NotifyChanged(const SkISize& size);
     std::unique_ptr<Surface> CreateRenderingSurface();
     std::unique_ptr<VsyncWaiter> CreateVSyncWaiter(int32_t platform);

@@ -73,14 +73,18 @@ bool OhosSurfaceSoftware::OnScreenSurfaceResize(const SkISize& size)
     return true;
 }
 
-void OhosSurfaceSoftware::SetPlatformWindow(const OHOS::sptr<OHOS::Window> &window)
+void OhosSurfaceSoftware::SetPlatformWindow(const OHOS::sptr<OHOS::Rosen::Window> &window)
 {
     if (window == nullptr) {
         FML_LOG(ERROR) << "OhosSurfaceSoftware::SetPlatformWindow, window is nullptr";
         return;
     }
     window_ = window;
-    surface_ = window->GetSurface();
+    auto surfaceNode = window->GetSurfaceNode();
+    if (!surfaceNode) {
+        FML_LOG(ERROR) << "surface node is null";
+    }
+    surface_ = surfaceNode->GetSurface();
     if (surface_ == nullptr) {
         FML_LOG(ERROR) << "OhosSurfaceSoftware::SetPlatformWindow, surface_ is nullptr";
         return;
