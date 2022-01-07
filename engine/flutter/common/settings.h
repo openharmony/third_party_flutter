@@ -104,6 +104,7 @@ struct Settings {
   // soon as a frame is rasterized.
   FrameRasterizedCallback frame_rasterized_callback;
   int32_t instanceId = 0;
+  bool platform_as_ui_thread = false;
 
   AcePlatform platform = AcePlatform::ACE_PLATFORM_INVALID;
 
