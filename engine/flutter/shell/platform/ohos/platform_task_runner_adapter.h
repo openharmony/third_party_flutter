@@ -17,7 +17,7 @@ namespace flutter {
 
 class PlatformTaskRunnerAdapter : public fml::TaskRunner {
 public:
-    PlatformTaskRunnerAdapter();
+    explicit PlatformTaskRunnerAdapter(bool useCurrentEventRunner);
 
     void PostTask(fml::closure task) override;
 
@@ -29,7 +29,7 @@ public:
 
     fml::TaskQueueId GetTaskQueueId() override;
 
-    static fml::RefPtr<fml::TaskRunner> CurrentTaskRunner();
+    static fml::RefPtr<fml::TaskRunner> CurrentTaskRunner(bool useCurrentEventRunner = false);
 
 private:
     static fml::RefPtr<fml::TaskRunner> taskRunner_;

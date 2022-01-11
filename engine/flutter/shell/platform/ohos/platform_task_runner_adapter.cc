@@ -8,12 +8,16 @@
 
 namespace flutter {
 
-fml::RefPtr<fml::TaskRunner> PlatformTaskRunnerAdapter::taskRunner_ = fml::MakeRefCounted<PlatformTaskRunnerAdapter>();
+fml::RefPtr<fml::TaskRunner> PlatformTaskRunnerAdapter::taskRunner_;
 
-PlatformTaskRunnerAdapter::PlatformTaskRunnerAdapter()
+PlatformTaskRunnerAdapter::PlatformTaskRunnerAdapter(bool useCurrentEventRunner)
     : fml::TaskRunner(nullptr)
 {
-    eventRunner_ = OHOS::AppExecFwk::EventRunner::GetMainEventRunner();
+    if (useCurrentEventRunner) {
+        eventRunner_ = OHOS::AppExecFwk::EventRunner::Current();
+    } else {
+        eventRunner_ = OHOS::AppExecFwk::EventRunner::GetMainEventRunner();
+    }
     eventHandler_ = std::make_shared<OHOS::AppExecFwk::EventHandler>(eventRunner_);
 }
 
@@ -42,8 +46,12 @@ fml::TaskQueueId PlatformTaskRunnerAdapter::GetTaskQueueId()
     return fml::_kUnmerged;
 }
 
-fml::RefPtr<fml::TaskRunner> PlatformTaskRunnerAdapter::CurrentTaskRunner()
+fml::RefPtr<fml::TaskRunner> PlatformTaskRunnerAdapter::CurrentTaskRunner(bool useCurrentEventRunner)
 {
+    if (taskRunner_) {
+        return taskRunner_;
+    }
+    taskRunner_ = fml::MakeRefCounted<PlatformTaskRunnerAdapter>(useCurrentEventRunner);
     return taskRunner_;
 }
 

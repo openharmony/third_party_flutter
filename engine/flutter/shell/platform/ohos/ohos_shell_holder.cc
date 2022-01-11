@@ -61,7 +61,8 @@ OhosShellHolder::OhosShellHolder(
   fml::RefPtr<fml::TaskRunner> gpu_runner;
   fml::RefPtr<fml::TaskRunner> ui_runner;
   fml::RefPtr<fml::TaskRunner> io_runner;
-  fml::RefPtr<fml::TaskRunner> platform_runner = PlatformTaskRunnerAdapter::CurrentTaskRunner();
+  fml::RefPtr<fml::TaskRunner> platform_runner =
+    PlatformTaskRunnerAdapter::CurrentTaskRunner(settings_.use_current_event_runner);
   if (is_background_view) {
     auto single_task_runner = thread_host_.ui_thread->GetTaskRunner();
     gpu_runner = single_task_runner;

@@ -11,7 +11,7 @@
 
 #include "flutter/fml/macros.h"
 #include "flutter/shell/common/surface.h"
-#include "window.h"
+#include "wm/window.h"
 
 namespace flutter {
 
