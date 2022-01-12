@@ -15,7 +15,7 @@ namespace flutter {
 // the Dart side.
 static const double kUnsetDepth = 1.7976931348623157e+308;
 
-struct ViewportMetrics {
+struct __attribute__((visibility("default"))) ViewportMetrics {
   ViewportMetrics();
 
   // Create a 2D ViewportMetrics instance.

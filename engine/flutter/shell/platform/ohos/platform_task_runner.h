@@ -14,7 +14,7 @@ namespace flutter {
 
 class PlatformTaskRunner {
 public:
-    static fml::RefPtr<fml::TaskRunner> CurrentTaskRunner();
+    static fml::RefPtr<fml::TaskRunner> CurrentTaskRunner(bool useCurrentEventRunner = false);
 };
 
 }  // namespace flutter

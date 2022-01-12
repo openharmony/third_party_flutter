@@ -10,9 +10,9 @@
 
 namespace flutter {
 
-fml::RefPtr<fml::TaskRunner> PlatformTaskRunner::CurrentTaskRunner()
+fml::RefPtr<fml::TaskRunner> PlatformTaskRunner::CurrentTaskRunner(bool useCurrentEventRunner)
 {
-    return PlatformTaskRunnerAdapter::CurrentTaskRunner();
+    return PlatformTaskRunnerAdapter::CurrentTaskRunner(useCurrentEventRunner);
 }
 
 }  // namespace flutter
