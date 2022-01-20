@@ -12,6 +12,7 @@
 #include "flutter/fml/macros.h"
 #include "flutter/shell/common/surface.h"
 #include "wm/window.h"
+#include <ui/rs_surface_node.h>
 
 namespace flutter {
 
