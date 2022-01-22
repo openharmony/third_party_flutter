@@ -132,7 +132,10 @@ namespace SkOpts {
         #endif
 
     #elif defined(SK_CPU_ARM64)
-        if (SkCpu::Supports(SkCpu::CRC32)) { Init_crc32(); }
+        if (SkCpu::Supports(SkCpu::CRC32)) {
+            // Notes below: fix the function of hash_fn has two implementations for arm64
+            /* Init_crc32(); */  
+        }
 
     #endif
 #endif
