@@ -361,7 +361,7 @@ void PlatformViewAndroid::FireFirstFrameCallback() {
 bool PlatformViewAndroid::RegisterOnFirstFrame(JNIEnv* env, jint platform) {
   jclass view_clazz = nullptr;
   if (platform == static_cast<jint>(AcePlatform::ACE_PLATFORM_ANDROID)) {
-    view_clazz = env->FindClass("ohos/ace/AceViewAosp");
+    view_clazz = env->FindClass("ohos/ace/adapter/AceViewAosp");
   } else if (platform == static_cast<jint>(AcePlatform::ACE_PLATFORM_OHOS)) {
     view_clazz = env->FindClass("ohos/ace/AceViewOhos");
   }
