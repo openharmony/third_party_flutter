@@ -94,7 +94,7 @@ bool VsyncWaiterAndroid::Register(JNIEnv* env) {
       .fnPtr = reinterpret_cast<void*>(&OnNativeVsync),
   }};
 
-  jclass clazz = env->FindClass("ohos/ace/AceVsyncWaiter");
+  jclass clazz = env->FindClass("ohos/ace/adapter/AceVsyncWaiter");
 
   if (clazz == nullptr) {
     return false;
