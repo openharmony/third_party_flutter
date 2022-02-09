@@ -71,6 +71,7 @@ Note:If the text contains special characters, please escape them according to th
                 <policyitem type="compatibility" name="FTL" path="skia/third_party/freetype2/.*" desc="FTL，BSD-style license, 不影响兼容性"/>
                 <policyitem type="compatibility" name="zlib-acknowledgement" path="skia/third_party/externals/imgui/examples/libs/.*" desc="zlib/libpng License，不影响兼容性"/>
                 <policyitem type="compatibility" name="zlib-acknowledgement" path="skia/third_party/externals/libjpeg-turbo/.*" desc="zlib/libpng License，不影响兼容性"/>
+                <policyitem type="compatibility" name="InvalidLicense" path="skia/third_party/externals/imgui/examples/.*" desc="zlib/libpng License，不影响兼容性"/>
                 <policyitem type="compatibility" name="Libpng" path="skia/third_party/externals/libpng/.*" desc="zlib/libpng License，不影响兼容性"/>
                 <policyitem type="compatibility" name="zlib-acknowledgement" path="skia/third_party/externals/sdl/.*" desc="zlib/libpng License，不影响兼容性"/>
                 <policyitem type="compatibility" name="Khronos License" path="skia/third_party/externals/opencl-lib/.*" desc="Khronos License，不影响兼容性"/>
@@ -175,6 +176,7 @@ Note:If the text contains special characters, please escape them according to th
                 <filteritem type="filepath" name="skia/third_party/externals/sdl/src/video/x11/edid-parse.c" desc="zlib LICENSE，文件未使用，不参与编译,不影响兼容性"/>
                 <filteritem type="filepath" name="skia/third_party/externals/opencl-lib/3-0/include/CL/internal/cl_icd_amd.h" desc="MIT，文件未使用，不参与编译,不影响兼容性"/>
                 <filteritem type="filepath" name="skia/third_party/externals/opencl-lib/3-0/include/GL/wglew.h" desc="Khronos License，文件未使用，不参与编译,不影响兼容性"/>
+                <filteritem type="filepath" name="skia/third_party/externals/opencl-lib/3-0/include/GL/glext.h" desc="Khronos License，文件未使用，不参与编译,不影响兼容性"/>
                 <filteritem type="filepath" name="skia/third_party/externals/angle2/util/windows/third_party/StackWalker/README.chromium" desc="三方仓下readme文件，文件未使用，不参与编译,不影响兼容性"/>
                 <filteritem type="filepath" name="skia/third_party/externals/angle2/third_party/vulkan-validation-layers/README.angle" desc="三方仓下readme文件，文件未使用，不参与编译,不影响兼容性"/>
                 <filteritem type="filepath" name="skia/third_party/externals/angle2/third_party/vulkan-tools/README.angle" desc="三方仓下readme文件，不参与编译,不影响兼容性"/>
@@ -196,9 +198,14 @@ Note:If the text contains special characters, please escape them according to th
                 <filteritem type="filepath" name="skia/third_party/externals/harfbuzz/m4/ax_cxx_compile_stdcxx.m4" desc="FSFAP License，文件不参与编译，协议也不影响兼容性"/>
                 <filteritem type="filepath" name="skia/third_party/externals/sdl/include/SDL_opengles2_gl2platform.h" desc="SGI Free Software B License，协议头写在代码后面了,不影响兼容性"/>
                 <filteritem type="filepath" name="skia/third_party/externals/sdl/include/SDL_opengles2_khrplatform.h" desc="SGI Free Software B License，协议头写在代码后面了,不影响兼容性"/>
+                <filteritem type="filepath" name="skia/third_party/externals/sdl/include/SDL_opengles2_gl2.h" desc="SGI Free Software B License，协议头写在代码后面了,不影响兼容性"/>
+                <filteritem type="filepath" name="skia/third_party/externals/sdl/include/SDL_opengles2_gl2ext.h" desc="SGI Free Software B License，协议头写在代码后面了,文件不参与编译，不影响兼容性"/>
+                <filteritem type="filepath" name="skia/third_party/externals/sdl/Xcode-iOS/Demos/src/common.c" desc="SGI Free Software B License，协议头写在代码后面了,不影响兼容性"/>
                 <filteritem type="filepath" name="skia/third_party/externals/sdl/debian/copyright" desc="zlib-acknowledgement License，文件不参与编译，不影响兼容性"/>
                 <filteritem type="filepath" name="skia/third_party/externals/dawn/scripts/git-clang-format" desc="文件不参与编译，不影响兼容性"/>
                 <filteritem type="filepath" name="skia/third_party/externals/imgui/imgui.cpp" desc="该文件未使用，不参与编译，不影响兼容性"/>
+                <filteritem type="filepath" name="skia/third_party/externals/imgui/examples/.*" desc="该目录未使用，不参与编译，不影响兼容性"/>
+            </filefilter>
             </filefilter>
             <filefilter name="binaryFileTypePolicyFilter" desc="二进制文件校验策略的过滤条件" >
                 <filteritem type="filepath" name=".*" desc="flutter三方库二进制，未使用。"/>
