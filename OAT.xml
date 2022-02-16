@@ -59,9 +59,12 @@ Note:If the text contains special characters, please escape them according to th
         <licensefile>engine/flutter/LICENSE|skia/LICENSE</licensefile>
         <policylist>
             <policy name="projectPolicy" desc="">
+                <policyitem type="compatibility" name="Apache-2.0" path="BUILD.gn" desc="自研构建文件，不影响兼容性"/>
+                <policyitem type="compatibility" name="Apache-2.0" path="flutter_ace_config.gni" desc="自研构建文件，不影响兼容性"/>
+                <policyitem type="compatibility" name="Apache-2.0" path="flutter_engine.gni" desc="自研构建文件，不影响兼容性"/>
+                <policyitem type="compatibility" name="Apache-2.0" path="make_skia_include_dir.py" desc="自研构建文件，不影响兼容性"/>
                 <policyitem type="compatibility" name="Unicode-DFS-2016" path="engine/flutter/third_party/icu/.*" desc="ICU License，不影响兼容性"/>
                 <policyitem type="compatibility" name="Unicode-DFS-2016" path="skia/third_party/externals/icu/.*" desc="ICU License，不影响兼容性"/>
-                <policyitem type="compatibility" name="Unicode-TOU" path=".*" desc="ICU License，不影响兼容性"/>
                 <policyitem type="compatibility" name="InvalidLicense" path="skia/README.chromium" desc="BSD 3-Clause License，不影响兼容性"/> -->
                 <policyitem type="compatibility" name="Khronos License" path="skia/src/sksl/GLSL.std.450.h" desc="Khronos License，不影响兼容性"/>
                 <policyitem type="compatibility" name="Khronos License" path="skia/src/sksl/spirv.h" desc="Khronos License，不影响兼容性"/>
@@ -71,7 +74,6 @@ Note:If the text contains special characters, please escape them according to th
                 <policyitem type="compatibility" name="FTL" path="skia/third_party/freetype2/.*" desc="FTL，BSD-style license, 不影响兼容性"/>
                 <policyitem type="compatibility" name="zlib-acknowledgement" path="skia/third_party/externals/imgui/examples/libs/.*" desc="zlib/libpng License，不影响兼容性"/>
                 <policyitem type="compatibility" name="zlib-acknowledgement" path="skia/third_party/externals/libjpeg-turbo/.*" desc="zlib/libpng License，不影响兼容性"/>
-                <policyitem type="compatibility" name="InvalidLicense" path="skia/third_party/externals/imgui/examples/.*" desc="zlib/libpng License，不影响兼容性"/>
                 <policyitem type="compatibility" name="Libpng" path="skia/third_party/externals/libpng/.*" desc="zlib/libpng License，不影响兼容性"/>
                 <policyitem type="compatibility" name="zlib-acknowledgement" path="skia/third_party/externals/sdl/.*" desc="zlib/libpng License，不影响兼容性"/>
                 <policyitem type="compatibility" name="Khronos License" path="skia/third_party/externals/opencl-lib/.*" desc="Khronos License，不影响兼容性"/>
@@ -89,11 +91,84 @@ Note:If the text contains special characters, please escape them according to th
                 <policyitem type="compatibility" name="MIT license Old Style with legal disclaimer" path="skia/third_party/externals/harfbuzz/.*" desc="友好许可证，不影响兼容性"/>
                 <policyitem type="compatibility" name="MIT license Old Style (no advertising without permission)" path=".*" desc="友好许可证，不影响兼容性"/>
                 <policyitem type="compatibility" name="ISC License" path=".*" desc="ISC License，BSD-style，不影响兼容性"/>
-                <policyitem type="compatibility" name="OpenSSL" path="engine/flutter/sky/packages/sky_engine/.*" desc="友好许可证，不影响兼容性"/>
-                <policyitem type="compatibility" name="RSA-MD" path="skia/third_party/externals/sdl/src/test/.*" desc="友好许可证，不影响兼容性"/>
+
+                <policyitem type="compatibility" name="Unicode-TOU" path="engine/flutter/third_party/icu/.*" desc="ICU License，不影响兼容性"/>
+                <policyitem type="compatibility" name="Unicode-TOU" path="skia/third_party/externals/icu/.*" desc="ICU License，不影响兼容性"/>
+                <policyitem type="compatibility" name="BSDStyleLicense" path="flutter/.*" desc="不影响兼容性"/>
+                <policyitem type="compatibility" name="BSDStyleLicense" path="engine/flutter/.*" desc="不影响兼容性"/>
+                <policyitem type="compatibility" name="BSDStyleLicense" path="skia/.*" desc="不影响兼容性"/>
+                <policyitem type="compatibility" name="BSD-3-Clause" path="engine/flutter/.*" desc="不影响兼容性"/>
+                <policyitem type="compatibility" name="BSD-3-Clause" path="flutter/.*" desc="不影响兼容性"/>
+                <policyitem type="compatibility" name="BSD-3-Clause" path="skia/.*" desc="不影响兼容性"/>
+                <policyitem type="compatibility" name="Apache-2.0" path="flutter/.*" desc="不影响兼容性"/>
+                <policyitem type="compatibility" name="Apache-2.0" path="engine/flutter/.*" desc="不影响兼容性"/>
+                <policyitem type="compatibility" name="Apache-2.0" path="skia/.*" desc="不影响兼容性"/>
+                <policyitem type="compatibility" name="MIT" path="engine/flutter/.*" desc="不影响兼容性"/>
+                <policyitem type="compatibility" name="MIT" path="flutter/.*" desc="不影响兼容性"/>
+                <policyitem type="compatibility" name="MIT" path="skia/.*" desc="不影响兼容性"/>
+                <policyitem type="compatibility" name="MIT-Modern-Variant" path="flutter/.*" desc="不影响兼容性"/>
+                <policyitem type="compatibility" name="MIT-Modern-Variant" path="skia/.*" desc="不影响兼容性"/>
+                <policyitem type="compatibility" name="InvalidLicense" path="skia/.*" desc="不影响兼容性"/>
+                <policyitem type="compatibility" name="zlib-acknowledgement" path="skia/.*" desc="不影响兼容性"/>
+                <policyitem type="compatibility" name="LGPLStyleLicense" path="skia/.*" desc="不影响兼容性"/>
+                <policyitem type="compatibility" name="BSD-2-Clause" path="skia/.*" desc="不影响兼容性"/>
+                <policyitem type="compatibility" name="BSD 2-Clause License" path="skia/.*" desc="不影响兼容性"/>
+                <policyitem type="compatibility" name="BSD 3-Clause License" path="skia/.*" desc="不影响兼容性"/>
+                <policyitem type="compatibility" name="RSA-MD" path="skia/.*" desc="不影响兼容性"/>
+                <policyitem type="compatibility" name="OpenSSL" path="engine/flutter/.*" desc="不影响兼容性"/>
+
+                <policyitem type="license" name="Unicode-TOU" path="engine/flutter/third_party/icu/.*" filefilter="defaultPolicyFilter" desc="ICU License，不影响兼容性"/>
+                <policyitem type="license" name="Unicode-TOU" path="skia/third_party/externals/icu/.*" filefilter="defaultPolicyFilter" desc="ICU License，不影响兼容性"/>
+                <policyitem type="license" name="BSDStyleLicense" path="engine/flutter/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="BSDStyleLicense" path="flutter/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="BSDStyleLicense" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="FTL" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="MIT-Modern-Variant" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="NoLicenseHeader" path="engine/flutter/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="NoLicenseHeader" path="flutter/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="NoLicenseHeader" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="BSD-3-Clause" path="flutter/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="BSD-3-Clause" path="engine/flutter/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="BSD-3-Clause" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="BSD 3-Clause License" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="BSD-2-Clause" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="BSD 2-Clause License" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="MIT" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="ISC" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="InvalidLicense" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="LGPLStyleLicense" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="zlib-acknowledgement" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="Libpng" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="The zlib/libpng License (Zlib)" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="SunPro Attribution License (sunpro)" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="The IJG (Independent JPEG Group) License" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="Khronos License" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="MIT" path="engine/flutter/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="OFL-1.1-no-RFN" path="engine/flutter/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="ApacheStyleLicense" path="engine/flutter/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="FSFULLR" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="RSA-MD" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="FSFUL" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="Beerware" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="MPL-1.1" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="PNG Reference Library License" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="OpenSSL" path="engine/flutter/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="Apache-2.0" path="skia/.*" filefilter="defaultPolicyFilter" desc="不影响兼容性"/>
+                <policyitem type="license" name="Apache-2.0" path="flutter/.*" desc="不影响兼容性"/>
+                <policyitem type="license" name="Apache-2.0" path="engine/flutter/.*" desc="不影响兼容性"/>
             </policy>
         </policylist>
         <filefilterlist>
+            <filefilter name="binaryFileTypePolicyFilter" desc="Invalid File Type" >
+                <filteritem type="filepath" name="flutter/.*" desc="二进制不参与编译"/>
+                <filteritem type="filepath" name="skia/.*" desc="二进制不参与编译"/>
+                <filteritem type="filepath" name="engine/flutter/.*" desc="二进制不参与编译"/>
+            </filefilter>
+            <filefilter name="copyrightPolicyFilter" desc="Invalid File Type" >
+                <filteritem type="filepath" name="engine/flutter/.*" desc="flutter软件都包含兼容的许可证"/>
+                <filteritem type="filepath" name="flutter/.*" desc="flutter软件都包含兼容的许可证"/>
+                <filteritem type="filepath" name="skia/.*" desc="flutter软件都包含兼容的许可证"/>
+            </filefilter>
             <filefilter name="defaultPolicyFilter" desc="compatibility，license文件头校验策略的过滤条件" >
                 <filteritem type="filepath" name="engine/flutter/tools/licenses/data/academic-3.0" desc="该文件未使用，且为tools下说明性质文件不参与打包"/>
                 <filteritem type="filepath" name="engine/flutter/tools/licenses/data/mozilla-2.0" desc="该文件未使用，且为tools下说明性质文件不参与打包"/>
@@ -176,7 +251,6 @@ Note:If the text contains special characters, please escape them according to th
                 <filteritem type="filepath" name="skia/third_party/externals/sdl/src/video/x11/edid-parse.c" desc="zlib LICENSE，文件未使用，不参与编译,不影响兼容性"/>
                 <filteritem type="filepath" name="skia/third_party/externals/opencl-lib/3-0/include/CL/internal/cl_icd_amd.h" desc="MIT，文件未使用，不参与编译,不影响兼容性"/>
                 <filteritem type="filepath" name="skia/third_party/externals/opencl-lib/3-0/include/GL/wglew.h" desc="Khronos License，文件未使用，不参与编译,不影响兼容性"/>
-                <filteritem type="filepath" name="skia/third_party/externals/opencl-lib/3-0/include/GL/glext.h" desc="Khronos License，文件未使用，不参与编译,不影响兼容性"/>
                 <filteritem type="filepath" name="skia/third_party/externals/angle2/util/windows/third_party/StackWalker/README.chromium" desc="三方仓下readme文件，文件未使用，不参与编译,不影响兼容性"/>
                 <filteritem type="filepath" name="skia/third_party/externals/angle2/third_party/vulkan-validation-layers/README.angle" desc="三方仓下readme文件，文件未使用，不参与编译,不影响兼容性"/>
                 <filteritem type="filepath" name="skia/third_party/externals/angle2/third_party/vulkan-tools/README.angle" desc="三方仓下readme文件，不参与编译,不影响兼容性"/>
@@ -198,17 +272,6 @@ Note:If the text contains special characters, please escape them according to th
                 <filteritem type="filepath" name="skia/third_party/externals/harfbuzz/m4/ax_cxx_compile_stdcxx.m4" desc="FSFAP License，文件不参与编译，协议也不影响兼容性"/>
                 <filteritem type="filepath" name="skia/third_party/externals/sdl/include/SDL_opengles2_gl2platform.h" desc="SGI Free Software B License，协议头写在代码后面了,不影响兼容性"/>
                 <filteritem type="filepath" name="skia/third_party/externals/sdl/include/SDL_opengles2_khrplatform.h" desc="SGI Free Software B License，协议头写在代码后面了,不影响兼容性"/>
-                <filteritem type="filepath" name="skia/third_party/externals/sdl/include/SDL_opengles2_gl2.h" desc="SGI Free Software B License，协议头写在代码后面了,不影响兼容性"/>
-                <filteritem type="filepath" name="skia/third_party/externals/sdl/include/SDL_opengles2_gl2ext.h" desc="SGI Free Software B License，协议头写在代码后面了,文件不参与编译，不影响兼容性"/>
-                <filteritem type="filepath" name="skia/third_party/externals/sdl/Xcode-iOS/Demos/src/common.c" desc="SGI Free Software B License，协议头写在代码后面了,不影响兼容性"/>
-                <filteritem type="filepath" name="skia/third_party/externals/sdl/debian/copyright" desc="zlib-acknowledgement License，文件不参与编译，不影响兼容性"/>
-                <filteritem type="filepath" name="skia/third_party/externals/dawn/scripts/git-clang-format" desc="文件不参与编译，不影响兼容性"/>
-                <filteritem type="filepath" name="skia/third_party/externals/imgui/imgui.cpp" desc="该文件未使用，不参与编译，不影响兼容性"/>
-                <filteritem type="filepath" name="skia/third_party/externals/imgui/examples/.*" desc="该目录未使用，不参与编译，不影响兼容性"/>
-            </filefilter>
-            </filefilter>
-            <filefilter name="binaryFileTypePolicyFilter" desc="二进制文件校验策略的过滤条件" >
-                <filteritem type="filepath" name=".*" desc="flutter三方库二进制，未使用。"/>
             </filefilter>
         </filefilterlist>
         <licensematcherlist>
