@@ -10,7 +10,7 @@
 #include "flutter/common/task_runners.h"
 #include "flutter/shell/platform/ohos/vsync_waiter_embedder.h"
 #ifdef OHOS_STANDARD_SYSTEM
-#include "vsync_helper.h"
+#include "transaction/rs_interfaces.h"
 #else
 #include "flutter/fml/platform/android/jni_util.h"
 #include "flutter/shell/common/ace_display_manager_jni.h"
@@ -38,6 +38,10 @@ VsyncWaiterEmbedder::VsyncWaiterEmbedder(flutter::TaskRunners task_runners) : Vs
     if (fps_ != kUnknownRefreshRateFPS) {
         refreshPeriod_ = static_cast<int64_t>(ONE_SECOND_IN_NANO / fps_);
     }
+
+    auto& rsClient = OHOS::Rosen::RSInterfaces::GetInstance();
+    vsyncReceiver_ = rsClient.CreateVSyncReceiver("ACE");
+    vsyncReceiver_->Init();
 }
 
 VsyncWaiterEmbedder::~VsyncWaiterEmbedder() = default;
@@ -83,14 +87,14 @@ void VsyncWaiterEmbedder::AwaitVSync()
     std::weak_ptr<VsyncWaiter> weak_base(shared_from_this());
     CallbackInfo* info = new CallbackInfo{ refreshPeriod_, fps_, weak_base };
 #ifdef OHOS_STANDARD_SYSTEM
-    task_runners_.GetPlatformTaskRunner()->PostTask([info]() {
-        struct OHOS::FrameCallback cb = {
-            .timestamp_ = 0,
-            .userdata_ = info,
+    task_runners_.GetPlatformTaskRunner()->PostTask([this, info]() {
+        OHOS::Rosen::VSyncReceiver::FrameCallback fcb = {
+            .userData_ = info,
             .callback_ = VSyncCallback,
         };
-        OHOS::VsyncHelper::Current()->RequestFrameCallback(cb);
+        this->vsyncReceiver_->RequestNextVSync(fcb);
     });
+    
 #else
     auto callback = [info](int64_t nanoTimestamp) {
         VSyncCallback(nanoTimestamp, (void*)info);
