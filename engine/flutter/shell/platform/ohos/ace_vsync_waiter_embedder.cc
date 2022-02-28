@@ -87,12 +87,16 @@ void VsyncWaiterEmbedder::AwaitVSync()
     std::weak_ptr<VsyncWaiter> weak_base(shared_from_this());
     CallbackInfo* info = new CallbackInfo{ refreshPeriod_, fps_, weak_base };
 #ifdef OHOS_STANDARD_SYSTEM
-    task_runners_.GetPlatformTaskRunner()->PostTask([this, info]() {
+    std::weak_ptr<OHOS::Rosen::VSyncReceiver> weakReceiver = vsyncReceiver_;
+    task_runners_.GetPlatformTaskRunner()->PostTask([weakReceiver, info]() {
         OHOS::Rosen::VSyncReceiver::FrameCallback fcb = {
             .userData_ = info,
             .callback_ = VSyncCallback,
         };
-        this->vsyncReceiver_->RequestNextVSync(fcb);
+	auto refRecevier = weakReceiver.lock();
+	if (refRecevier) {
+          refRecevier->RequestNextVSync(fcb);
+	}
     });
     
 #else
