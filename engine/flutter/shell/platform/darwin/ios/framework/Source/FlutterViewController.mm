@@ -88,15 +88,14 @@ typedef enum UIAccessibilityContrast : NSInteger {
   return self;
 }
 
-- (instancetype)initWithProject:(FlutterDartProject*)projectOrNil
-                        nibName:(NSString*)nibNameOrNil
-                         bundle:(NSBundle*)nibBundleOrNil {
+- (instancetype)initWithName:(NSString*)nibNameOrNil
+                      bundle:(NSBundle*)nibBundleOrNil {
   self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
   if (self) {
     _viewOpaque = YES;
     _weakFactory = std::make_unique<fml::WeakPtrFactory<FlutterViewController>>(self);
     _engine.reset([[FlutterEngine alloc] initWithName:@"io.flutter"
-                                              project:projectOrNil
+//                                              project:projectOrNil
                                allowHeadlessExecution:NO]);
     _flutterView.reset([[FlutterView alloc] initWithDelegate:_engine opaque:self.isViewOpaque]);
     [_engine.get() createShell:nil libraryURI:nil];
@@ -109,16 +108,28 @@ typedef enum UIAccessibilityContrast : NSInteger {
   return self;
 }
 
+- (void) setIdleCallBack:(std::function<void(int64_t)>)idleCallback {
+// void setIdleCallBack(IdleCallback idleCallback){
+  flutter::Shell& shell = [_engine.get() shell];
+  
+  
+  auto platform_view = shell.GetPlatformView();
+  if (!platform_view) {
+    return;
+  }
+  platform_view->SetIdleNotificationCallback(std::move(idleCallback));
+}
+
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil bundle:(NSBundle*)nibBundleOrNil {
-  return [self initWithProject:nil nibName:nil bundle:nil];
+  return [self initWithName:nil bundle:nil];
 }
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder {
-  return [self initWithProject:nil nibName:nil bundle:nil];
+  return [self initWithName:nil bundle:nil];
 }
 
 - (instancetype)init {
-  return [self initWithProject:nil nibName:nil bundle:nil];
+  return [self initWithName:nil bundle:nil];
 }
 
 - (BOOL)isViewOpaque {
@@ -200,36 +211,6 @@ typedef enum UIAccessibilityContrast : NSInteger {
   [center addObserver:self
              selector:@selector(onLocaleUpdated:)
                  name:NSCurrentLocaleDidChangeNotification
-               object:nil];
-
-  [center addObserver:self
-             selector:@selector(onAccessibilityStatusChanged:)
-                 name:UIAccessibilityVoiceOverStatusChanged
-               object:nil];
-
-  [center addObserver:self
-             selector:@selector(onAccessibilityStatusChanged:)
-                 name:UIAccessibilitySwitchControlStatusDidChangeNotification
-               object:nil];
-
-  [center addObserver:self
-             selector:@selector(onAccessibilityStatusChanged:)
-                 name:UIAccessibilitySpeakScreenStatusDidChangeNotification
-               object:nil];
-
-  [center addObserver:self
-             selector:@selector(onAccessibilityStatusChanged:)
-                 name:UIAccessibilityInvertColorsStatusDidChangeNotification
-               object:nil];
-
-  [center addObserver:self
-             selector:@selector(onAccessibilityStatusChanged:)
-                 name:UIAccessibilityReduceMotionStatusDidChangeNotification
-               object:nil];
-
-  [center addObserver:self
-             selector:@selector(onAccessibilityStatusChanged:)
-                 name:UIAccessibilityBoldTextStatusDidChangeNotification
                object:nil];
 
   [center addObserver:self
@@ -465,7 +446,6 @@ typedef enum UIAccessibilityContrast : NSInteger {
   TRACE_EVENT0("flutter", "viewDidAppear");
   [self onLocaleUpdated:nil];
   [self onUserSettingsChanged:nil];
-  [self onAccessibilityStatusChanged:nil];
   [[_engine.get() lifecycleChannel] sendMessage:@"AppLifecycleState.resumed"];
 
   [super viewDidAppear:animated];
@@ -698,22 +678,6 @@ static flutter::PointerData::DeviceKind DeviceKindFromTouchType(UITouch* touch) 
   [_engine.get() dispatchPointerDataPacket:std::move(packet)];
 }
 
-- (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event {
-  [self dispatchTouches:touches pointerDataChangeOverride:nullptr];
-}
-
-- (void)touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event {
-  [self dispatchTouches:touches pointerDataChangeOverride:nullptr];
-}
-
-- (void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event {
-  [self dispatchTouches:touches pointerDataChangeOverride:nullptr];
-}
-
-- (void)touchesCancelled:(NSSet*)touches withEvent:(UIEvent*)event {
-  [self dispatchTouches:touches pointerDataChangeOverride:nullptr];
-}
-
 #pragma mark - Handle view resizing
 
 - (void)updateViewportMetrics {
@@ -830,32 +794,6 @@ static flutter::PointerData::DeviceKind DeviceKindFromTouchType(UITouch* touch) 
 
 - (NSUInteger)supportedInterfaceOrientations {
   return _orientationPreferences;
-}
-
-#pragma mark - Accessibility
-
-- (void)onAccessibilityStatusChanged:(NSNotification*)notification {
-  auto platformView = [_engine.get() platformView];
-  int32_t flags = 0;
-  if (UIAccessibilityIsInvertColorsEnabled())
-    flags |= static_cast<int32_t>(flutter::AccessibilityFeatureFlag::kInvertColors);
-  if (UIAccessibilityIsReduceMotionEnabled())
-    flags |= static_cast<int32_t>(flutter::AccessibilityFeatureFlag::kReduceMotion);
-  if (UIAccessibilityIsBoldTextEnabled())
-    flags |= static_cast<int32_t>(flutter::AccessibilityFeatureFlag::kBoldText);
-#if TARGET_OS_SIMULATOR
-  // There doesn't appear to be any way to determine whether the accessibility
-  // inspector is enabled on the simulator. We conservatively always turn on the
-  // accessibility bridge in the simulator, but never assistive technology.
-  platformView->SetSemanticsEnabled(true);
-  platformView->SetAccessibilityFeatures(flags);
-#else
-  bool enabled = UIAccessibilityIsVoiceOverRunning() || UIAccessibilityIsSwitchControlRunning();
-  if (enabled)
-    flags |= static_cast<int32_t>(flutter::AccessibilityFeatureFlag::kAccessibleNavigation);
-  platformView->SetSemanticsEnabled(enabled || UIAccessibilityIsSpeakScreenEnabled());
-  platformView->SetAccessibilityFeatures(flags);
-#endif
 }
 
 #pragma mark - Locale updates
@@ -1126,11 +1064,11 @@ constexpr CGFloat kStandardStatusBarHeight = 20.0;
 }
 
 - (NSString*)lookupKeyForAsset:(NSString*)asset {
-  return [FlutterDartProject lookupKeyForAsset:asset];
+    return nil;
 }
 
 - (NSString*)lookupKeyForAsset:(NSString*)asset fromPackage:(NSString*)package {
-  return [FlutterDartProject lookupKeyForAsset:asset fromPackage:package];
+    return nil;
 }
 
 - (id<FlutterPluginRegistry>)pluginRegistry {

@@ -199,58 +199,8 @@ std::unique_ptr<fml::Mapping> GetSymbolMapping(std::string symbol_prefix,
 Settings SettingsFromCommandLine(const fml::CommandLine& command_line) {
   Settings settings = {};
 
-  // Enable Observatory
-  settings.enable_observatory =
-      !command_line.HasOption(FlagForSwitch(Switch::DisableObservatory));
-
-  // Set Observatory Host
-  if (command_line.HasOption(FlagForSwitch(Switch::DeviceObservatoryHost))) {
-    command_line.GetOptionValue(FlagForSwitch(Switch::DeviceObservatoryHost),
-                                &settings.observatory_host);
-  }
-  // Default the observatory port based on --ipv6 if not set.
-  if (settings.observatory_host.empty()) {
-    settings.observatory_host =
-        command_line.HasOption(FlagForSwitch(Switch::IPv6)) ? "::1"
-                                                            : "127.0.0.1";
-  }
-
-  // Set Observatory Port
-  if (command_line.HasOption(FlagForSwitch(Switch::DeviceObservatoryPort))) {
-    if (!GetSwitchValue(command_line, Switch::DeviceObservatoryPort,
-                        &settings.observatory_port)) {
-      FML_LOG(INFO)
-          << "Observatory port specified was malformed. Will default to "
-          << settings.observatory_port;
-    }
-  }
-
-  // Disable need for authentication codes for VM service communication, if
-  // specified.
-  settings.disable_service_auth_codes =
-      command_line.HasOption(FlagForSwitch(Switch::DisableServiceAuthCodes));
-
-  // Checked mode overrides.
-  settings.disable_dart_asserts =
-      command_line.HasOption(FlagForSwitch(Switch::DisableDartAsserts));
-
-  settings.start_paused =
-      command_line.HasOption(FlagForSwitch(Switch::StartPaused));
-
-  settings.enable_checked_mode =
-      command_line.HasOption(FlagForSwitch(Switch::EnableCheckedMode));
-
-  settings.enable_dart_profiling =
-      command_line.HasOption(FlagForSwitch(Switch::EnableDartProfiling));
-
   settings.enable_software_rendering =
       command_line.HasOption(FlagForSwitch(Switch::EnableSoftwareRendering));
-
-  settings.endless_trace_buffer =
-      command_line.HasOption(FlagForSwitch(Switch::EndlessTraceBuffer));
-
-  settings.trace_startup =
-      command_line.HasOption(FlagForSwitch(Switch::TraceStartup));
 
   settings.skia_deterministic_rendering_on_cpu =
       command_line.HasOption(FlagForSwitch(Switch::SkiaDeterministicRendering));
@@ -285,24 +235,6 @@ Settings SettingsFromCommandLine(const fml::CommandLine& command_line) {
       FlagForSwitch(Switch::IsolateSnapshotInstructions),
       &isolate_snapshot_instr_filename);
 
-  if (aot_shared_library_name.size() > 0) {
-    for (std::string_view name : aot_shared_library_name) {
-      settings.application_library_path.emplace_back(name);
-    }
-  } else if (snapshot_asset_path.size() > 0) {
-    settings.vm_snapshot_data_path =
-        fml::paths::JoinPaths({snapshot_asset_path, vm_snapshot_data_filename});
-    settings.vm_snapshot_instr_path = fml::paths::JoinPaths(
-        {snapshot_asset_path, vm_snapshot_instr_filename});
-    settings.isolate_snapshot_data_path = fml::paths::JoinPaths(
-        {snapshot_asset_path, isolate_snapshot_data_filename});
-    settings.isolate_snapshot_instr_path = fml::paths::JoinPaths(
-        {snapshot_asset_path, isolate_snapshot_instr_filename});
-  }
-
-  command_line.GetOptionValue(FlagForSwitch(Switch::CacheDirPath),
-                              &settings.temp_directory_path);
-
   if (settings.icu_initialization_required) {
     command_line.GetOptionValue(FlagForSwitch(Switch::ICUDataFilePath),
                                 &settings.icu_data_path);
@@ -325,32 +257,6 @@ Settings SettingsFromCommandLine(const fml::CommandLine& command_line) {
 
   settings.use_test_fonts =
       command_line.HasOption(FlagForSwitch(Switch::UseTestFonts));
-
-#if FLUTTER_RUNTIME_MODE != FLUTTER_RUNTIME_MODE_RELEASE
-  command_line.GetOptionValue(FlagForSwitch(Switch::LogTag), &settings.log_tag);
-  std::string all_dart_flags;
-  if (command_line.GetOptionValue(FlagForSwitch(Switch::DartFlags),
-                                  &all_dart_flags)) {
-    std::stringstream stream(all_dart_flags);
-    std::string flag;
-
-    // Assume that individual flags are comma separated.
-    while (std::getline(stream, flag, ',')) {
-      if (!IsWhitelistedDartVMFlag(flag)) {
-        FML_LOG(FATAL) << "Encountered blacklisted Dart VM flag: " << flag;
-      }
-      settings.dart_flags.push_back(flag);
-    }
-  }
-
-  settings.trace_skia =
-      command_line.HasOption(FlagForSwitch(Switch::TraceSkia));
-  settings.trace_systrace =
-      command_line.HasOption(FlagForSwitch(Switch::TraceSystrace));
-#endif
-
-  settings.dump_skp_on_shader_compilation =
-      command_line.HasOption(FlagForSwitch(Switch::DumpSkpOnShaderCompilation));
 
   return settings;
 }

@@ -46,23 +46,12 @@ void PlatformViewIOS::SetOwnerViewController(fml::WeakPtr<FlutterViewController>
   if (ios_surface_ || !owner_controller) {
     NotifyDestroyed();
     ios_surface_.reset();
-    accessibility_bridge_.reset();
   }
   owner_controller_ = owner_controller;
   if (owner_controller_) {
     ios_surface_ =
         [static_cast<FlutterView*>(owner_controller.get().view) createSurface:gl_context_];
     FML_DCHECK(ios_surface_ != nullptr);
-
-    if (accessibility_bridge_) {
-      accessibility_bridge_.reset(
-          new AccessibilityBridge(static_cast<FlutterView*>(owner_controller_.get().view), this,
-                                  [owner_controller.get() platformViewsController]));
-    }
-    // Do not call `NotifyCreated()` here - let FlutterViewController take care
-    // of that when its Viewport is sized.  If `NotifyCreated()` is called here,
-    // it can occasionally get invoked before the viewport is sized resulting in
-    // a framebuffer that will not be able to completely attach.
   }
 }
 
@@ -95,59 +84,19 @@ sk_sp<GrContext> PlatformViewIOS::CreateResourceContext() const {
 }
 
 // |PlatformView|
-void PlatformViewIOS::SetSemanticsEnabled(bool enabled) {
-  if (!owner_controller_) {
-    FML_LOG(WARNING) << "Could not set semantics to enabled, this "
-                        "PlatformViewIOS has no ViewController.";
-    return;
-  }
-  if (enabled && !accessibility_bridge_) {
-    accessibility_bridge_ = std::make_unique<AccessibilityBridge>(
-        static_cast<FlutterView*>(owner_controller_.get().view), this,
-        [owner_controller_.get() platformViewsController]);
-  } else if (!enabled && accessibility_bridge_) {
-    accessibility_bridge_.reset();
-  }
-  PlatformView::SetSemanticsEnabled(enabled);
-}
-
-// |shell:PlatformView|
-void PlatformViewIOS::SetAccessibilityFeatures(int32_t flags) {
-  PlatformView::SetAccessibilityFeatures(flags);
-}
-
-// |PlatformView|
-void PlatformViewIOS::UpdateSemantics(flutter::SemanticsNodeUpdates update,
-                                      flutter::CustomAccessibilityActionUpdates actions) {
-  FML_DCHECK(owner_controller_);
-  if (accessibility_bridge_) {
-    accessibility_bridge_->UpdateSemantics(std::move(update), std::move(actions));
-    [[NSNotificationCenter defaultCenter] postNotificationName:FlutterSemanticsUpdateNotification
-                                                        object:owner_controller_.get()];
-  }
-}
-
-// |PlatformView|
-std::unique_ptr<VsyncWaiter> PlatformViewIOS::CreateVSyncWaiter() {
-  return std::make_unique<VsyncWaiterIOS>(task_runners_);
+std::unique_ptr<VsyncWaiter> PlatformViewIOS::CreateVSyncWaiter(int32_t platform) {
+//    if (platform == static_cast<int32_t>(AcePlatform::ACE_PLATFORM_IOS)) {
+        return std::make_unique<VsyncWaiterIOS>(task_runners_);
+//    }
+//
+//    return nullptr;
 }
 
 void PlatformViewIOS::OnPreEngineRestart() const {
-  if (accessibility_bridge_) {
-    accessibility_bridge_->clearState();
-  }
   if (!owner_controller_) {
     return;
   }
   [owner_controller_.get() platformViewsController] -> Reset();
-}
-
-fml::scoped_nsprotocol<FlutterTextInputPlugin*> PlatformViewIOS::GetTextInputPlugin() const {
-  return text_input_plugin_;
-}
-
-void PlatformViewIOS::SetTextInputPlugin(fml::scoped_nsprotocol<FlutterTextInputPlugin*> plugin) {
-  text_input_plugin_ = plugin;
 }
 
 }  // namespace flutter

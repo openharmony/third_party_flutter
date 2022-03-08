@@ -9,7 +9,6 @@
 #include "flutter/common/task_runners.h"
 #include "flutter/fml/message_loop.h"
 #include "flutter/fml/platform/darwin/scoped_nsobject.h"
-#include "flutter/runtime/dart_vm.h"
 #include "flutter/shell/common/shell.h"
 #include "flutter/shell/common/switches.h"
 #include "flutter/shell/platform/darwin/common/command_line.h"
@@ -66,41 +65,6 @@ static flutter::Settings DefaultSettingsForProcess(NSBundle* bundle = nil) {
     }
   }
 
-  if (flutter::DartVM::IsRunningPrecompiledCode()) {
-    if (hasExplicitBundle) {
-      NSString* executablePath = bundle.executablePath;
-      if ([[NSFileManager defaultManager] fileExistsAtPath:executablePath]) {
-        settings.application_library_path.push_back(executablePath.UTF8String);
-      }
-    }
-
-    // No application bundle specified.  Try a known location from the main bundle's Info.plist.
-    if (settings.application_library_path.size() == 0) {
-      NSString* libraryName = [mainBundle objectForInfoDictionaryKey:@"FLTLibraryPath"];
-      NSString* libraryPath = [mainBundle pathForResource:libraryName ofType:@""];
-      if (libraryPath.length > 0) {
-        NSString* executablePath = [NSBundle bundleWithPath:libraryPath].executablePath;
-        if (executablePath.length > 0) {
-          settings.application_library_path.push_back(executablePath.UTF8String);
-        }
-      }
-    }
-
-    // In case the application bundle is still not specified, look for the App.framework in the
-    // Frameworks directory.
-    if (settings.application_library_path.size() == 0) {
-      NSString* applicationFrameworkPath = [mainBundle pathForResource:@"Frameworks/App.framework"
-                                                                ofType:@""];
-      if (applicationFrameworkPath.length > 0) {
-        NSString* executablePath =
-            [NSBundle bundleWithPath:applicationFrameworkPath].executablePath;
-        if (executablePath.length > 0) {
-          settings.application_library_path.push_back(executablePath.UTF8String);
-        }
-      }
-    }
-  }
-
   // Checks to see if the flutter assets directory is already present.
   if (settings.assets_path.size() == 0) {
     NSString* assetsName = [FlutterDartProject flutterAssetsName:bundle];
@@ -114,20 +78,6 @@ static flutter::Settings DefaultSettingsForProcess(NSBundle* bundle = nil) {
       NSLog(@"Failed to find assets path for \"%@\"", assetsName);
     } else {
       settings.assets_path = assetsPath.UTF8String;
-
-      // Check if there is an application kernel snapshot in the assets directory we could
-      // potentially use.  Looking for the snapshot makes sense only if we have a VM that can use
-      // it.
-      if (!flutter::DartVM::IsRunningPrecompiledCode()) {
-        NSURL* applicationKernelSnapshotURL =
-            [NSURL URLWithString:@(kApplicationKernelSnapshotFileName)
-                   relativeToURL:[NSURL fileURLWithPath:assetsPath]];
-        if ([[NSFileManager defaultManager] fileExistsAtPath:applicationKernelSnapshotURL.path]) {
-          settings.application_kernel_asset = applicationKernelSnapshotURL.path.UTF8String;
-        } else {
-          NSLog(@"Failed to find snapshot: %@", applicationKernelSnapshotURL.path);
-        }
-      }
     }
   }
 
@@ -185,14 +135,7 @@ static flutter::Settings DefaultSettingsForProcess(NSBundle* bundle = nil) {
 
 - (flutter::RunConfiguration)runConfigurationForEntrypoint:(NSString*)entrypointOrNil
                                               libraryOrNil:(NSString*)dartLibraryOrNil {
-  auto config = flutter::RunConfiguration::InferFromSettings(_settings);
-  if (dartLibraryOrNil && entrypointOrNil) {
-    config.SetEntrypointAndLibrary(std::string([entrypointOrNil UTF8String]),
-                                   std::string([dartLibraryOrNil UTF8String]));
-
-  } else if (entrypointOrNil) {
-    config.SetEntrypoint(std::string([entrypointOrNil UTF8String]));
-  }
+  flutter::RunConfiguration config;
   return config;
 }
 

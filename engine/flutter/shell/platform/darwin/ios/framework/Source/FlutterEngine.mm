@@ -18,8 +18,6 @@
 #include "flutter/shell/common/thread_host.h"
 #include "flutter/shell/platform/darwin/common/command_line.h"
 #import "flutter/shell/platform/darwin/ios/framework/Source/FlutterBinaryMessengerRelay.h"
-#import "flutter/shell/platform/darwin/ios/framework/Source/FlutterDartProject_Internal.h"
-#import "flutter/shell/platform/darwin/ios/framework/Source/FlutterObservatoryPublisher.h"
 #import "flutter/shell/platform/darwin/ios/framework/Source/FlutterPlatformPlugin.h"
 #import "flutter/shell/platform/darwin/ios/framework/Source/FlutterTextInputDelegate.h"
 #import "flutter/shell/platform/darwin/ios/framework/Source/FlutterViewController_Internal.h"
@@ -40,14 +38,12 @@
 @end
 
 @implementation FlutterEngine {
-  fml::scoped_nsobject<FlutterDartProject> _dartProject;
   flutter::ThreadHost _threadHost;
   std::unique_ptr<flutter::Shell> _shell;
   NSString* _labelPrefix;
   std::unique_ptr<fml::WeakPtrFactory<FlutterEngine>> _weakFactory;
 
   fml::WeakPtr<FlutterViewController> _viewController;
-  fml::scoped_nsobject<FlutterObservatoryPublisher> _publisher;
 
   std::unique_ptr<flutter::FlutterPlatformViewsController> _platformViewsController;
 
@@ -69,12 +65,11 @@
   FlutterBinaryMessengerRelay* _binaryMessenger;
 }
 
-- (instancetype)initWithName:(NSString*)labelPrefix project:(FlutterDartProject*)projectOrNil {
-  return [self initWithName:labelPrefix project:projectOrNil allowHeadlessExecution:YES];
+- (instancetype)initWithName:(NSString*)labelPrefix {
+  return [self initWithName:labelPrefix allowHeadlessExecution:YES];
 }
 
 - (instancetype)initWithName:(NSString*)labelPrefix
-                     project:(FlutterDartProject*)projectOrNil
       allowHeadlessExecution:(BOOL)allowHeadlessExecution {
   self = [super init];
   NSAssert(self, @"Super init cannot be nil");
@@ -84,11 +79,6 @@
   _labelPrefix = [labelPrefix copy];
 
   _weakFactory = std::make_unique<fml::WeakPtrFactory<FlutterEngine>>(self);
-
-  if (projectOrNil == nil)
-    _dartProject.reset([[FlutterDartProject alloc] init]);
-  else
-    _dartProject.reset([projectOrNil retain]);
 
   _pluginPublications = [NSMutableDictionary new];
   _platformViewsController.reset(new flutter::FlutterPlatformViewsController());
@@ -159,10 +149,6 @@
   return _shell->GetTaskRunners().GetGPUTaskRunner();
 }
 
-- (void)ensureSemanticsEnabled {
-  self.iosPlatformView->SetSemanticsEnabled(true);
-}
-
 - (void)setViewController:(FlutterViewController*)viewController {
   FML_DCHECK(self.iosPlatformView);
   _viewController = [viewController getWeakPtr];
@@ -223,7 +209,7 @@
 }
 
 - (NSURL*)observatoryUrl {
-  return [_publisher.get() url];
+  return nil;
 }
 
 - (void)resetChannels {
@@ -240,59 +226,9 @@
 // If you add a channel, be sure to also update `resetChannels`.
 // Channels get a reference to the engine, and therefore need manual
 // cleanup for proper collection.
-- (void)setupChannels {
-  // This will be invoked once the shell is done setting up and the isolate ID
-  // for the UI isolate is available.
-  [_binaryMessenger setMessageHandlerOnChannel:@"flutter/isolate"
-                          binaryMessageHandler:^(NSData* message, FlutterBinaryReply reply) {
-                            self.isolateId = [[FlutterStringCodec sharedInstance] decode:message];
-                          }];
+ - (void)setupChannels {
 
-  _localizationChannel.reset([[FlutterMethodChannel alloc]
-         initWithName:@"flutter/localization"
-      binaryMessenger:self.binaryMessenger
-                codec:[FlutterJSONMethodCodec sharedInstance]]);
-
-  _navigationChannel.reset([[FlutterMethodChannel alloc]
-         initWithName:@"flutter/navigation"
-      binaryMessenger:self.binaryMessenger
-                codec:[FlutterJSONMethodCodec sharedInstance]]);
-
-  _platformChannel.reset([[FlutterMethodChannel alloc]
-         initWithName:@"flutter/platform"
-      binaryMessenger:self.binaryMessenger
-                codec:[FlutterJSONMethodCodec sharedInstance]]);
-
-  _platformViewsChannel.reset([[FlutterMethodChannel alloc]
-         initWithName:@"flutter/platform_views"
-      binaryMessenger:self.binaryMessenger
-                codec:[FlutterStandardMethodCodec sharedInstance]]);
-
-  _textInputChannel.reset([[FlutterMethodChannel alloc]
-         initWithName:@"flutter/textinput"
-      binaryMessenger:self.binaryMessenger
-                codec:[FlutterJSONMethodCodec sharedInstance]]);
-
-  _lifecycleChannel.reset([[FlutterBasicMessageChannel alloc]
-         initWithName:@"flutter/lifecycle"
-      binaryMessenger:self.binaryMessenger
-                codec:[FlutterStringCodec sharedInstance]]);
-
-  _systemChannel.reset([[FlutterBasicMessageChannel alloc]
-         initWithName:@"flutter/system"
-      binaryMessenger:self.binaryMessenger
-                codec:[FlutterJSONMessageCodec sharedInstance]]);
-
-  _settingsChannel.reset([[FlutterBasicMessageChannel alloc]
-         initWithName:@"flutter/settings"
-      binaryMessenger:self.binaryMessenger
-                codec:[FlutterJSONMessageCodec sharedInstance]]);
-
-  _textInputPlugin.reset([[FlutterTextInputPlugin alloc] init]);
-  _textInputPlugin.get().textInputDelegate = self;
-
-  _platformPlugin.reset([[FlutterPlatformPlugin alloc] initWithEngine:[self getWeakPtr]]);
-}
+ }
 
 - (void)maybeSetupPlatformViewChannels {
   if (_shell && self.shell.IsSetup()) {
@@ -308,7 +244,6 @@
     [_textInputChannel.get() setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
       [_textInputPlugin.get() handleMethodCall:call result:result];
     }];
-    self.iosPlatformView->SetTextInputPlugin(_textInputPlugin);
   }
 }
 
@@ -318,9 +253,7 @@
 }
 
 - (void)launchEngine:(NSString*)entrypoint libraryURI:(NSString*)libraryOrNil {
-  // Launch the Dart application with the inferred run configuration.
-  self.shell.RunEngine([_dartProject.get() runConfigurationForEntrypoint:entrypoint
-                                                            libraryOrNil:libraryOrNil]);
+
 }
 
 - (BOOL)createShell:(NSString*)entrypoint libraryURI:(NSString*)libraryURI {
@@ -331,18 +264,15 @@
 
   static size_t shellCount = 1;
 
-  auto settings = [_dartProject.get() settings];
+  flutter::Settings settings = {};;// = [_dartProject.get() settings];
 
   if (libraryURI) {
     FML_DCHECK(entrypoint) << "Must specify entrypoint if specifying library";
-    settings.advisory_script_entrypoint = entrypoint.UTF8String;
-    settings.advisory_script_uri = libraryURI.UTF8String;
+    settings.assets_path = entrypoint.UTF8String;
   } else if (entrypoint) {
-    settings.advisory_script_entrypoint = entrypoint.UTF8String;
-    settings.advisory_script_uri = std::string("main.dart");
+    settings.assets_path = entrypoint.UTF8String;
   } else {
-    settings.advisory_script_entrypoint = std::string("main");
-    settings.advisory_script_uri = std::string("main.dart");
+    settings.assets_path = std::string("main");
   }
 
   const auto threadLabel = [NSString stringWithFormat:@"%@.%zu", _labelPrefix, shellCount++];
@@ -412,7 +342,7 @@
     if (!_platformViewsController) {
       _platformViewsController.reset(new flutter::FlutterPlatformViewsController());
     }
-    _publisher.reset([[FlutterObservatoryPublisher alloc] init]);
+
     [self maybeSetupPlatformViewChannels];
   }
 
@@ -563,11 +493,11 @@
 }
 
 - (NSString*)lookupKeyForAsset:(NSString*)asset {
-  return [FlutterDartProject lookupKeyForAsset:asset];
+    return nil;
 }
 
 - (NSString*)lookupKeyForAsset:(NSString*)asset fromPackage:(NSString*)package {
-  return [FlutterDartProject lookupKeyForAsset:asset fromPackage:package];
+    return nil;
 }
 
 - (id<FlutterPluginRegistry>)pluginRegistry {

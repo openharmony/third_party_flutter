@@ -22,6 +22,7 @@ namespace flutter {
 enum class AcePlatform : int32_t {
   ACE_PLATFORM_INVALID = -1,
   ACE_PLATFORM_ANDROID,
+  ACE_PLATFORM_IOS,
   ACE_PLATFORM_OHOS,
 };
 

@@ -8,8 +8,6 @@
 #import <UIKit/UIKit.h>
 #include <sys/cdefs.h>
 
-#include "FlutterBinaryMessenger.h"
-#include "FlutterDartProject.h"
 #include "FlutterEngine.h"
 #include "FlutterMacros.h"
 #include "FlutterPlugin.h"
@@ -66,8 +64,10 @@ FLUTTER_EXPORT
  * @param nibNameOrNil The NIB name to initialize this UIViewController with.
  * @param nibBundleOrNil The NIB bundle.
  */
-- (instancetype)initWithProject:(FlutterDartProject*)projectOrNil
-                        nibName:(NSString*)nibNameOrNil
+//- (instancetype)initWithProject:(FlutterDartProject*)projectOrNil
+//                        nibName:(NSString*)nibNameOrNil
+//                         bundle:(NSBundle*)nibBundleOrNil NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_DESIGNATED_INITIALIZER;
 
 - (void)handleStatusBarTouches:(UIEvent*)event;
