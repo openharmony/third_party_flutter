@@ -64,9 +64,6 @@ FLUTTER_EXPORT
  * @param nibNameOrNil The NIB name to initialize this UIViewController with.
  * @param nibBundleOrNil The NIB bundle.
  */
-//- (instancetype)initWithProject:(FlutterDartProject*)projectOrNil
-//                        nibName:(NSString*)nibNameOrNil
-//                         bundle:(NSBundle*)nibBundleOrNil NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_DESIGNATED_INITIALIZER;
 

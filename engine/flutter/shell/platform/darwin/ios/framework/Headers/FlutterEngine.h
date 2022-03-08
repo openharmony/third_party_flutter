@@ -153,7 +153,7 @@ FLUTTER_EXPORT
  * update.  This will asynchronously fire after a semantics tree has actually
  * built (which may be some time after the frame has been rendered).
  */
-// - (void)ensureSemanticsEnabled;
+
 
 /**
  * Sets the `FlutterViewController` for this instance.  The FlutterEngine must be
