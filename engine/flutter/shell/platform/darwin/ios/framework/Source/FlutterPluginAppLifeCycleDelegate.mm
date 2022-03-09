@@ -5,9 +5,7 @@
 #include "flutter/shell/platform/darwin/ios/framework/Headers/FlutterPluginAppLifeCycleDelegate.h"
 #include "flutter/fml/logging.h"
 #include "flutter/fml/paths.h"
-#include "flutter/lib/ui/plugins/callback_cache.h"
 #include "flutter/shell/platform/darwin/ios/framework/Headers/FlutterViewController.h"
-#include "flutter/shell/platform/darwin/ios/framework/Source/FlutterCallbackCache_Internal.h"
 
 static const char* kCallbackCacheSubDir = "Library/Caches/";
 
@@ -44,7 +42,6 @@ static const SEL selectorsHandledByPlugins[] = {
   if (self = [super init]) {
     _notificationUnsubscribers = [[NSMutableArray alloc] init];
     std::string cachePath = fml::paths::JoinPaths({getenv("HOME"), kCallbackCacheSubDir});
-    [FlutterCallbackCache setCachePath:[NSString stringWithUTF8String:cachePath.c_str()]];
     [self addObserverFor:UIApplicationDidEnterBackgroundNotification
                 selector:@selector(handleDidEnterBackground:)];
     [self addObserverFor:UIApplicationWillEnterForegroundNotification
@@ -118,7 +115,6 @@ static BOOL isPowerOfTwo(NSUInteger x) {
 
 - (BOOL)application:(UIApplication*)application
     willFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
-  flutter::DartCallbackCache::LoadCacheFromDisk();
   for (NSObject<FlutterApplicationLifeCycleDelegate>* delegate in [_delegates allObjects]) {
     if (!delegate) {
       continue;

@@ -41,15 +41,11 @@ class PlatformViewIOS final : public PlatformView {
 
   void SetTextInputPlugin(fml::scoped_nsprotocol<FlutterTextInputPlugin*> plugin);
 
-  // |PlatformView|
-  void SetSemanticsEnabled(bool enabled) override;
-
  private:
   fml::WeakPtr<FlutterViewController> owner_controller_;
   std::unique_ptr<IOSSurface> ios_surface_;
   std::shared_ptr<IOSGLContext> gl_context_;
   PlatformMessageRouter platform_message_router_;
-  std::unique_ptr<AccessibilityBridge> accessibility_bridge_;
   fml::scoped_nsprotocol<FlutterTextInputPlugin*> text_input_plugin_;
   fml::closure firstFrameCallback_;
 
@@ -63,14 +59,10 @@ class PlatformViewIOS final : public PlatformView {
   sk_sp<GrContext> CreateResourceContext() const override;
 
   // |PlatformView|
-  void SetAccessibilityFeatures(int32_t flags) override;
+  void SetAccessibilityFeatures(int32_t flags);
 
   // |PlatformView|
-  void UpdateSemantics(flutter::SemanticsNodeUpdates update,
-                       flutter::CustomAccessibilityActionUpdates actions) override;
-
-  // |PlatformView|
-  std::unique_ptr<VsyncWaiter> CreateVSyncWaiter() override;
+  std::unique_ptr<VsyncWaiter> CreateVSyncWaiter(int32_t platform) override;
 
   // |PlatformView|
   void OnPreEngineRestart() const override;

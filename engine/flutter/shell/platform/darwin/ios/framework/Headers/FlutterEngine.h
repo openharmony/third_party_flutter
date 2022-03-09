@@ -8,8 +8,6 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#include "FlutterBinaryMessenger.h"
-#include "FlutterDartProject.h"
 #include "FlutterMacros.h"
 #include "FlutterPlugin.h"
 #include "FlutterTexture.h"
@@ -58,7 +56,7 @@ FLUTTER_EXPORT
  *   the threads used by this FlutterEngine.
  * @param projectOrNil The `FlutterDartProject` to run.
  */
-- (instancetype)initWithName:(NSString*)labelPrefix project:(FlutterDartProject*)projectOrNil;
+- (instancetype)initWithName:(NSString*)labelPrefix;
 
 /**
  * Initialize this FlutterEngine with a `FlutterDartProject`.
@@ -78,7 +76,6 @@ FLUTTER_EXPORT
  *   running after passing a nil `FlutterViewController` to `-setViewController:`.
  */
 - (instancetype)initWithName:(NSString*)labelPrefix
-                     project:(FlutterDartProject*)projectOrNil
       allowHeadlessExecution:(BOOL)allowHeadlessExecution NS_DESIGNATED_INITIALIZER;
 
 /**
@@ -156,7 +153,7 @@ FLUTTER_EXPORT
  * update.  This will asynchronously fire after a semantics tree has actually
  * built (which may be some time after the frame has been rendered).
  */
-- (void)ensureSemanticsEnabled;
+
 
 /**
  * Sets the `FlutterViewController` for this instance.  The FlutterEngine must be

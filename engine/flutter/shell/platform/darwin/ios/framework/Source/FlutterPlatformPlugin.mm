@@ -87,7 +87,7 @@ using namespace flutter;
     [self setClipboardData:args];
     result(nil);
   } else {
-    result(FlutterMethodNotImplemented);
+    result(nil);
   }
 }
 

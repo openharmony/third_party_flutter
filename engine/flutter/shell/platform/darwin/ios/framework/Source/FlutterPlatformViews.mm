@@ -37,18 +37,11 @@ void FlutterPlatformViewsController::OnMethodCall(FlutterMethodCall* call, Flutt
   } else if ([[call method] isEqualToString:@"rejectGesture"]) {
     OnRejectGesture(call, result);
   } else {
-    result(FlutterMethodNotImplemented);
   }
 }
 
 void FlutterPlatformViewsController::OnCreate(FlutterMethodCall* call, FlutterResult& result) {
   if (!flutter_view_.get()) {
-    // Right now we assume we have a reference to FlutterView when creating a new view.
-    // TODO(amirh): support this by setting the reference to FlutterView when it becomes available.
-    // https://github.com/flutter/flutter/issues/23787
-    result([FlutterError errorWithCode:@"create_failed"
-                               message:@"can't create a view on a headless engine"
-                               details:nil]);
     return;
   }
   NSDictionary<NSString*, id>* args = [call arguments];
@@ -56,18 +49,8 @@ void FlutterPlatformViewsController::OnCreate(FlutterMethodCall* call, FlutterRe
   long viewId = [args[@"id"] longValue];
   std::string viewType([args[@"viewType"] UTF8String]);
 
-  if (views_.count(viewId) != 0) {
-    result([FlutterError errorWithCode:@"recreating_view"
-                               message:@"trying to create an already created view"
-                               details:[NSString stringWithFormat:@"view id: '%ld'", viewId]]);
-  }
-
   NSObject<FlutterPlatformViewFactory>* factory = factories_[viewType].get();
   if (factory == nil) {
-    result([FlutterError errorWithCode:@"unregistered_view_type"
-                               message:@"trying to create a view with an unregistered type"
-                               details:[NSString stringWithFormat:@"unregistered view type: '%@'",
-                                                                  args[@"viewType"]]]);
     return;
   }
 
@@ -101,9 +84,6 @@ void FlutterPlatformViewsController::OnDispose(FlutterMethodCall* call, FlutterR
   int64_t viewId = [arg longLongValue];
 
   if (views_.count(viewId) == 0) {
-    result([FlutterError errorWithCode:@"unknown_view"
-                               message:@"trying to dispose an unknown"
-                               details:[NSString stringWithFormat:@"view id: '%lld'", viewId]]);
     return;
   }
   // We wait for next submitFrame to dispose views.
@@ -117,9 +97,6 @@ void FlutterPlatformViewsController::OnAcceptGesture(FlutterMethodCall* call,
   int64_t viewId = [args[@"id"] longLongValue];
 
   if (views_.count(viewId) == 0) {
-    result([FlutterError errorWithCode:@"unknown_view"
-                               message:@"trying to set gesture state for an unknown view"
-                               details:[NSString stringWithFormat:@"view id: '%lld'", viewId]]);
     return;
   }
 
@@ -135,9 +112,6 @@ void FlutterPlatformViewsController::OnRejectGesture(FlutterMethodCall* call,
   int64_t viewId = [args[@"id"] longLongValue];
 
   if (views_.count(viewId) == 0) {
-    result([FlutterError errorWithCode:@"unknown_view"
-                               message:@"trying to set gesture state for an unknown view"
-                               details:[NSString stringWithFormat:@"view id: '%lld'", viewId]]);
     return;
   }
 
