@@ -1,4 +1,4 @@
-// Copyright 2013 The Flutter Authors. All rights reserved.
+// Copyright 2013-2022 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 namespace flutter {
 
+constexpr int32_t MIN_PLUGIN_SUBCONTAINER_ID = 2000000;
 static std::unique_ptr<UIDartState> g_ui_state;
 
 UIDartState::UIDartState() {
@@ -37,6 +38,7 @@ void UIDartState::Init(int32_t instanceId,
 
 void UIDartState::DeInit(int32_t instanceId) {
   g_ui_state->RemoveStateItem(instanceId);
+  g_ui_state->RemovePluginParentContainer(instanceId);
 }
 
 void UIDartState::SetCurStateItem(int32_t id, std::unique_ptr<UIDartState::UIStateItem> item) {
@@ -56,6 +58,9 @@ void UIDartState::RemoveStateItem(int32_t id) {
 }
 
 UIDartState::UIStateItem* UIDartState::GetStateById(int32_t id) const {
+  if (id >= MIN_PLUGIN_SUBCONTAINER_ID) {
+      id = GetPluginParentContainerId(id);
+  }
   std::lock_guard<std::mutex> lock(mutex_);
   auto iter = state_map_.find(id);
   if (iter != state_map_.end()) {
@@ -111,7 +116,44 @@ Window* UIDartState::window() const {
     return nullptr;
   }
   int32_t id = *ptr;
+  if (id >= MIN_PLUGIN_SUBCONTAINER_ID) {
+    id = GetPluginParentContainerId(id);
+  }
   return WindowManager::GetWindow(id);
+}
+
+int64_t UIDartState::GetPluginParentContainerId(int64_t pluginId) const
+{
+    std::lock_guard<std::mutex> lock(parentContainerMutex_);
+    auto result = parentContainerMap_.find(pluginId);
+    if (result != parentContainerMap_.end()) {
+      return result->second;
+    } else {
+      FML_LOG(ERROR) << "ParentContainerId is empty.";
+      return 0;
+    }
+}
+
+void UIDartState::AddPluginParentContainer(int64_t pluginId, int32_t pluginParentContainerId)
+{
+    std::lock_guard<std::mutex> lock(parentContainerMutex_);
+    auto result = parentContainerMap_.try_emplace(pluginId, pluginParentContainerId);
+    if (!result.second) {
+      FML_LOG(ERROR) << "already have pluginSubContainer of this instance, pluginId: " << pluginId;
+    }
+}
+
+void UIDartState::RemovePluginParentContainer(int64_t pluginParentContainerId)
+{
+    std::lock_guard<std::mutex> lock(parentContainerMutex_);
+    auto iter = parentContainerMap_.begin();
+    while(iter != parentContainerMap_.end()) {
+      if (iter->second == pluginParentContainerId) {
+        parentContainerMap_.erase(iter++);
+      } else {
+        ++iter;
+      }
+    }
 }
 
 } // namespcae blink

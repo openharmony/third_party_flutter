@@ -1,4 +1,4 @@
-// Copyright 2013 The Flutter Authors. All rights reserved.
+// Copyright 2013-2022 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,11 +72,17 @@ class __attribute__((visibility("default"))) UIDartState {
   void SetCurStateItem(int32_t id, std::unique_ptr<UIStateItem>);
   void RemoveStateItem(int32_t id);
 
+  void AddPluginParentContainer(int64_t pluginId, int32_t pluginParentContainerId);
+  void RemovePluginParentContainer(int64_t pluginParentContainerId);
+  int64_t GetPluginParentContainerId(int64_t pluginId) const;
+
  private:
   UIDartState();
   fml::ThreadLocalUniquePtr<int32_t> cur_instance_id_;
   std::map<int32_t, std::unique_ptr<UIStateItem>> state_map_;
   mutable std::mutex mutex_;
+  std::unordered_map<int64_t, int32_t> parentContainerMap_;
+  mutable std::mutex parentContainerMutex_;
   FML_DISALLOW_COPY_AND_ASSIGN(UIDartState);
 };
 
