@@ -552,6 +552,24 @@ void FlutterDesktopSetIdleCallback(FlutterDesktopWindowControllerRef controller,
   FlutterEngineSetIdleNotificationCallback(controller->engine, idleCallback);
 }
 
+void FlutterDesktopAddKeyboardHookHandler(FlutterDesktopWindowControllerRef controller,
+                                          std::unique_ptr<flutter::KeyboardHookHandler> keyboardHookHandler) {
+  controller->keyboard_hook_handlers.push_back(std::move(keyboardHookHandler));
+}
+
+FLUTTER_EXPORT void FlutterDesktopSetClipboardData(
+    FlutterDesktopWindowControllerRef controller, const char* data) {
+  GLFWwindow* window = FlutterDesktopGetWindow(controller)->window;
+  glfwSetClipboardString(window, data);
+}
+
+FLUTTER_EXPORT const char* FlutterDesktopGetClipboardData(
+    FlutterDesktopWindowControllerRef controller) {
+  GLFWwindow* window = FlutterDesktopGetWindow(controller)->window;
+  auto result = glfwGetClipboardString(window);
+  return result == NULL ? "" : result;
+}
+
 void FlutterDesktopGetFramebufferSize(FlutterDesktopWindowRef flutter_window,
                                   int* width,
                                   int* height) {

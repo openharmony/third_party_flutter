@@ -12,6 +12,9 @@
 
 #if defined(__cplusplus)
 #include <functional>
+namespace flutter {
+class KeyboardHookHandler;
+}
 extern "C" {
 #endif
 
@@ -74,6 +77,16 @@ FLUTTER_EXPORT void FlutterDesktopDestroyWindow(
 FLUTTER_EXPORT void FlutterDesktopSetIdleCallback(
     FlutterDesktopWindowControllerRef controller,
     const IdleCallback& idleCallback);
+
+FLUTTER_EXPORT void FlutterDesktopAddKeyboardHookHandler(
+    FlutterDesktopWindowControllerRef controller,
+    std::unique_ptr<flutter::KeyboardHookHandler> keyboardHookHandler);
+
+FLUTTER_EXPORT void FlutterDesktopSetClipboardData(
+    FlutterDesktopWindowControllerRef controller, const char* data);
+
+FLUTTER_EXPORT const char* FlutterDesktopGetClipboardData(
+    FlutterDesktopWindowControllerRef controller);
 
 FLUTTER_EXPORT void FlutterDesktopGetFramebufferSize(
     FlutterDesktopWindowRef flutter_window,
