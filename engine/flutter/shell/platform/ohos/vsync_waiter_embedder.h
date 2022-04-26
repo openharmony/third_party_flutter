@@ -45,8 +45,6 @@ private:
 
     int64_t refreshPeriod_ = 0;
 
-    int64_t lastTimestamp_ = 0;
-
     std::shared_ptr<OHOS::Rosen::VSyncReceiver> vsyncReceiver_ = nullptr;
 
     FML_DISALLOW_COPY_AND_ASSIGN(VsyncWaiterEmbedder);
