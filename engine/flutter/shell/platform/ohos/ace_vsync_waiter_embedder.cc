@@ -20,7 +20,6 @@ namespace flutter {
 namespace {
 
 constexpr float ONE_SECOND_IN_NANO = 1000000000.0f;
-constexpr float TOLERATE_PERCENT = 0.96f;
 
 } // namespace
 
@@ -62,11 +61,6 @@ void VsyncWaiterEmbedder::VSyncCallback(int64_t nanoTimestamp, void* userdata)
     auto shared_base = weak_base.lock();
     auto shared_this = static_cast<VsyncWaiterEmbedder*>(shared_base.get());
     if (shared_base && fps != kUnknownRefreshRateFPS && shared_this) {
-        if (nanoTimestamp < shared_this->lastTimestamp_ + refreshPeriod * TOLERATE_PERCENT) {
-            nanoTimestamp = shared_this->lastTimestamp_ + refreshPeriod;
-        }
-        shared_this->lastTimestamp_ = nanoTimestamp;
-
         auto frame_time = fml::TimePoint::FromEpochDelta(fml::TimeDelta::FromNanoseconds(nanoTimestamp));
         auto target_time =
             fml::TimePoint::FromEpochDelta(fml::TimeDelta::FromNanoseconds(nanoTimestamp + refreshPeriod));
