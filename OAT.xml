@@ -112,6 +112,8 @@ Note:If the text contains special characters, please escape them according to th
                 <policyitem type="compatibility" name="BSD 3-Clause License" path="skia/.*" desc="不影响兼容性"/>
                 <policyitem type="compatibility" name="RSA-MD" path="skia/.*" desc="不影响兼容性"/>
                 <policyitem type="compatibility" name="OpenSSL" path="engine/flutter/.*" desc="不影响兼容性"/>
+                <policyitem type="compatibility" name="zlib License" path="glfw/.*" desc="不影响兼容性"/>
+                <policyitem type="compatibility" name="zlib-acknowledgement" path="glfw/.*" desc="不影响兼容性"/>
 
                 <policyitem type="license" name="Unicode-TOU" path="engine/flutter/third_party/icu/.*" filefilter="defaultPolicyFilter" desc="ICU License，不影响兼容性"/>
                 <policyitem type="license" name="Unicode-TOU" path="skia/third_party/externals/icu/.*" filefilter="defaultPolicyFilter" desc="ICU License，不影响兼容性"/>
@@ -268,7 +270,14 @@ Note:If the text contains special characters, please escape them according to th
                 <filteritem type="filepath" name="skia/third_party/externals/harfbuzz/m4/ax_cxx_compile_stdcxx.m4" desc="FSFAP License，文件不参与编译，协议也不影响兼容性"/>
                 <filteritem type="filepath" name="skia/third_party/externals/sdl/include/SDL_opengles2_gl2platform.h" desc="SGI Free Software B License，协议头写在代码后面了,不影响兼容性"/>
                 <filteritem type="filepath" name="skia/third_party/externals/sdl/include/SDL_opengles2_khrplatform.h" desc="SGI Free Software B License，协议头写在代码后面了,不影响兼容性"/>
+                <filteritem type="filepath" name="glfw/docs/main.dox" desc="三方仓内说明文档类文件，未写license头，不参与编译，不影响兼容性"/>
+                <filteritem type="filepath" name="glfw/docs/compile.dox" desc="三方仓内说明文档类文件，未写license头，不参与编译，不影响兼容性"/>
+                <filteritem type="filepath" name="glfw/tests/vulkan.c" desc="声明可自由分发，无许可头声明"/>
+                <filteritem type="filepath" name="glfw/deps/KHR/khrplatform.h" desc="声明可自由分发，无许可头声明"/>
+                <filteritem type="filepath" name="glfw/deps/mingw/dinput.h" desc="该文件未使用，不参与打包"/>
+                <filteritem type="filepath" name="glfw/deps/mingw/xinput.h" desc="该文件未使用，不参与打包"/>
             </filefilter>
+
         </filefilterlist>
         <licensematcherlist>
             <licensematcher name="BSD 3-Clause License" desc="如果工具扫描是InvalidLicense，可在此定义匹配规则，注意引号要转义" >
@@ -411,7 +420,21 @@ Note:If the text contains special characters, please escape them according to th
                     # without express or implied warranty.
                 " desc=""/>
             </licensematcher>
+            <licensematcher name="zlib License" desc="">
+                <licensetext name="For conditions of distribution and use, see copyright notice in zlib.h" desc=""/>
+                <licensetext name="
+                    * For conditions of distribution and use, see copyright notice in jsimdext.inc
+                " desc=""/>
+                <licensetext name="
+                    This software is provided 'as-is', without any express or implied
+                    warranty. In no event will the authors be held liable for any damages
+                    arising from the use of this software.
 
+                    Permission is granted to anyone to use this software for any purpose,
+                    including commercial applications, and to alter it and redistribute it
+                    freely.
+                " desc=""/>
+            </licensematcher>
         </licensematcherlist>
     </oatconfig>
 </configuration>
