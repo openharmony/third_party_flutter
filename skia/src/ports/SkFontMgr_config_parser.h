@@ -116,11 +116,6 @@ public:
     SkFontMgr_Config_Parser() = default;
     ~SkFontMgr_Config_Parser() = default;
 
-    static void setFontBasePathCallback(std::string& fontBasePath)
-    {
-        basePath = fontBasePath;
-    }
-
     static SkFontMgr_Config_Parser& GetInstance()
     {
         static SkFontMgr_Config_Parser instance;
@@ -131,7 +126,6 @@ public:
     void GetSystemFontFamilies(SkTDArray<FontFamily *> &fontFamilies);
 
 private:
-
     static std::string basePath;
 
 };
