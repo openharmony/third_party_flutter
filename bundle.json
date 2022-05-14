@@ -14,8 +14,8 @@
         "en": "flutter/README.md"
     },
     "component": {
-        "name": "thirdparty_flutter",
-        "subsystem": "",
+        "name": "flutter",
+        "subsystem": "thirdparty",
         "syscap": [],
         "features": [],
         "adapted_system_type": [],
