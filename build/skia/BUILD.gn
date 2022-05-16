@@ -1797,7 +1797,7 @@ ohos_source_set("ace_fontmgr_standard") {
 
   deps = [
     ":ace_fontconfig.json",
-    "$jsoncpp_root:jsoncpp",
+    "$jsoncpp_root:jsoncpp_static",
   ]
 
   # Only standard system has ohos_fonts source
