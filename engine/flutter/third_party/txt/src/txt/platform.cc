@@ -3,11 +3,25 @@
 // found in the LICENSE file.
 
 #include "txt/platform.h"
+#include "include/core/SkFontMgr.h"
 
+bool SkFontMgr::physicalDeviceFonts = false;
 namespace txt {
 
 std::string GetDefaultFontFamily() {
-  return "Arial";
+#ifdef OHOS_STANDARD_SYSTEM
+  if (SkFontMgr::physicalDeviceFonts) {
+    return "HarmonyOS-Sans";
+  } else {
+    return "Arial";
+  }
+#else
+  if (SkFontMgr::physicalDeviceFonts) {
+    return "sans-serif";
+  } else {
+    return "Arial";
+  }
+#endif
 }
 
 sk_sp<SkFontMgr> GetDefaultFontManager() {
