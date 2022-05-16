@@ -372,9 +372,6 @@ template("ace_skia_opts") {
         "$flutter_root/skia/src/opts/SkOpts_ssse3.cpp",
       ]
     } else if (platform == "ios") {
-      if (target_cpu == "x64") {
-        sources -= [ "$flutter_root/skia/src/opts/SkOpts_crc32.cpp" ]
-      }
       sources += [
         "$flutter_root/skia/src/opts/SkOpts_sse41.cpp",
         "$flutter_root/skia/src/opts/SkOpts_sse42.cpp",

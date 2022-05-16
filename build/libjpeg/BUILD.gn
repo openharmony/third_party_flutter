@@ -88,19 +88,19 @@ ohos_source_set("ace_libjpeg") {
     "$flutter_root/skia/third_party/externals/libjpeg-turbo/jutils.c",
   ]
 
-  if (use_mingw_win || target_cpu == "x86_64" || use_mac) {
-    sources += [
-      "$flutter_root/skia/third_party/externals/libjpeg-turbo/jsimd_none.c",
-    ]
-  } else if (target_cpu == "arm") {
+  if (target_cpu == "arm") {
     sources += [
       "$flutter_root/skia/third_party/externals/libjpeg-turbo/simd/arm/jsimd.c",
       "$flutter_root/skia/third_party/externals/libjpeg-turbo/simd/arm/jsimd_neon.S",
     ]
-  } else {
+  } else if (target_cpu == "arm64") {
     sources += [
       "$flutter_root/skia/third_party/externals/libjpeg-turbo/simd/arm64/jsimd.c",
       "$flutter_root/skia/third_party/externals/libjpeg-turbo/simd/arm64/jsimd_neon.S",
+    ]
+  } else {
+    sources += [
+      "$flutter_root/skia/third_party/externals/libjpeg-turbo/jsimd_none.c",
     ]
   }
 
