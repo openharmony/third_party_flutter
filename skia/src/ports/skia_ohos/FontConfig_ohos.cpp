@@ -16,9 +16,11 @@
 #include "SkString.h"
 
 using namespace ErrorCode;
-
+#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_WIN) or defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC)
+static const char* OHOS_DEFAULT_CONFIG = "fontconfig.json";
+#else
 static const char* OHOS_DEFAULT_CONFIG = "/system/etc/fontconfig.json";
-
+#endif
 /*! Constructor
  * \param fontScanner the scanner to get the font information from a font file
  * \param fname the full name of system font configuration document.
@@ -1022,10 +1024,20 @@ int FontConfig_OHOS::scanFonts(const SkTypeface_FreeType::Scanner& fontScanner)
             continue;
         }
         struct dirent* node = nullptr;
+#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_WIN)
+        struct stat filestat;
+#endif
         while ((node = readdir(dir))) {
+#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_WIN)
+            stat(node->d_name, &filestat);
+            if(S_ISDIR(filestat.st_mode)) {
+                continue;
+            }
+#else
             if (node->d_type != DT_REG) {
                 continue;
             }
+#endif
             const char* fname = node->d_name;
             int len = strlen(fname);
             int suffixLen = strlen(".ttf");
@@ -1039,9 +1051,15 @@ int FontConfig_OHOS::scanFonts(const SkTypeface_FreeType::Scanner& fontScanner)
             char fullname[len];
             memset_s(fullname, len,  0, len);
             strcpy_s(fullname, len, fontDirSet[i].c_str());
+#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_WIN)
+            if (fontDirSet[i][fontDirSet[i].size() - 1] != '\\') {
+                strcat_s(fullname, len, "\\");
+            }
+#else
             if (fontDirSet[i][fontDirSet[i].size() - 1] != '/') {
                 strcat_s(fullname, len, "/");
             }
+#endif
             strcat_s(fullname, len, fname);
             loadFont(fontScanner, fullname);
         }

@@ -13,15 +13,34 @@
 #include <AppKit/AppKit.h>
 #define FONT_CLASS NSFont
 #endif  // TARGET_OS_EMBEDDED
+#include "include/core/SkFontMgr.h"
+
+bool SkFontMgr::physicalDeviceFonts = false;
 
 namespace txt {
 
 std::string GetDefaultFontFamily() {
-  if (fml::IsPlatformVersionAtLeast(9)) {
-    return [FONT_CLASS systemFontOfSize:14].familyName.UTF8String;
+#ifdef OHOS_STANDARD_SYSTEM
+  if (SkFontMgr::physicalDeviceFonts) {
+    return "HarmonyOS-Sans";
   } else {
-    return "Helvetica";
+    if (fml::IsPlatformVersionAtLeast(9)) {
+      return [FONT_CLASS systemFontOfSize:14].familyName.UTF8String;
+    } else {
+      return "Helvetica";
+    }
   }
+#else
+  if (SkFontMgr::physicalDeviceFonts) {
+    return "sans-serif";
+  } else {
+    if (fml::IsPlatformVersionAtLeast(9)) {
+      return [FONT_CLASS systemFontOfSize:14].familyName.UTF8String;
+    } else {
+      return "Helvetica";
+    }
+  }
+#endif
 }
 
 sk_sp<SkFontMgr> GetDefaultFontManager() {

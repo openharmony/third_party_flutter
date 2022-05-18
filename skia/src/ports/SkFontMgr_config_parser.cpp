@@ -24,8 +24,11 @@ namespace {
 std::string g_lmpSystemFontsFile = "INVALID_FILE_PATH";
 
 }
-
-std::string SkFontMgr_Config_Parser::basePath;
+#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_WIN)
+std::string SkFontMgr_Config_Parser::basePath = "..\\..\\resources\\fonts\\";
+#elif defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC)
+std::string SkFontMgr_Config_Parser::basePath = "../../resources/fonts/";
+#endif
 
 /**
  * This parser file for android contains TWO 'familyset' handlers:
