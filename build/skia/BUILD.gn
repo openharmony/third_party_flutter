@@ -1792,14 +1792,14 @@ ohos_source_set("ace_fontmgr_standard") {
     "-Wno-tautological-unsigned-enum-zero-compare",
   ]
 
-  deps = [
-    ":ace_fontconfig.json",
-    "$jsoncpp_root:jsoncpp_static",
-  ]
+  deps = [ ":ace_fontconfig.json" ]
 
   # Only standard system has ohos_fonts source
   if (is_standard_system) {
-    deps += [ "//utils/resources:ohos_fonts" ]
+    deps += [
+      "$jsoncpp_root:jsoncpp_static",
+      "//utils/resources:ohos_fonts",
+    ]
   }
 
   defines = [ "SK_BUILD_FONT_MGR_FOR_OHOS" ]
