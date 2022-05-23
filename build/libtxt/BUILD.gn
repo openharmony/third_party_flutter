@@ -98,12 +98,18 @@ template("thirdparty_lib_txt") {
       if (is_standard_system) {
         defines += [ "OHOS_STANDARD_SYSTEM" ]
       }
+      if (use_mingw_win) {
+        defines += [ "SK_BUILD_FONT_MGR_FOR_PREVIEW_WIN" ]
+      }
     } else if (platform == "mac" || platform == "ios") {
       sources += [
         "$flutter_root/engine/flutter/third_party/txt/src/txt/platform_mac.mm",
       ]
       if (is_standard_system) {
         defines += [ "OHOS_STANDARD_SYSTEM" ]
+      }
+      if (use_mac) {
+        defines += [ "SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC" ]
       }
     } else if (platform == "android") {
       sources += [ "$flutter_root/engine/flutter/third_party/txt/src/txt/platform_android.cc" ]

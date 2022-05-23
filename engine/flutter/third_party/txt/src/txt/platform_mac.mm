@@ -13,12 +13,15 @@
 #include <AppKit/AppKit.h>
 #define FONT_CLASS NSFont
 #endif  // TARGET_OS_EMBEDDED
-#include "include/core/SkFontMgr.h"
 
+#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC)
+#include "include/core/SkFontMgr.h"
 bool SkFontMgr::physicalDeviceFonts = false;
+#endif
 
 namespace txt {
 
+#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC)
 std::string GetDefaultFontFamily() {
 #ifdef OHOS_STANDARD_SYSTEM
   if (SkFontMgr::physicalDeviceFonts) {
@@ -42,6 +45,15 @@ std::string GetDefaultFontFamily() {
   }
 #endif
 }
+#else
+std::string GetDefaultFontFamily() {
+  if (fml::IsPlatformVersionAtLeast(9)) {
+    return [FONT_CLASS systemFontOfSize:14].familyName.UTF8String;
+  } else {
+    return "Helvetica";
+  }
+}
+#endif
 
 sk_sp<SkFontMgr> GetDefaultFontManager() {
   return SkFontMgr::RefDefault();
