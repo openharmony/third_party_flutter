@@ -1803,7 +1803,7 @@ ohos_source_set("ace_fontmgr_standard") {
   if (is_standard_system) {
     deps += [
       "$jsoncpp_root:jsoncpp_static",
-      "//utils/resources:ohos_fonts",
+      "//utils/system_resources:ohos_fonts",
     ]
   }
 
