@@ -308,7 +308,10 @@ config("skia_config") {
   ]
 
   defines = ace_skia_common_defines
-  defines -= [ "SK_DISABLE_READBUFFER" ]
+  defines -= [
+    "SK_DISABLE_READBUFFER",
+    "SK_DISABLE_EFFECT_DESERIALIZATION",
+  ]
 }
 
 # ------------------------------------------------
@@ -812,10 +815,7 @@ template("ace_skia_core") {
     }
 
     if (platform == "windows") {
-      defines -= [
-        "NOGDI",
-        "SK_DISABLE_READBUFFER",
-      ]
+      defines -= [ "NOGDI" ]
 
       sources -= [
         "$flutter_root/skia/src/ports/SkOSFile_posix.cpp",
@@ -879,7 +879,13 @@ template("ace_skia_core") {
       if (target_cpu != "arm") {
         defines += [ "SKVM_JIT" ]
       }
-      defines -= [ "SK_DISABLE_READBUFFER" ]
+
+      if (platform == "ohos") {
+        defines -= [
+          "SK_DISABLE_READBUFFER",
+          "SK_DISABLE_EFFECT_DESERIALIZATION",
+        ]
+      }
 
       if (defined(config.disable_gpu) && config.disable_gpu) {
         defines += [
