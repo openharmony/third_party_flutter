@@ -191,6 +191,7 @@ ace_skia_common_ccflags = [
   "-Wno-suggest-destructor-override",
   "-Wno-tautological-value-range-compare",
   "-Wno-suggest-override",
+  "-Wno-psabi",
   "-Wno-four-char-constants",
   "-fvisibility-inlines-hidden",
   "-Os",
