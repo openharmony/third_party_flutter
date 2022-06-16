@@ -192,6 +192,7 @@ ace_skia_common_ccflags = [
   "-Wno-tautological-value-range-compare",
   "-Wno-suggest-override",
   "-Wno-psabi",
+  "-Wno-four-char-constants",
   "-fvisibility-inlines-hidden",
   "-Os",
   "-DSKIA_DLL",
