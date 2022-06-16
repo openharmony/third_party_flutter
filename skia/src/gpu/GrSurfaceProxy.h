@@ -8,6 +8,8 @@
 #ifndef GrSurfaceProxy_DEFINED
 #define GrSurfaceProxy_DEFINED
 
+#include <atomic>
+
 #include "include/core/SkRect.h"
 #include "include/gpu/GrBackendSurface.h"
 #include "include/gpu/GrGpuResource.h"
@@ -57,7 +59,7 @@ protected:
     int32_t internalGetProxyRefCnt() const { return fRefCnt; }
 
 private:
-    mutable int32_t fRefCnt;
+    mutable std::atomic<int32_t> fRefCnt;
 };
 
 class GrSurfaceProxy : public GrIORefProxy {
