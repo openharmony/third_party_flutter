@@ -361,9 +361,10 @@ template("ace_skia_opts") {
         "$flutter_root/skia/src/opts/SkOpts_avx.cpp",
         "$flutter_root/skia/src/opts/SkOpts_hsw.cpp",
       ]
+      cflags_cc = [ "-Wno-psabi" ]
     }
 
-    if (platform == "windows") {
+    if (platform == "windows" || target_cpu == "x86_64") {
       sources += [
         "$flutter_root/skia/src/opts/SkOpts_sse41.cpp",
         "$flutter_root/skia/src/opts/SkOpts_sse42.cpp",
