@@ -76,6 +76,7 @@ template("glfw") {
       cflags = [
         "-Wno-deprecated-declarations",
         "-Wno-objc-multiple-method-names",
+        "-DNS_FORMAT_ARGUMENT(A)=",
       ]
       public_configs += [ ":glfw_config_mac" ]
       defines += [ "_GLFW_COCOA" ]

@@ -372,12 +372,16 @@ template("ace_skia_opts") {
       ]
     } else if (platform == "mac") {
       cflags += [
-        "-march=haswell",
         "-mavx",
         "-mssse3",
         "-msse4.1",
         "-msse4.2",
       ]
+      if (host_cpu == "m1") {
+        cflags += [ "-mcpu=native" ]
+      } else {
+        cflags += [ "-march=haswell" ]
+      }
 
       sources += [
         "$flutter_root/skia/src/opts/SkOpts_sse41.cpp",
