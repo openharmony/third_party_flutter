@@ -397,6 +397,7 @@ template("ace_skia_opts") {
     } else {
       sources += [ "$flutter_root/skia/src/opts/SkOpts_crc32.cpp" ]
     }
+    cflags += [ "-Wno-unused-command-line-argument" ]
   }
 }
 
