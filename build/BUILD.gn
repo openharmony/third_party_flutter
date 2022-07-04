@@ -158,6 +158,8 @@ template("flutter_engine_fml") {
       libs = [ "//prebuilts/mingw-w64/ohos/linux-x86_64/clang-mingw/x86_64-w64-mingw32/lib/librpcrt4.a" ]
     } else if (platform == "mac" || platform == "ios") {
       public_configs = [ ":flutter_engine_fml_mac_config" ]
+
+      cflags = [ "-DNS_FORMAT_ARGUMENT(A)=" ]
       sources += [
         "$flutter_root/engine/flutter/fml/platform/darwin/cf_utils.cc",
         "$flutter_root/engine/flutter/fml/platform/darwin/message_loop_darwin.mm",

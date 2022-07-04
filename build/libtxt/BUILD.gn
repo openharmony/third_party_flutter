@@ -102,6 +102,7 @@ template("thirdparty_lib_txt") {
         defines += [ "SK_BUILD_FONT_MGR_FOR_PREVIEW_WIN" ]
       }
     } else if (platform == "mac" || platform == "ios") {
+      cflags = [ "-DNS_FORMAT_ARGUMENT(A)=" ]
       sources += [
         "$flutter_root/engine/flutter/third_party/txt/src/txt/platform_mac.mm",
       ]
