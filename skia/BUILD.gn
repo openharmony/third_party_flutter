@@ -290,7 +290,9 @@ opts("hsw") {
   if (is_win) {
     cflags = [ "/arch:AVX2" ]
   } else {
-    cflags = [ "-march=haswell" ]
+    if (host_cpu != "arm64") {
+      cflags = [ "-march=haswell" ]
+    }
   }
 }
 
