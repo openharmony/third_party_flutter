@@ -429,7 +429,7 @@ template("flutter_engine_shell") {
 
     if (is_standard_system && platform == "ohos") {
       include_dirs = [
-        "//foundation/windowmanager/interfaces/innerkits",
+        "//foundation/window/window_manager/interfaces/innerkits",
         "//utils/native/base/include",
       ]
       sources += [
@@ -451,7 +451,7 @@ template("flutter_engine_shell") {
       deps += [
         "//foundation/graphic/graphic_2d/rosen/modules/composer:libcomposer",
         "//foundation/graphic/graphic_2d/rosen/modules/render_service_client:librender_service_client",
-        "//foundation/windowmanager/wm:libwm",
+        "//foundation/window/window_manager/wm:libwm",
       ]
       external_deps = [
         "eventhandler:libeventhandler",
