@@ -1790,7 +1790,7 @@ config("ace_fontmgr_standard_config") {
     "$flutter_root/skia/src/core",
     "$flutter_root/skia/src/ports",
     "$flutter_root/skia/src/ports/skia_ohos",
-    "//utils/native/base/include",
+    "//commonlibrary/c_utils/base/include",
   ]
 }
 
