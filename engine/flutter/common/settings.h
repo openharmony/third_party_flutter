@@ -107,6 +107,7 @@ struct Settings {
   int32_t instanceId = 0;
   bool platform_as_ui_thread = false;
   bool use_current_event_runner = false;
+  bool use_system_render_thread = false;
 
   AcePlatform platform = AcePlatform::ACE_PLATFORM_INVALID;
 

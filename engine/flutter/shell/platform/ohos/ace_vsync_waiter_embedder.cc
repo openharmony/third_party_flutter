@@ -33,14 +33,6 @@ VsyncWaiterEmbedder::VsyncWaiterEmbedder(flutter::TaskRunners task_runners) : Vs
 #ifndef OHOS_STANDARD_SYSTEM
     vsync_scheduler_ = OHOS::AGP::VsyncScheduler::Create();
 #endif
-    fps_ = GetDisplayRefreshRate();
-    if (fps_ != kUnknownRefreshRateFPS) {
-        refreshPeriod_ = static_cast<int64_t>(ONE_SECOND_IN_NANO / fps_);
-    }
-
-    auto& rsClient = OHOS::Rosen::RSInterfaces::GetInstance();
-    vsyncReceiver_ = rsClient.CreateVSyncReceiver("ACE");
-    vsyncReceiver_->Init();
 }
 
 VsyncWaiterEmbedder::~VsyncWaiterEmbedder() = default;
@@ -81,6 +73,11 @@ void VsyncWaiterEmbedder::AwaitVSync()
     std::weak_ptr<VsyncWaiter> weak_base(shared_from_this());
     CallbackInfo* info = new CallbackInfo{ refreshPeriod_, fps_, weak_base };
 #ifdef OHOS_STANDARD_SYSTEM
+    if (vsyncReceiver_) {
+        auto& rsClient = OHOS::Rosen::RSInterfaces::GetInstance();
+        vsyncReceiver_ = rsClient.CreateVSyncReceiver("ACE");
+        vsyncReceiver_->Init();
+    }
     std::weak_ptr<OHOS::Rosen::VSyncReceiver> weakReceiver = vsyncReceiver_;
     task_runners_.GetPlatformTaskRunner()->PostTask([weakReceiver, info]() {
         OHOS::Rosen::VSyncReceiver::FrameCallback fcb = {
