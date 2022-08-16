@@ -43,10 +43,21 @@ class CanvasImage final : public RefCountedDartWrappable<CanvasImage> {
 
   static void RegisterNatives(tonic::DartLibraryNatives* natives);
 
+  sk_sp<SkData> compressData() const { return compressData_; }
+  int compressWidth() { return compressWidth_; }
+  int compressHeight() { return compressHeight_; }
+  void setCompress(sk_sp<SkData> data, int width, int height) {
+    compressData_ = data;
+    compressWidth_ = width;
+    compressHeight_ = height;
+  }
  private:
   CanvasImage();
 
   flutter::SkiaGPUObject<SkImage> image_;
+  sk_sp<SkData> compressData_;
+  int compressWidth_;
+  int compressHeight_;
 };
 
 }  // namespace flutter

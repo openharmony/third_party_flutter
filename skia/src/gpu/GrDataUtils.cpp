@@ -118,8 +118,15 @@ static int num_ETC1_blocks(int w, int h) {
 size_t GrCompressedDataSize(SkImage::CompressionType type, int width, int height) {
     switch (type) {
         case SkImage::kETC1_CompressionType:
+        {
             int numBlocks = num_ETC1_blocks(width, height);
             return numBlocks * sizeof(ETC1Block);
+        }
+        case SkImage::kASTC_CompressionType:
+        {
+            int size = std::ceil(width / 4.0f) * std::ceil(height / 4.0f) * 16;
+            return size;
+        }
     }
     SK_ABORT("Unexpected compression type");
 }

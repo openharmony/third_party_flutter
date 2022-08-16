@@ -67,8 +67,8 @@ enum GrPixelConfig {
     // Experimental (for Y416 and mutant P016/P010)
     kRGBA_16161616_GrPixelConfig,
     kRG_half_GrPixelConfig,
-
-    kLast_GrPixelConfig = kRG_half_GrPixelConfig
+    kRGB_ASTC_GrPixelConfig,
+    kLast_GrPixelConfig = kRGB_ASTC_GrPixelConfig
 };
 static const int kGrPixelConfigCnt = kLast_GrPixelConfig + 1;
 
@@ -838,6 +838,7 @@ static constexpr bool GrPixelConfigIsSRGB(GrPixelConfig config) {
         case kRGBA_half_GrPixelConfig:
         case kRGBA_half_Clamped_GrPixelConfig:
         case kRGB_ETC1_GrPixelConfig:
+        case kRGB_ASTC_GrPixelConfig:
         case kR_16_GrPixelConfig:
         case kRG_1616_GrPixelConfig:
         // Experimental (for Y416 and mutant P016/P010)
@@ -851,6 +852,7 @@ static constexpr bool GrPixelConfigIsSRGB(GrPixelConfig config) {
 static constexpr GrPixelConfig GrCompressionTypePixelConfig(SkImage::CompressionType compression) {
     switch (compression) {
         case SkImage::kETC1_CompressionType: return kRGB_ETC1_GrPixelConfig;
+        case SkImage::kASTC_CompressionType: return kRGB_ASTC_GrPixelConfig;
     }
     SkUNREACHABLE;
 }
@@ -887,6 +889,7 @@ static constexpr size_t GrBytesPerPixel(GrPixelConfig config) {
             return 16;
         case kUnknown_GrPixelConfig:
         case kRGB_ETC1_GrPixelConfig:
+        case kRGB_ASTC_GrPixelConfig:
             return 0;
 
         // Experimental (for Y416 and mutant P016/P010)
@@ -908,6 +911,7 @@ static constexpr bool GrPixelConfigIsOpaque(GrPixelConfig config) {
         case kGray_8_as_Lum_GrPixelConfig:
         case kGray_8_as_Red_GrPixelConfig:
         case kRGB_ETC1_GrPixelConfig:
+        case kRGB_ASTC_GrPixelConfig:
         case kR_16_GrPixelConfig:
         case kRG_1616_GrPixelConfig:
         case kRG_half_GrPixelConfig: // Experimental (for mutant P016/P010)
@@ -959,6 +963,7 @@ static constexpr bool GrPixelConfigIsAlphaOnly(GrPixelConfig config) {
         case kRGBA_half_GrPixelConfig:
         case kRGBA_half_Clamped_GrPixelConfig:
         case kRGB_ETC1_GrPixelConfig:
+        case kRGB_ASTC_GrPixelConfig:
         case kR_16_GrPixelConfig:
         case kRG_1616_GrPixelConfig:
         // Experimental (for Y416 and mutant P016/P010)
@@ -988,6 +993,7 @@ static constexpr bool GrPixelConfigIsFloatingPoint(GrPixelConfig config) {
         case kSRGBA_8888_GrPixelConfig:
         case kRGBA_1010102_GrPixelConfig:
         case kRGB_ETC1_GrPixelConfig:
+        case kRGB_ASTC_GrPixelConfig:
         case kR_16_GrPixelConfig:
         case kRG_1616_GrPixelConfig:
         case kRGBA_16161616_GrPixelConfig: // Experimental (for Y416)
@@ -1019,6 +1025,8 @@ static constexpr bool GrPixelConfigIsCompressed(GrPixelConfig config) {
     switch (config) {
         case kRGB_ETC1_GrPixelConfig:
             return true;
+        case kRGB_ASTC_GrPixelConfig:
+            return true;
         default:
             return false;
     }
@@ -1031,6 +1039,8 @@ static constexpr bool GrPixelConfigIsCompressed(GrPixelConfig config) {
 static constexpr GrPixelConfig GrMakePixelConfigUncompressed(GrPixelConfig config) {
     switch (config) {
         case kRGB_ETC1_GrPixelConfig:
+            return kRGBA_8888_GrPixelConfig;
+        case kRGB_ASTC_GrPixelConfig:
             return kRGBA_8888_GrPixelConfig;
         default:
             return config;
@@ -1047,6 +1057,10 @@ static inline size_t GrCompressedFormatDataSize(GrPixelConfig config,
 
     switch (config) {
         case kRGB_ETC1_GrPixelConfig:
+            SkASSERT((width & 3) == 0);
+            SkASSERT((height & 3) == 0);
+            return (width >> 2) * (height >> 2) * 8;
+        case kRGB_ASTC_GrPixelConfig:
             SkASSERT((width & 3) == 0);
             SkASSERT((height & 3) == 0);
             return (width >> 2) * (height >> 2) * 8;
@@ -1425,6 +1439,8 @@ static constexpr GrColorType GrPixelConfigToColorType(GrPixelConfig config) {
             // We may need a roughly equivalent color type for a compressed texture. This should be
             // the logical format for decompressing the data into.
             return GrColorType::kRGB_888x;
+        case kRGB_ASTC_GrPixelConfig:
+            return GrColorType::kRGB_888x;
         case kAlpha_8_as_Alpha_GrPixelConfig:
             return GrColorType::kAlpha_8;
         case kAlpha_8_as_Red_GrPixelConfig:
@@ -1548,6 +1564,7 @@ static constexpr const char* GrPixelConfigToStr(GrPixelConfig config) {
         case kRGBA_half_GrPixelConfig:         return "RGBAHalf";
         case kRGBA_half_Clamped_GrPixelConfig: return "RGBAHalfClamped";
         case kRGB_ETC1_GrPixelConfig:          return "RGBETC1";
+        case kRGB_ASTC_GrPixelConfig:          return "RGBASTC";
         case kR_16_GrPixelConfig:              return "R16";
         case kRG_1616_GrPixelConfig:           return "RG1616";
         case kRGBA_16161616_GrPixelConfig:     return "RGBA16161616";

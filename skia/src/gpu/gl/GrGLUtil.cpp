@@ -602,6 +602,7 @@ bool GrGLFormatIsCompressed(GrGLFormat format) {
     switch (format) {
         case GrGLFormat::kCOMPRESSED_RGB8_ETC2:
         case GrGLFormat::kCOMPRESSED_ETC1_RGB8:
+        case GrGLFormat::kCOMPRESSED_ASTC_RGB8:
             return true;
 
         case GrGLFormat::kRGBA8:
@@ -635,7 +636,9 @@ bool GrGLFormatToCompressionType(GrGLFormat format, SkImage::CompressionType* co
         case GrGLFormat::kCOMPRESSED_ETC1_RGB8:
             *compressionType = SkImage::kETC1_CompressionType;
             return true;
-
+        case GrGLFormat::kCOMPRESSED_ASTC_RGB8:
+            *compressionType = SkImage::kASTC_CompressionType;
+            return true;
         case GrGLFormat::kRGBA8:
         case GrGLFormat::kR8:
         case GrGLFormat::kALPHA8:
@@ -696,6 +699,7 @@ size_t GrGLBytesPerFormat(GrGLFormat glFormat) {
 
         case GrGLFormat::kCOMPRESSED_RGB8_ETC2:
         case GrGLFormat::kCOMPRESSED_ETC1_RGB8:
+        case GrGLFormat::kCOMPRESSED_ASTC_RGB8:
         case GrGLFormat::kUnknown:
             return 0;
     }
