@@ -33,11 +33,17 @@ OhosShellHolder::OhosShellHolder(
   static size_t shell_count = 1;
   auto thread_label = std::to_string(shell_count++);
 
+  uint64_t type_mask = 0;
   if (is_background_view) {
-    thread_host_ = {thread_label, ThreadHost::Type::UI};
+    type_mask |= ThreadHost::Type::UI;
   } else {
-    thread_host_ = {thread_label, ThreadHost::Type::UI | ThreadHost::Type::GPU |
-                                      ThreadHost::Type::IO};
+    if (!settings_.platform_as_ui_thread) {
+      type_mask |= ThreadHost::Type::UI;
+    }
+    if (!settings_.use_system_render_thread) {
+      type_mask |= ThreadHost::Type::GPU | ThreadHost::Type::IO;
+    }
+    thread_host_ = {thread_label, type_mask};
   }
 
   fml::WeakPtr<PlatformViewOhos> weak_platform_view;
@@ -69,13 +75,18 @@ OhosShellHolder::OhosShellHolder(
     ui_runner = single_task_runner;
     io_runner = single_task_runner;
   } else {
-    gpu_runner = thread_host_.gpu_thread->GetTaskRunner();
     if (settings_.platform_as_ui_thread) {
       ui_runner = platform_runner;
     } else {
       ui_runner = thread_host_.ui_thread->GetTaskRunner();
     }
-    io_runner = thread_host_.io_thread->GetTaskRunner();
+    if (!settings_.use_system_render_thread) {
+      gpu_runner = thread_host_.gpu_thread->GetTaskRunner();
+      io_runner = thread_host_.io_thread->GetTaskRunner();
+    } else {
+      gpu_runner = ui_runner;
+      io_runner = ui_runner;
+    }
   }
   flutter::TaskRunners task_runners(thread_label,     // label
                                     platform_runner,  // platform
