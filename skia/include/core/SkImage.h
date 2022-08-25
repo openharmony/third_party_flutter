@@ -228,7 +228,8 @@ public:
     // Experimental
     enum CompressionType {
         kETC1_CompressionType,
-        kLast_CompressionType = kETC1_CompressionType,
+        kASTC_CompressionType,
+        kLast_CompressionType = kASTC_CompressionType,
     };
 
     /** Creates a GPU-backed SkImage from compressed data.

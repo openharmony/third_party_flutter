@@ -79,8 +79,9 @@ enum class GrGLFormat {
     kRGBA16,
     kRG16F,
     kLUMINANCE16F,
+    kCOMPRESSED_ASTC_RGB8,
 
-    kLast = kLUMINANCE16F
+    kLast = kCOMPRESSED_ASTC_RGB8
 };
 
 ///////////////////////////////////////////////////////////////////////////////

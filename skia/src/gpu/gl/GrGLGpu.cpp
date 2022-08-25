@@ -3791,6 +3791,7 @@ static GrPixelConfig gl_format_to_pixel_config(GrGLFormat format) {
 
         case GrGLFormat::kCOMPRESSED_RGB8_ETC2: return kRGB_ETC1_GrPixelConfig;
         case GrGLFormat::kCOMPRESSED_ETC1_RGB8: return kRGB_ETC1_GrPixelConfig;
+        case GrGLFormat::kCOMPRESSED_ASTC_RGB8: return kRGB_ASTC_GrPixelConfig;
     }
     SkUNREACHABLE;
 }

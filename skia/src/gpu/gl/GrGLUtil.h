@@ -294,6 +294,7 @@ static constexpr GrGLFormat GrGLFormatFromGLEnum(GrGLenum glFormat) {
         case GR_GL_SRGB8_ALPHA8:         return GrGLFormat::kSRGB8_ALPHA8;
         case GR_GL_COMPRESSED_RGB8_ETC2: return GrGLFormat::kCOMPRESSED_RGB8_ETC2;
         case GR_GL_COMPRESSED_ETC1_RGB8: return GrGLFormat::kCOMPRESSED_ETC1_RGB8;
+        case GR_GL_COMPRESSED_RGBA_ASTC_4x4: return GrGLFormat::kCOMPRESSED_ASTC_RGB8;
         case GR_GL_R16:                  return GrGLFormat::kR16;
         case GR_GL_RG16:                 return GrGLFormat::kRG16;
         case GR_GL_RGBA16:               return GrGLFormat::kRGBA16;
@@ -323,6 +324,7 @@ static constexpr GrGLenum GrGLFormatToEnum(GrGLFormat format) {
         case GrGLFormat::kSRGB8_ALPHA8:         return GR_GL_SRGB8_ALPHA8;
         case GrGLFormat::kCOMPRESSED_RGB8_ETC2: return GR_GL_COMPRESSED_RGB8_ETC2;
         case GrGLFormat::kCOMPRESSED_ETC1_RGB8: return GR_GL_COMPRESSED_ETC1_RGB8;
+        case GrGLFormat::kCOMPRESSED_ASTC_RGB8: return GR_GL_COMPRESSED_RGBA_ASTC_4x4;
         case GrGLFormat::kR16:                  return GR_GL_R16;
         case GrGLFormat::kRG16:                 return GR_GL_RG16;
         case GrGLFormat::kRGBA16:               return GR_GL_RGBA16;
@@ -352,6 +354,7 @@ static constexpr const char* GrGLFormatToStr(GrGLenum glFormat) {
         case GR_GL_SRGB8_ALPHA8:         return "SRGB8_ALPHA8";
         case GR_GL_COMPRESSED_RGB8_ETC2: return "ETC2";
         case GR_GL_COMPRESSED_ETC1_RGB8: return "ETC1";
+        case GR_GL_COMPRESSED_RGBA_ASTC_4x4: return "ASTC";
         case GR_GL_R16:                  return "R16";
         case GR_GL_RG16:                 return "RG16";
         case GR_GL_RGBA16:               return "RGBA16";
