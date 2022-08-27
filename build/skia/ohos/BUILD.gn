@@ -14,6 +14,7 @@
 import("//build/ohos.gni")
 import("//foundation/arkui/ace_engine/ace_config.gni")
 import("//foundation/graphic/graphic_2d/graphic_config.gni")
+import("//third_party/flutter/flutter_config.gni")
 
 rosen_flutter_engine_root =
     "//foundation/graphic/graphic_2d/rosen/build/flutter"
@@ -177,6 +178,10 @@ skia_common_defines = [
   "SK_LEGACY_SKCODEC_NONE_ENUM",
   "SK_ENABLE_DUMP_GPU",
 ]
+
+if (flutter_feature_skia_small_page_enable) {
+  skia_common_defines += [ "SK_ENABLE_SMALL_PAGE" ]
+}
 
 # ------------------------------------------------
 #      Skia core source

@@ -53,7 +53,7 @@ enum GrDistanceFieldEffectFlags {
  */
 class GrDistanceFieldA8TextGeoProc : public GrGeometryProcessor {
 public:
-    static constexpr int kMaxTextures = 4;
+    static constexpr int kMaxTextures = 16;
 
     /** The local matrix should be identity if local coords are not required by the GrPipeline. */
 #ifdef SK_GAMMA_APPLY_TO_A8
@@ -132,7 +132,7 @@ private:
  */
 class GrDistanceFieldPathGeoProc : public GrGeometryProcessor {
 public:
-    static constexpr int kMaxTextures = 4;
+    static constexpr int kMaxTextures = 16;
 
     /** The local matrix should be identity if local coords are not required by the GrPipeline. */
     static sk_sp<GrGeometryProcessor> Make(const GrShaderCaps& caps,
@@ -194,7 +194,7 @@ private:
  */
 class GrDistanceFieldLCDTextGeoProc : public GrGeometryProcessor {
 public:
-    static constexpr int kMaxTextures = 4;
+    static constexpr int kMaxTextures = 16;
 
     struct DistanceAdjust {
         SkScalar fR, fG, fB;

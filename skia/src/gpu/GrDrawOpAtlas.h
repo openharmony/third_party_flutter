@@ -49,7 +49,7 @@ class GrRectanizer;
  */
 class GrDrawOpAtlas {
 private:
-    static constexpr auto kMaxMultitexturePages = 4;
+    static constexpr auto kMaxMultitexturePages = 16;
 
 
 public:
@@ -97,6 +97,8 @@ public:
                                                int width, int height,
                                                int plotWidth, int plotHeight,
                                                AllowMultitexturing allowMultitexturing,
+                                               int atlasPageCount,
+                                               int plotOldThreshold,
                                                GrDrawOpAtlas::EvictionFunc func, void* data);
 
     /**
@@ -159,6 +161,7 @@ public:
     }
 
     uint32_t numActivePages() { return fNumActivePages; }
+    void deactivateHalfPage();
 
     /**
      * A class which can be handed back to GrDrawOpAtlas for updating last use tokens in bulk.  The
@@ -248,7 +251,7 @@ public:
 private:
     GrDrawOpAtlas(GrProxyProvider*, const GrBackendFormat& format, GrColorType, int width,
                   int height, int plotWidth, int plotHeight,
-                  AllowMultitexturing allowMultitexturing);
+                  AllowMultitexturing allowMultitexturing, int atlasPageCount, int plotOldThreshold);
 
     /**
      * The backing GrTexture for a GrDrawOpAtlas is broken into a spatial grid of Plots. The Plots
@@ -416,6 +419,7 @@ private:
     uint32_t fMaxPages;
 
     uint32_t fNumActivePages;
+    int fPlotOldThreshold;
 };
 
 // There are three atlases (A8, 565, ARGB) that are kept in relation with one another. In
@@ -431,9 +435,10 @@ public:
 
     // For testing only - make minimum sized atlases -- a single plot for ARGB, four for A8
     GrDrawOpAtlasConfig() : GrDrawOpAtlasConfig(kMaxAtlasDim, 0) {}
-
+    SkISize getARGBDimensions(){return fARGBDimensions;}
     SkISize atlasDimensions(GrMaskFormat type) const;
     SkISize plotDimensions(GrMaskFormat type) const;
+    int resetAsSmallPage();
 
 private:
     // On some systems texture coordinates are represented using half-precision floating point,

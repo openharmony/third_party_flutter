@@ -38,6 +38,8 @@ std::unique_ptr<GrDrawOpAtlas> GrDrawOpAtlas::Make(GrProxyProvider* proxyProvide
                                                    GrColorType colorType, int width,
                                                    int height, int plotWidth, int plotHeight,
                                                    AllowMultitexturing allowMultitexturing,
+                                                   int atlasPageNum,
+                                                   int plotOldThreshold,
                                                    GrDrawOpAtlas::EvictionFunc func, void* data) {
     if (!format.isValid()) {
         return nullptr;
@@ -45,7 +47,7 @@ std::unique_ptr<GrDrawOpAtlas> GrDrawOpAtlas::Make(GrProxyProvider* proxyProvide
 
     std::unique_ptr<GrDrawOpAtlas> atlas(new GrDrawOpAtlas(proxyProvider, format, colorType, width,
                                                            height, plotWidth, plotHeight,
-                                                           allowMultitexturing));
+                                                           allowMultitexturing, atlasPageNum, plotOldThreshold));
     if (!atlas->getProxies()[0]) {
         return nullptr;
     }
@@ -184,7 +186,8 @@ void GrDrawOpAtlas::Plot::resetRects() {
 
 GrDrawOpAtlas::GrDrawOpAtlas(GrProxyProvider* proxyProvider, const GrBackendFormat& format,
                              GrColorType colorType, int width, int height,
-                             int plotWidth, int plotHeight, AllowMultitexturing allowMultitexturing)
+                             int plotWidth, int plotHeight, AllowMultitexturing allowMultitexturing,
+                             int atlasPageNum, int plotOldThreshold)
         : fFormat(format)
         , fColorType(colorType)
         , fTextureWidth(width)
@@ -193,8 +196,9 @@ GrDrawOpAtlas::GrDrawOpAtlas(GrProxyProvider* proxyProvider, const GrBackendForm
         , fPlotHeight(plotHeight)
         , fAtlasGeneration(kInvalidAtlasGeneration + 1)
         , fPrevFlushToken(GrDeferredUploadToken::AlreadyFlushedToken())
-        , fMaxPages(AllowMultitexturing::kYes == allowMultitexturing ? kMaxMultitexturePages : 1)
-        , fNumActivePages(0) {
+        , fMaxPages(AllowMultitexturing::kYes == allowMultitexturing ? ((atlasPageNum > 16) ? 16 : atlasPageNum) : 1)
+        , fNumActivePages(0)
+        , fPlotOldThreshold(plotOldThreshold) {
     int numPlotsX = width/plotWidth;
     int numPlotsY = height/plotHeight;
     SkASSERT(numPlotsX * numPlotsY <= GrDrawOpAtlas::kMaxPlots);
@@ -204,6 +208,9 @@ GrDrawOpAtlas::GrDrawOpAtlas(GrProxyProvider* proxyProvider, const GrBackendForm
     fNumPlots = numPlotsX * numPlotsY;
 
     this->createPages(proxyProvider);
+
+    SkDebugf("Texture[Width:%{public}d, Height:%{public}d, MaxPage:%{public}d], Plot[Width:%{public}d, Height:%{public}d, OldThreshold:%{public}d].", \
+        fTextureWidth, fTextureHeight, fMaxPages, fPlotWidth, fPlotHeight, fPlotOldThreshold);
 }
 
 inline void GrDrawOpAtlas::processEviction(AtlasID id) {
@@ -262,7 +269,7 @@ bool GrDrawOpAtlas::uploadToPage(unsigned int pageIdx, AtlasID* id, GrDeferredUp
 // a page with unused plots will get removed reasonably quickly, but allow it
 // to hang around for a bit in case it's needed. The assumption is that flushes
 // are rare; i.e., we are not continually refreshing the frame.
-static constexpr auto kRecentlyUsedCount = 256;
+
 
 GrDrawOpAtlas::ErrorCode GrDrawOpAtlas::addToAtlas(GrResourceProvider* resourceProvider,
                                                    AtlasID* id, GrDeferredUploadTarget* target,
@@ -298,6 +305,9 @@ GrDrawOpAtlas::ErrorCode GrDrawOpAtlas::addToAtlas(GrResourceProvider* resourceP
                 if (!this->updatePlot(target, id, plot)) {
                     return ErrorCode::kError;
                 }
+#ifdef SK_DEBUG_PAGE
+                SkDebugf("----- addToAtlas overwrite page# %{public}d.", pageIdx);
+#endif
                 return ErrorCode::kSucceeded;
             }
         }
@@ -367,6 +377,9 @@ GrDrawOpAtlas::ErrorCode GrDrawOpAtlas::addToAtlas(GrResourceProvider* resourceP
 
     *id = newPlot->id();
 
+#ifdef SK_DEBUG_PAGE
+    SkDebugf("----- addToAtlas addInlineUpload page# %{public}d.", pageIdx);
+#endif
     return ErrorCode::kSucceeded;
 }
 
@@ -425,7 +438,7 @@ void GrDrawOpAtlas::compact(GrDeferredUploadToken startTokenForNextFlush) {
 #endif
                 // Count plots we can potentially upload to in all pages except the last one
                 // (the potential compactee).
-                if (plot->flushesSinceLastUsed() > kRecentlyUsedCount) {
+                if (plot->flushesSinceLastUsed() > fPlotOldThreshold) {
                     availablePlots.push_back() = plot;
                 }
 
@@ -460,7 +473,7 @@ void GrDrawOpAtlas::compact(GrDeferredUploadToken startTokenForNextFlush) {
             }
 #endif
             // If this plot was used recently
-            if (plot->flushesSinceLastUsed() <= kRecentlyUsedCount) {
+            if (plot->flushesSinceLastUsed() <= fPlotOldThreshold) {
                 usedPlots++;
             } else if (plot->lastUseToken() != GrDeferredUploadToken::AlreadyFlushedToken()) {
                 // otherwise if aged out just evict it.
@@ -482,7 +495,7 @@ void GrDrawOpAtlas::compact(GrDeferredUploadToken startTokenForNextFlush) {
             plotIter.init(fPages[lastPageIndex].fPlotList, PlotList::Iter::kHead_IterStart);
             while (Plot* plot = plotIter.get()) {
                 // If this plot was used recently
-                if (plot->flushesSinceLastUsed() <= kRecentlyUsedCount) {
+                if (plot->flushesSinceLastUsed() <= fPlotOldThreshold) {
                     // See if there's room in an earlier page and if so evict.
                     // We need to be somewhat harsh here so that a handful of plots that are
                     // consistently in use don't end up locking the page in memory.
@@ -506,6 +519,9 @@ void GrDrawOpAtlas::compact(GrDeferredUploadToken startTokenForNextFlush) {
             if (gDumpAtlasData) {
                 SkDebugf("delete %d\n", fNumPages-1);
             }
+#endif
+#ifdef SK_DEBUG_PAGE
+            SkDebugf("----- availablePlots %{public}d.", availablePlots.count());
 #endif
             this->deactivateLastPage();
         }
@@ -570,6 +586,9 @@ bool GrDrawOpAtlas::activateNewPage(GrResourceProvider* resourceProvider) {
     }
 #endif
 
+#ifdef SK_DEBUG_PAGE
+    SkDebugf("----- activated page#: %{public}d.", fNumActivePages);
+#endif
     ++fNumActivePages;
     return true;
 }
@@ -602,6 +621,19 @@ inline void GrDrawOpAtlas::deactivateLastPage() {
     // remove ref to the backing texture
     fProxies[lastPageIndex]->deinstantiate();
     --fNumActivePages;
+
+#ifdef SK_DEBUG_PAGE
+    SkDebugf("----- deactivateLastPage %{public}d.", lastPageIndex);
+#endif
+}
+
+void GrDrawOpAtlas::deactivateHalfPage() {
+    SkASSERT(fNumActivePages);
+    int pageCount = fNumActivePages / 2;
+    while (pageCount > 1) {
+        deactivateLastPage();
+        pageCount--;
+    }
 }
 
 GrDrawOpAtlasConfig::GrDrawOpAtlasConfig(int maxTextureSize, size_t maxBytes) {
@@ -628,6 +660,12 @@ GrDrawOpAtlasConfig::GrDrawOpAtlasConfig(int maxTextureSize, size_t maxBytes) {
     fMaxTextureSize = SkTMin<int>(maxTextureSize, kMaxAtlasDim);
 }
 
+int GrDrawOpAtlasConfig::resetAsSmallPage() {
+    size_t maxBytes = fARGBDimensions.width() * fARGBDimensions.height() * 4;
+    fARGBDimensions.set(512, 512);
+    return maxBytes / (fARGBDimensions.width() * fARGBDimensions.height());
+}
+
 SkISize GrDrawOpAtlasConfig::atlasDimensions(GrMaskFormat type) const {
     if (kA8_GrMaskFormat == type) {
         // A8 is always 2x the ARGB dimensions, clamped to the max allowed texture size
@@ -647,8 +685,8 @@ SkISize GrDrawOpAtlasConfig::plotDimensions(GrMaskFormat type) const {
 
         // This will give us 512x256 plots for 2048x1024, 512x512 plots for 2048x2048,
         // and 256x256 plots otherwise.
-        int plotWidth = atlasDimensions.width() >= 2048 ? 512 : 256;
-        int plotHeight = atlasDimensions.height() >= 2048 ? 512 : 256;
+        int plotWidth = atlasDimensions.width() >= 1024 ? 512 : 256;
+        int plotHeight = atlasDimensions.height() >= 1024 ? 512 : 256;
 
         return { plotWidth, plotHeight };
     } else {
