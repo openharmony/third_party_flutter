@@ -435,7 +435,7 @@ public:
 
     // For testing only - make minimum sized atlases -- a single plot for ARGB, four for A8
     GrDrawOpAtlasConfig() : GrDrawOpAtlasConfig(kMaxAtlasDim, 0) {}
-    SkISize getARGBDimensions(){return fARGBDimensions;}
+    SkISize getARGBDimensions(){ return fARGBDimensions; }
     SkISize atlasDimensions(GrMaskFormat type) const;
     SkISize plotDimensions(GrMaskFormat type) const;
     int resetAsSmallPage();

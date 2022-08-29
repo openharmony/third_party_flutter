@@ -79,9 +79,9 @@ void GrAtlasManager::deactiveAtlases() {
     }
 }
 
-static int count = 0;
 void GrAtlasManager::postFlush(GrDeferredUploadToken startTokenForNextFlush,
                    const uint32_t* opListIDs, int numOpListIDs) {
+    static int count = 0;
     count++;
     if (count == 5) {
         float hitRate = atlasHitRate();
@@ -205,7 +205,7 @@ bool GrAtlasManager::initAtlas(GrMaskFormat format) {
     int index = MaskFormatToAtlasIndex(format);
     if (fAtlases[index] == nullptr) {
         GrColorType grColorType = mask_format_to_gr_color_type(format);
-        int pageNum = 4; // 原始代码中纹理页最大为4
+        int pageNum = 4; // The maximum number of texture pages in the original skia code is 4
 #ifdef SK_ENABLE_SMALL_PAGE
         if (format == kA8_GrMaskFormat && fAtlasConfig.getARGBDimensions().width() > 512) {
             // reset fAtlasConfig to suit small page.
