@@ -21,7 +21,7 @@ class GrInvariantOutput;
  */
 class GrBitmapTextGeoProc : public GrGeometryProcessor {
 public:
-    static constexpr int kMaxTextures = 4;
+    static constexpr int kMaxTextures = 16;
 
     static sk_sp<GrGeometryProcessor> Make(const GrShaderCaps& caps,
                                            const SkPMColor4f& color, bool wideColor,

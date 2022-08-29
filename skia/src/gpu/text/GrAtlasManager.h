@@ -26,7 +26,7 @@ class GrTextStrike;
 class GrAtlasManager : public GrOnFlushCallbackObject {
 public:
     GrAtlasManager(GrProxyProvider*, GrStrikeCache*,
-                   size_t maxTextureBytes, GrDrawOpAtlas::AllowMultitexturing);
+                   size_t maxTextureBytes, GrDrawOpAtlas::AllowMultitexturing, int plotOldThreshold);
     ~GrAtlasManager() override;
 
     // Change an expected 565 mask format to 8888 if 565 is not supported (will happen when using
@@ -58,6 +58,21 @@ public:
     void freeAll();
 
     bool hasGlyph(GrGlyph* glyph);
+
+    void incAtlasHitCount() { fAtlasHitCount++; }
+    void incAtlasMissCount() { fAtlasMissCount++; }
+    float atlasHitRate() {
+        if (fAtlasHitCount + fAtlasMissCount == 0) {
+            return 0;
+        }
+        return (float)fAtlasHitCount / (fAtlasHitCount + fAtlasMissCount);
+    }
+    void resetHitCount() {
+        fAtlasHitCount = 0;
+        fAtlasMissCount = 0;
+    }
+
+    void deactiveAtlases();
 
     // To ensure the GrDrawOpAtlas does not evict the Glyph Mask from its texture backing store,
     // the client must pass in the current op token along with the GrGlyph.
@@ -98,13 +113,7 @@ public:
     }
 
     void postFlush(GrDeferredUploadToken startTokenForNextFlush,
-                   const uint32_t* opListIDs, int numOpListIDs) override {
-        for (int i = 0; i < kMaskFormatCount; ++i) {
-            if (fAtlases[i]) {
-                fAtlases[i]->compact(startTokenForNextFlush);
-            }
-        }
-    }
+                    const uint32_t* opListIDs, int numOpListIDs) override;
 
     // The AtlasGlyph cache always survives freeGpuResources so we want it to remain in the active
     // OnFlushCallbackObject list
@@ -112,7 +121,7 @@ public:
 
     ///////////////////////////////////////////////////////////////////////////
     // Functions intended debug only
-#ifdef SK_DEBUG
+#ifdef SK_DUMP_ATLAS_IMAGE
     void dump(GrContext* context) const;
 #endif
 
@@ -139,6 +148,9 @@ private:
     sk_sp<const GrCaps> fCaps;
     GrStrikeCache* fGlyphCache;
     GrDrawOpAtlasConfig fAtlasConfig;
+    int fPlotOldThreshold;
+    int fAtlasHitCount;
+    int fAtlasMissCount;
 
     typedef GrOnFlushCallbackObject INHERITED;
 };

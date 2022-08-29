@@ -33,6 +33,8 @@
 #define ATLAS_TEXTURE_HEIGHT 2048
 #define PLOT_WIDTH  512
 #define PLOT_HEIGHT 256
+#define ATLAS_PAGE_NUM 4
+#define PLOT_OLD_THRESHOLD 256
 
 #define NUM_PLOTS_X   (ATLAS_TEXTURE_WIDTH / PLOT_WIDTH)
 #define NUM_PLOTS_Y   (ATLAS_TEXTURE_HEIGHT / PLOT_HEIGHT)
@@ -882,6 +884,8 @@ bool GrSmallPathRenderer::onDrawPath(const DrawPathArgs& args) {
                                      ATLAS_TEXTURE_WIDTH, ATLAS_TEXTURE_HEIGHT,
                                      PLOT_WIDTH, PLOT_HEIGHT,
                                      GrDrawOpAtlas::AllowMultitexturing::kYes,
+                                     ATLAS_PAGE_NUM,
+                                     PLOT_OLD_THRESHOLD,
                                      &GrSmallPathRenderer::HandleEviction,
                                      (void*)this);
         if (!fAtlas) {
@@ -971,6 +975,8 @@ GR_DRAW_OP_TEST_DEFINE(SmallPathOp) {
                                                  ATLAS_TEXTURE_WIDTH, ATLAS_TEXTURE_HEIGHT,
                                                  PLOT_WIDTH, PLOT_HEIGHT,
                                                  GrDrawOpAtlas::AllowMultitexturing::kYes,
+                                                 ATLAS_PAGE_NUM,
+                                                 PLOT_OLD_THRESHOLD,
                                                  &PathTestStruct::HandleEviction,
                                                  (void*)&gTestStruct);
     }

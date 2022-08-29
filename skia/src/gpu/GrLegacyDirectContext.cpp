@@ -108,7 +108,8 @@ protected:
 
         fAtlasManager = new GrAtlasManager(proxyProvider, glyphCache,
                                            this->options().fGlyphCacheTextureMaximumBytes,
-                                           allowMultitexturing);
+                                           allowMultitexturing,
+                                           this->options().fPlotOldThreshold);
         this->priv().addOnFlushCallbackObject(fAtlasManager);
 
         return true;

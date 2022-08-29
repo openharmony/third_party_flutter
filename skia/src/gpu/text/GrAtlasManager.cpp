@@ -12,12 +12,16 @@
 
 GrAtlasManager::GrAtlasManager(GrProxyProvider* proxyProvider, GrStrikeCache* glyphCache,
                                size_t maxTextureBytes,
-                               GrDrawOpAtlas::AllowMultitexturing allowMultitexturing)
+                               GrDrawOpAtlas::AllowMultitexturing allowMultitexturing,
+                               int plotOldThreshold)
             : fAllowMultitexturing{allowMultitexturing}
             , fProxyProvider{proxyProvider}
             , fCaps{fProxyProvider->refCaps()}
             , fGlyphCache{glyphCache}
-            , fAtlasConfig{fCaps->maxTextureSize(), maxTextureBytes} { }
+            , fAtlasConfig{fCaps->maxTextureSize(), maxTextureBytes}
+            , fPlotOldThreshold(plotOldThreshold)
+            , fAtlasHitCount(0)
+            , fAtlasMissCount(0) { }
 
 GrAtlasManager::~GrAtlasManager() = default;
 
@@ -67,7 +71,45 @@ void GrAtlasManager::addGlyphToBulkAndSetUseToken(GrDrawOpAtlas::BulkUseTokenUpd
     }
 }
 
-#ifdef SK_DEBUG
+void GrAtlasManager::deactiveAtlases() {
+    for (int i = 0; i < kMaskFormatCount; ++i) {
+        if (fAtlases[i]) {
+            fAtlases[i]->deactivateHalfPage();
+        }
+    }
+}
+
+void GrAtlasManager::postFlush(GrDeferredUploadToken startTokenForNextFlush,
+                   const uint32_t* opListIDs, int numOpListIDs) {
+    static int count = 0;
+    count++;
+    if (count == 5) {
+        float hitRate = atlasHitRate();
+        if (!(fabs(hitRate-0) <= 1.0e-6)) {
+#ifdef SK_DEGUB_ATLAS_HIT_RATE
+            SkDebugf("----- last 5 flush AtlasHitRate = %{public}6.2f.", hitRate);
+#endif
+#ifdef SK_ENABLE_SMALL_PAGE
+            if (hitRate < 0.2) {
+                deactiveAtlases();
+#ifdef SK_DEBUG_PAGE
+                SkDebugf("------------- Deactive Half Atlase Pages.");
+#endif
+            }
+#endif
+        }
+        resetHitCount();
+        count = 0;
+    }
+
+    for (int i = 0; i < kMaskFormatCount; ++i) {
+        if (fAtlases[i]) {
+            fAtlases[i]->compact(startTokenForNextFlush);
+        }
+    }
+}
+
+#ifdef SK_DUMP_ATLAS_IMAGE
 #include "src/gpu/GrContextPriv.h"
 #include "src/gpu/GrSurfaceContext.h"
 #include "src/gpu/GrSurfaceProxy.h"
@@ -137,7 +179,7 @@ void GrAtlasManager::dump(GrContext* context) const {
 #ifdef SK_BUILD_FOR_ANDROID
                 filename.printf("/sdcard/fontcache_%d%d%d.png", gDumpCount, i, pageIdx);
 #else
-                filename.printf("fontcache_%d%d%d.png", gDumpCount, i, pageIdx);
+                filename.printf("/data/storage/el2/base/cache/fontcache_%d_%d_%d.png", gDumpCount, i, pageIdx);
 #endif
                 auto ct = mask_format_to_gr_color_type(AtlasIndexToMaskFormat(i));
                 save_pixels(context, proxies[pageIdx].get(), ct, filename.c_str());
@@ -163,6 +205,13 @@ bool GrAtlasManager::initAtlas(GrMaskFormat format) {
     int index = MaskFormatToAtlasIndex(format);
     if (fAtlases[index] == nullptr) {
         GrColorType grColorType = mask_format_to_gr_color_type(format);
+        int pageNum = 4; // The maximum number of texture pages in the original skia code is 4
+#ifdef SK_ENABLE_SMALL_PAGE
+        if (format == kA8_GrMaskFormat && fAtlasConfig.getARGBDimensions().width() > 512) {
+            // reset fAtlasConfig to suit small page.
+            pageNum = fAtlasConfig.resetAsSmallPage();
+        }
+#endif
         SkISize atlasDimensions = fAtlasConfig.atlasDimensions(format);
         SkISize plotDimensions = fAtlasConfig.plotDimensions(format);
 
@@ -173,7 +222,7 @@ bool GrAtlasManager::initAtlas(GrMaskFormat format) {
                 fProxyProvider, format, grColorType,
                 atlasDimensions.width(), atlasDimensions.height(),
                 plotDimensions.width(), plotDimensions.height(),
-                fAllowMultitexturing, &GrStrikeCache::HandleEviction, fGlyphCache);
+                fAllowMultitexturing, pageNum, fPlotOldThreshold, &GrStrikeCache::HandleEviction, fGlyphCache);
         if (!fAtlases[index]) {
             return false;
         }

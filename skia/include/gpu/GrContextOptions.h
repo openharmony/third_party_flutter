@@ -119,6 +119,7 @@ struct SK_API GrContextOptions {
      */
     size_t fGlyphCacheTextureMaximumBytes = 2048 * 1024 * 4;
 
+    int fPlotOldThreshold = 128;
     /**
      * Below this threshold size in device space distance field fonts won't be used. Distance field
      * fonts don't support hinting which is more important at smaller sizes. A negative value means

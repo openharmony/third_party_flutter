@@ -289,6 +289,10 @@ ace_skia_common_defines = [
   "SK_ENABLE_DUMP_GPU",
 ]
 
+if (flutter_feature_skia_small_page_enable) {
+  ace_skia_common_defines += [ "SK_ENABLE_SMALL_PAGE" ]
+}
+
 config("harfbuzz_config") {
   visibility = [ ":*" ]
 

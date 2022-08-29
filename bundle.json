@@ -17,7 +17,7 @@
         "name": "flutter",
         "subsystem": "thirdparty",
         "syscap": [],
-        "features": [],
+        "features": ["flutter_feature_skia_small_page_enable"],
         "adapted_system_type": [],
         "rom": "",
         "ram": "",

@@ -13,3 +13,7 @@
 
 # Config part name
 flutter_part = "flutter"
+
+declare_args() {
+  flutter_feature_skia_small_page_enable = true
+}

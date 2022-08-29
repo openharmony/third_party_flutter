@@ -65,16 +65,16 @@ static void regen_texcoords(char* vertex, size_t vertexStride, const GrGlyph* gl
     }
     // We pack the 2bit page index in the low bit of the u and v texture coords
     uint32_t pageIndex = glyph->pageIndex();
-    SkASSERT(pageIndex < 4);
-    uint16_t uBit = (pageIndex >> 1) & 0x1;
-    uint16_t vBit = pageIndex & 0x1;
-    u0 <<= 1;
+    SkASSERT(pageIndex < 16);
+    uint16_t uBit = (pageIndex >> 3) & 0x7;
+    uint16_t vBit = pageIndex & 0x7;
+    u0 <<= 3;
     u0 |= uBit;
-    v0 <<= 1;
+    v0 <<= 3;
     v0 |= vBit;
-    u1 <<= 1;
+    u1 <<= 3;
     u1 |= uBit;
-    v1 <<= 1;
+    v1 <<= 3;
     v1 |= vBit;
 
     uint16_t* textureCoords = reinterpret_cast<uint16_t*>(vertex + texCoordOffset);
@@ -99,7 +99,7 @@ static void regen_texcoords(char* vertex, size_t vertexStride, const GrGlyph* gl
             hackColor = GrColorPackRGBA(0, 255, 0, 255);
             break;
         case 1:
-            hackColor = GrColorPackRGBA(255, 0, 0, 255);;
+            hackColor = GrColorPackRGBA(255, 0, 0, 255);
             break;
         case 2:
             hackColor = GrColorPackRGBA(255, 0, 255, 255);
@@ -156,6 +156,8 @@ GrTextBlob::VertexRegenerator::VertexRegenerator(GrResourceProvider* resourcePro
     }
 }
 
+
+
 bool GrTextBlob::VertexRegenerator::doRegen(GrTextBlob::VertexRegenerator::Result* result,
                                             bool regenPos, bool regenCol, bool regenTexCoords,
                                             bool regenGlyphs) {
@@ -200,6 +202,7 @@ bool GrTextBlob::VertexRegenerator::doRegen(GrTextBlob::VertexRegenerator::Resul
             SkASSERT(glyph && glyph->fMaskFormat == fSubRun->maskFormat());
 
             if (!fFullAtlasManager->hasGlyph(glyph)) {
+                fFullAtlasManager->incAtlasMissCount();
                 GrDrawOpAtlas::ErrorCode code;
                 code = strike->addGlyphToAtlas(fResourceProvider, fUploadTarget, fGlyphCache,
                                               fFullAtlasManager, glyph,
@@ -214,6 +217,8 @@ bool GrTextBlob::VertexRegenerator::doRegen(GrTextBlob::VertexRegenerator::Resul
                     result->fFinished = false;
                     return true;
                 }
+            } else {
+                fFullAtlasManager->incAtlasHitCount();
             }
             auto tokenTracker = fUploadTarget->tokenTracker();
             fFullAtlasManager->addGlyphToBulkAndSetUseToken(fSubRun->bulkUseToken(), glyph,
