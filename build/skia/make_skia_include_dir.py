@@ -36,7 +36,7 @@ def main(argv):
     print("skia path is : " + src_path)
     dst_path = os.path.abspath(symlink_path)
     print("symlink path is: " + dst_path)
-    subprocess.run(['ln', '-s', dst_path, src_path])
+    subprocess.run(['ln', '-sf', dst_path, src_path])
 
 if __name__ == '__main__':
     main(sys.argv)

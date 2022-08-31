@@ -29,7 +29,9 @@ template("make_skia_include_dir") {
   action("make_${target_name}_skia_include_dir") {
     script = "make_skia_include_dir.py"
     inputs = [ src_path ]
-    outputs = [ dst_path ]
+
+    # refer to tmp.txt that doesn't exist because we need to relink the dir to support run on different build dir.
+    outputs = [ "${dst_path}/tmp.txt" ]
     args = [
       rebase_path(dst_path, root_build_dir),
       rebase_path(src_path, root_build_dir),
