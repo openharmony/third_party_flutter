@@ -30,7 +30,7 @@ VsyncWaiterFallback::~VsyncWaiterFallback() = default;
 // |VsyncWaiter|
 void VsyncWaiterFallback::AwaitVSync() {
 // ACE PC preview
-#if defined(WINDOWS_PLATFORM) || defined(MAC_PLATFORM)
+#if defined(WINDOWS_PLATFORM) || defined(MAC_PLATFORM) || defined(LINUX_PLATFORM)
   constexpr fml::TimeDelta kSingleFrameInterval =
       fml::TimeDelta::FromSecondsF(1.0 / 30.0);
 #else

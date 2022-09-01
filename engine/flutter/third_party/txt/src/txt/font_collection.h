@@ -18,6 +18,7 @@
 #define LIB_TXT_SRC_FONT_COLLECTION_H_
 
 #include <memory>
+#include <mutex>
 #include <set>
 #include <string>
 #include <unordered_map>

@@ -179,6 +179,16 @@ template("flutter_engine_fml") {
         "CoreFoundation.framework",
         "Foundation.framework",
       ]
+    } else if (platform == "linux") {
+      sources += [
+        "$flutter_root/engine/flutter/fml/platform/linux/message_loop_linux.cc",
+        "$flutter_root/engine/flutter/fml/platform/linux/paths_linux.cc",
+        "$flutter_root/engine/flutter/fml/platform/linux/timerfd.cc",
+        "$flutter_root/engine/flutter/fml/platform/posix/file_posix.cc",
+        "$flutter_root/engine/flutter/fml/platform/posix/mapping_posix.cc",
+        "$flutter_root/engine/flutter/fml/platform/posix/native_library_posix.cc",
+        "$flutter_root/engine/flutter/fml/platform/posix/paths_posix.cc",
+      ]
     } else {
       sources += [
         "$flutter_root/engine/flutter/fml/platform/linux/timerfd.cc",
@@ -651,7 +661,8 @@ template("flutter_engine_lib_ui") {
       "$flutter_root/engine/flutter/lib/ui/window/window.cc",
     ]
 
-    if (platform == "mac" || platform == "windows" || platform == "ios") {
+    if (platform == "mac" || platform == "windows" || platform == "ios" ||
+        platform == "linux") {
       sources +=
           [ "$flutter_root/engine/flutter/lib/ui/window/pointer_data.cc" ]
     }

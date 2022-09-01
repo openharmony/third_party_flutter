@@ -81,6 +81,39 @@ template("glfw") {
       public_configs += [ ":glfw_config_mac" ]
       defines += [ "_GLFW_COCOA" ]
     }
+    if (platform == "linux") {
+      sources += [
+        "src/egl_context.c",
+        "src/egl_context.h",
+        "src/glx_context.c",
+        "src/glx_context.h",
+        "src/linux_joystick.c",
+        "src/linux_joystick.h",
+        "src/posix_time.c",
+        "src/posix_time.h",
+        "src/posix_tls.c",
+        "src/posix_tls.h",
+        "src/x11_init.c",
+        "src/x11_monitor.c",
+        "src/x11_platform.h",
+        "src/x11_window.c",
+        "src/xkb_unicode.c",
+        "src/xkb_unicode.h",
+      ]
+      cflags_c = [
+        "-Wno-sign-compare",
+        "-Wno-missing-field-initializers",
+      ]
+      libs = [
+        "rt",
+        "dl",
+        "X11",
+        "Xcursor",
+        "Xinerama",
+        "Xrandr",
+      ]
+      defines += [ "_GLFW_X11" ]
+    }
   }
 }
 
@@ -92,4 +125,9 @@ glfw("glfw_windows") {
 glfw("glfw_mac") {
   defines = ace_mac_defines
   platform = "mac"
+}
+
+glfw("glfw_linux") {
+  defines = ace_linux_defines
+  platform = "linux"
 }
