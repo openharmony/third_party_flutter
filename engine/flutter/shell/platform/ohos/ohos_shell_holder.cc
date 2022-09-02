@@ -41,8 +41,9 @@ OhosShellHolder::OhosShellHolder(
       type_mask |= ThreadHost::Type::UI;
     }
     if (!settings_.use_system_render_thread) {
-      type_mask |= ThreadHost::Type::GPU | ThreadHost::Type::IO;
+      type_mask |= ThreadHost::Type::GPU;
     }
+    type_mask |= ThreadHost::Type::IO;
     thread_host_ = {thread_label, type_mask};
   }
 
@@ -82,11 +83,10 @@ OhosShellHolder::OhosShellHolder(
     }
     if (!settings_.use_system_render_thread) {
       gpu_runner = thread_host_.gpu_thread->GetTaskRunner();
-      io_runner = thread_host_.io_thread->GetTaskRunner();
     } else {
       gpu_runner = ui_runner;
-      io_runner = ui_runner;
     }
+    io_runner = thread_host_.io_thread->GetTaskRunner();
   }
   flutter::TaskRunners task_runners(thread_label,     // label
                                     platform_runner,  // platform
