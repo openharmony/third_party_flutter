@@ -291,10 +291,6 @@ ace_skia_common_defines = [
   "SK_ENABLE_DUMP_GPU",
 ]
 
-if (flutter_feature_skia_small_page_enable) {
-  ace_skia_common_defines += [ "SK_ENABLE_SMALL_PAGE" ]
-}
-
 config("harfbuzz_config") {
   visibility = [ ":*" ]
 
@@ -1536,6 +1532,9 @@ template("ace_gpu") {
         # Ohos or Android platform
         if (is_standard_system) {
           public_deps = [ "//foundation/graphic/graphic_2d:libgl" ]
+          if (flutter_feature_skia_small_page_enable) {
+            defines += [ "SK_ENABLE_SMALL_PAGE" ]
+          }
         } else {
           aosp_deps = [
             "shared_library:libEGL",

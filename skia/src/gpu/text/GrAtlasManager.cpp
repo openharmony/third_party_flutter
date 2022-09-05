@@ -81,26 +81,18 @@ void GrAtlasManager::deactiveAtlases() {
 
 void GrAtlasManager::postFlush(GrDeferredUploadToken startTokenForNextFlush,
                    const uint32_t* opListIDs, int numOpListIDs) {
+#ifdef SK_DEGUB_ATLAS_HIT_RATE
     static int count = 0;
     count++;
     if (count == 5) {
         float hitRate = atlasHitRate();
         if (!(fabs(hitRate-0) <= 1.0e-6)) {
-#ifdef SK_DEGUB_ATLAS_HIT_RATE
             SkDebugf("----- last 5 flush AtlasHitRate = %{public}6.2f.", hitRate);
-#endif
-#ifdef SK_ENABLE_SMALL_PAGE
-            if (hitRate < 0.2) {
-                deactiveAtlases();
-#ifdef SK_DEBUG_PAGE
-                SkDebugf("------------- Deactive Half Atlase Pages.");
-#endif
-            }
-#endif
         }
         resetHitCount();
         count = 0;
     }
+#endif
 
     for (int i = 0; i < kMaskFormatCount; ++i) {
         if (fAtlases[i]) {
