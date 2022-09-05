@@ -292,7 +292,7 @@ bool GPUSurfaceGL::PresentSurface(SkCanvas* canvas) {
     onscreen_surface_->getCanvas()->flush();
 
 // ACE PC preview
-#if defined(WINDOWS_PLATFORM) or defined(MAC_PLATFORM)
+#if defined(PREVIEW)
     int32_t width = onscreen_surface_->width();
     int32_t height = onscreen_surface_->height();
     SkImageInfo info = SkImageInfo::Make(width, height, kRGBA_8888_SkColorType, kOpaque_SkAlphaType);

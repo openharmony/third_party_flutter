@@ -10,6 +10,7 @@
 #include <mutex>
 #include <queue>
 #include <thread>
+#include <condition_variable>
 
 #include "flutter/shell/platform/embedder/embedder.h"
 

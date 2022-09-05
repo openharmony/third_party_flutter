@@ -142,7 +142,7 @@ template("flutter_platform_glfw") {
     ]
 
     # wait for glfw enabled in standard system
-    if (!is_standard_system || use_mingw_win || use_mac) {
+    if (!is_standard_system || use_mingw_win || use_mac || use_linux) {
       deps += [ "$flutter_root/glfw:glfw_$platform" ]
     }
   }
@@ -150,7 +150,7 @@ template("flutter_platform_glfw") {
 
 foreach(item, ace_platforms) {
   platform = item.name
-  if (platform == "windows" || platform == "mac") {
+  if (platform == "windows" || platform == "mac" || platform == "linux") {
     flutter_platform_glfw("flutter_glfw_preview_" + item.name) {
       platform = item.name
       defines = []

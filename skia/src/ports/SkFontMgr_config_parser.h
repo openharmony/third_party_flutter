@@ -11,6 +11,7 @@
 #define SkFontMgr_config_parser_DEFINED
 
 #include <string>
+#include <climits>
 
 #include "include/core/SkFontMgr.h"
 #include "include/core/SkString.h"

@@ -26,7 +26,7 @@ std::string g_lmpSystemFontsFile = "INVALID_FILE_PATH";
 }
 #if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_WIN)
 std::string SkFontMgr_Config_Parser::basePath = "..\\..\\resources\\fonts\\";
-#elif defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC)
+#elif defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC) || defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_LINUX)
 std::string SkFontMgr_Config_Parser::basePath = "../../resources/fonts/";
 #endif
 

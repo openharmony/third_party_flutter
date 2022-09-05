@@ -360,7 +360,7 @@ template("ace_skia_opts") {
     sources = []
 
     if (target_cpu == "x86_64" || platform == "windows" || platform == "mac" ||
-        platform == "ios") {
+        platform == "linux" || platform == "ios") {
       cflags -= [ "-march=armv8-a+crc" ]
       sources += [
         "$flutter_root/skia/src/opts/SkOpts_avx.cpp",
@@ -370,6 +370,12 @@ template("ace_skia_opts") {
     }
 
     if (platform == "windows" || target_cpu == "x86_64") {
+      sources += [
+        "$flutter_root/skia/src/opts/SkOpts_sse41.cpp",
+        "$flutter_root/skia/src/opts/SkOpts_sse42.cpp",
+        "$flutter_root/skia/src/opts/SkOpts_ssse3.cpp",
+      ]
+    } else if (platform == "linux") {
       sources += [
         "$flutter_root/skia/src/opts/SkOpts_sse41.cpp",
         "$flutter_root/skia/src/opts/SkOpts_sse42.cpp",
@@ -893,6 +899,9 @@ template("ace_skia_core") {
         # UIKit symbols UIFontWeightXXX may be dlsym'ed.
         "UIKit.framework",
       ]
+    } else if (platform == "linux") {
+      sources += [ "$flutter_root/skia/src/ports/SkDebug_stdio.cpp" ]
+      libs = [ "GL" ]
     } else {
       # Ohos and Android plarform
       if (target_cpu != "arm") {
@@ -1522,6 +1531,14 @@ template("ace_gpu") {
       sources += [
         "$flutter_root/skia/src/gpu/gl/mac/GrGLMakeNativeInterface_mac.cpp",
       ]
+    } else if (platform == "linux") {
+      defines += [ "SK_R32_SHIFT=16" ]
+      sources -= [
+        "$flutter_root/skia/src/gpu/gl/egl/GrGLMakeNativeInterface_egl.cpp",
+      ]
+      sources += [
+        "$flutter_root/skia/src/gpu/gl/glx/GrGLMakeNativeInterface_glx.cpp",
+      ]
     } else if (platform == "ios") {
       defines += [
         "SK_BUILD_FOR_IOS",
@@ -1743,6 +1760,24 @@ template("ace_fontmgr") {
           "$flutter_root/skia/src/ports/SkFontMgr_preview.cpp",
         ]
       }
+    } else if (platform == "linux") {
+      if (defined(config.ohos_standard_fontmgr) &&
+          config.ohos_standard_fontmgr) {
+        sources = [
+          "$flutter_root/skia/src/ports/SkFontMgr_custom.cpp",
+          "$flutter_root/skia/src/ports/SkFontMgr_custom_directory.cpp",
+          "$flutter_root/skia/src/ports/SkFontMgr_custom_directory_factory.cpp",
+        ]
+        deps = [ ":ace_fontmgr_standard" ]
+      } else {
+        sources = [
+          "$flutter_root/skia/src/ports/SkFontMgr_config_parser.cpp",
+          "$flutter_root/skia/src/ports/SkFontMgr_custom.cpp",
+          "$flutter_root/skia/src/ports/SkFontMgr_custom_directory.cpp",
+          "$flutter_root/skia/src/ports/SkFontMgr_custom_directory_factory.cpp",
+          "$flutter_root/skia/src/ports/SkFontMgr_preview.cpp",
+        ]
+      }
     } else {
       # Ohos or Android platform
       if (defined(config.ohos_standard_fontmgr) &&
@@ -1837,6 +1872,9 @@ ohos_source_set("ace_fontmgr_standard") {
     defines -= [ "SK_BUILD_FONT_MGR_FOR_OHOS" ]
   } else if (use_mac) {
     defines += [ "SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC" ]
+    defines -= [ "SK_BUILD_FONT_MGR_FOR_OHOS" ]
+  } else if (use_linux) {
+    defines += [ "SK_BUILD_FONT_MGR_FOR_PREVIEW_LINUX" ]
     defines -= [ "SK_BUILD_FONT_MGR_FOR_OHOS" ]
   }
 }

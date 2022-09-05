@@ -4,6 +4,11 @@
 
 #include "txt/platform.h"
 
+#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_LINUX)
+#include "include/core/SkFontMgr.h"
+bool SkFontMgr::physicalDeviceFonts = false;
+#endif
+
 #ifdef FLUTTER_USE_FONTCONFIG
 #include "third_party/skia/include/ports/SkFontMgr_fontconfig.h"
 #else
@@ -12,12 +17,24 @@
 
 namespace txt {
 
+#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_LINUX)
+std::string GetDefaultFontFamily() {
+#ifdef OHOS_STANDARD_SYSTEM
+  return "HarmonyOS-Sans";
+#else
+  return "Arial";
+#endif
+}
+#else
 std::string GetDefaultFontFamily() {
   return "Arial";
 }
+#endif
 
 sk_sp<SkFontMgr> GetDefaultFontManager() {
-#ifdef FLUTTER_USE_FONTCONFIG
+#ifdef SK_BUILD_FONT_MGR_FOR_PREVIEW_LINUX
+  return SkFontMgr::RefDefault();
+#elif FLUTTER_USE_FONTCONFIG
   return SkFontMgr_New_FontConfig(nullptr);
 #else
   return SkFontMgr_New_Custom_Directory("/usr/share/fonts/");

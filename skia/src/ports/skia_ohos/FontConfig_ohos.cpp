@@ -16,7 +16,7 @@
 #include "SkString.h"
 
 using namespace ErrorCode;
-#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_WIN) or defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC)
+#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_WIN) or defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC) or defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_LINUX)
 static const char* OHOS_DEFAULT_CONFIG = "fontconfig.json";
 #else
 static const char* OHOS_DEFAULT_CONFIG = "/system/etc/fontconfig.json";
