@@ -119,15 +119,18 @@ template("glfw") {
 
 glfw("glfw_windows") {
   defines = ace_windows_defines
+  defines += [ "PREVIEW" ]
   platform = "windows"
 }
 
 glfw("glfw_mac") {
   defines = ace_mac_defines
+  defines += [ "PREVIEW" ]
   platform = "mac"
 }
 
 glfw("glfw_linux") {
   defines = ace_linux_defines
+  defines += [ "PREVIEW" ]
   platform = "linux"
 }
