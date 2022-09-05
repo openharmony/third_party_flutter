@@ -38,7 +38,6 @@ ohos_source_set("ace_libpng") {
   part_name = flutter_part
   license_file = "$flutter_root/skia/third_party/externals/libpng/LICENSE"
   configs = [ ":ace_libpng_config" ]
-  configs += [ "$ace_root/build:reduce_eh_frame_config" ]
 
   deps = [ "//third_party/zlib:libz" ]
 

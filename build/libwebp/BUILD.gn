@@ -38,7 +38,6 @@ ohos_source_set("ace_libwebp") {
   part_name = flutter_part
   license_file = "$flutter_root/skia/third_party/externals/libwebp/COPYING"
   configs = [ ":ace_libwebp_config" ]
-  configs += [ "$ace_root/build:reduce_eh_frame_config" ]
 
   if ((target_cpu == "x86_64" && !use_mingw_win) || use_mac) {
     deps = [ ":ace_libwebp_sse41" ]
@@ -180,7 +179,6 @@ config("ace_libwebp_sse41_config") {
 ohos_source_set("ace_libwebp_sse41") {
   part_name = flutter_part
   configs = [ ":ace_libwebp_sse41_config" ]
-  configs += [ "$ace_root/build:reduce_eh_frame_config" ]
   sources = [
     "$flutter_root/skia/third_party/externals/libwebp/src/dsp/alpha_processing_sse41.c",
     "$flutter_root/skia/third_party/externals/libwebp/src/dsp/dec_sse41.c",

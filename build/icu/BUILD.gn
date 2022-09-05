@@ -136,7 +136,9 @@ template("ace_libicu") {
       }
     } else {
       configs += [ "//build/config/compiler:rtti" ]
-      configs += [ "$ace_root/build:reduce_eh_frame_config" ]
+      if (platform == "android") {
+        configs += [ "$ace_root/build:reduce_eh_frame_config" ]
+      }
       defines += [
         "U_COMMON_IMPLEMENTATION",
         "U_STATIC_IMPLEMENTATION",
