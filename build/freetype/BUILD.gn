@@ -41,7 +41,6 @@ ohos_source_set("ace_libfreetype2") {
   license_file =
       "$flutter_root/skia/third_party/externals/freetype/docs/LICENSE.TXT"
   configs = [ ":ace_libfreetype2_config" ]
-  configs += [ "$ace_root/build:reduce_eh_frame_config" ]
   sources = [
     "$flutter_root/skia/third_party/externals/freetype/src/autofit/autofit.c",
     "$flutter_root/skia/third_party/externals/freetype/src/base/ftbase.c",

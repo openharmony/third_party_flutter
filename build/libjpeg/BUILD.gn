@@ -39,7 +39,6 @@ ohos_source_set("ace_libjpeg") {
   license_file =
       "$flutter_root/skia/third_party/externals/libjpeg-turbo/LICENSE.md"
   configs = [ ":ace_libjpeg_config" ]
-  configs += [ "$ace_root/build:reduce_eh_frame_config" ]
   sources = [
     "$flutter_root/skia/third_party/externals/libjpeg-turbo/jaricom.c",
     "$flutter_root/skia/third_party/externals/libjpeg-turbo/jcapimin.c",
