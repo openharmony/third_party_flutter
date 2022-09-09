@@ -48,6 +48,7 @@ template("flutter_engine") {
 
   ohos_source_set(target_name) {
     part_name = flutter_part
+    subsystem_name = flutter_subsystem
     license_file = "$flutter_root/engine/flutter/LICENSE"
     deps = [
       ":flutter_engine_asset_manager",
@@ -80,6 +81,7 @@ foreach(item, ace_platforms) {
 # ------------------------------------------------
 ohos_source_set("flutter_engine_asset_manager") {
   part_name = flutter_part
+  subsystem_name = flutter_subsystem
   sources = [
     "$flutter_root/engine/flutter/assets/asset_manager.cc",
     "$flutter_root/engine/flutter/assets/directory_asset_bundle.cc",
@@ -106,6 +108,7 @@ template("flutter_engine_fml") {
   forward_variables_from(invoker, "*")
   ohos_source_set(target_name) {
     part_name = flutter_part
+    subsystem_name = flutter_subsystem
     defines += invoker.defines
     cflags_cc += invoker.cflags_cc
     configs = [
@@ -255,6 +258,7 @@ template("flutter_engine_common") {
 
   ohos_source_set(target_name) {
     part_name = flutter_part
+    subsystem_name = flutter_subsystem
     defines += invoker.defines
     cflags_cc += invoker.cflags_cc
     configs = [ ":flutter_config" ]
@@ -305,6 +309,7 @@ template("flutter_engine_flow") {
 
   ohos_source_set(target_name) {
     part_name = flutter_part
+    subsystem_name = flutter_subsystem
     defines += invoker.defines
     cflags_cc += invoker.cflags_cc
 
@@ -385,6 +390,7 @@ template("flutter_engine_shell") {
 
   ohos_source_set(target_name) {
     part_name = flutter_part
+    subsystem_name = flutter_subsystem
     defines += invoker.defines
     defines += [
       "FLUTTER_ENGINE_VERSION=\"cc88fa45dbf4c55bc23cecea17fb90f43bccf588\"",
@@ -621,6 +627,7 @@ template("flutter_engine_lib_ui") {
   forward_variables_from(invoker, "*")
   ohos_source_set(target_name) {
     part_name = flutter_part
+    subsystem_name = flutter_subsystem
     defines += invoker.defines
     cflags_cc += invoker.cflags_cc
 

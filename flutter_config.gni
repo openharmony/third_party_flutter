@@ -14,6 +14,9 @@
 # Config part name
 flutter_part = "flutter"
 
+# Config subsystem name
+flutter_subsystem = "thirdparty"
+
 declare_args() {
   flutter_feature_skia_small_page_enable = true
 }

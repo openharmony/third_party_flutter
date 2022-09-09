@@ -47,6 +47,7 @@ template("ace_libharfbuzz") {
 
   ohos_source_set(target_name) {
     part_name = flutter_part
+    subsystem_name = flutter_subsystem
     license_file = "$flutter_root/skia/third_party/externals/harfbuzz/COPYING"
     defines += invoker.defines
     defines += [

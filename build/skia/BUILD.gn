@@ -80,6 +80,7 @@ template("make_skia_deps") {
 
   ohos_source_set("ace_skia_$platform") {
     part_name = flutter_part
+    subsystem_name = flutter_subsystem
     license_file = "$flutter_root/skia/LICENSE"
     if (platform == "ohos" &&
         (!defined(config.disable_gpu) || !config.disable_gpu) &&
@@ -339,6 +340,7 @@ template("ace_skia_opts") {
 
   ohos_source_set(target_name) {
     part_name = flutter_part
+    subsystem_name = flutter_subsystem
     defines = [
       "SK_SUPPORT_ATLAS_TEXT=1",
       "SK_GAMMA_APPLY_TO_A8",
@@ -435,6 +437,7 @@ template("ace_skia_core") {
 
   ohos_source_set(target_name) {
     part_name = flutter_part
+    subsystem_name = flutter_subsystem
     defines += invoker.defines
     defines += ace_skia_common_defines
     cflags_cc += invoker.cflags_cc
@@ -987,6 +990,7 @@ template("ace_skia_ext") {
 
   ohos_source_set(target_name) {
     part_name = flutter_part
+    subsystem_name = flutter_subsystem
     defines += invoker.defines
     defines += [ "OHOS_ACE_SKIA_EXT" ]
     configs = [ ":ace_skia_ext_config" ]
@@ -1062,6 +1066,7 @@ config("ace_jpeg_config") {
 
 ohos_source_set("ace_jpeg") {
   part_name = flutter_part
+  subsystem_name = flutter_subsystem
   configs = [ ":ace_jpeg_config" ]
 
   sources = [
@@ -1096,6 +1101,7 @@ config("ace_skcms_config") {
 
 ohos_source_set("ace_skcms") {
   part_name = flutter_part
+  subsystem_name = flutter_subsystem
   configs = [ ":ace_skcms_config" ]
   sources = [ "$flutter_root/skia/third_party/skcms/skcms.cc" ]
 }
@@ -1123,6 +1129,7 @@ template("ace_pdf") {
 
   ohos_source_set(target_name) {
     part_name = flutter_part
+    subsystem_name = flutter_subsystem
     defines += invoker.defines
     cflags_cc += invoker.cflags_cc
     defines += ace_skia_common_defines
@@ -1220,6 +1227,7 @@ template("ace_gpu") {
 
   ohos_source_set(target_name) {
     part_name = flutter_part
+    subsystem_name = flutter_subsystem
     defines += invoker.defines
     defines += ace_skia_common_defines
     defines += [ "SK_DISABLE_REDUCE_OPLIST_SPLITTING" ]
@@ -1606,6 +1614,7 @@ config("ace_typeface_freetype_config") {
 
 ohos_source_set("ace_typeface_freetype") {
   part_name = flutter_part
+  subsystem_name = flutter_subsystem
   defines = ace_skia_common_defines
   defines += [ "SK_FREETYPE_MINIMUM_RUNTIME_VERSION=(((FREETYPE_MAJOR) << 24) | ((FREETYPE_MINOR) << 16) | ((FREETYPE_PATCH) << 8))" ]
   configs = [
@@ -1634,6 +1643,7 @@ config("ace_gif_config") {
 
 ohos_source_set("ace_gif") {
   part_name = flutter_part
+  subsystem_name = flutter_subsystem
   defines = ace_skia_common_defines
   configs = [ ":ace_gif_config" ]
   sources = [
@@ -1658,6 +1668,7 @@ config("ace_xml_config") {
 
 ohos_source_set("ace_xml") {
   part_name = flutter_part
+  subsystem_name = flutter_subsystem
   configs = [
     ":ace_xml_config",
     ":skia_deps_include_config",
@@ -1695,6 +1706,7 @@ template("ace_fontmgr") {
 
   ohos_source_set(target_name) {
     part_name = flutter_part
+    subsystem_name = flutter_subsystem
     configs = [
       ":ace_fontmgr_config",
       ":skia_deps_include_config",
@@ -1834,6 +1846,7 @@ config("ace_fontmgr_standard_config") {
 
 ohos_source_set("ace_fontmgr_standard") {
   part_name = flutter_part
+  subsystem_name = flutter_subsystem
   configs = [
     ":ace_fontmgr_config",
     ":ace_fontmgr_standard_config",
@@ -1882,6 +1895,7 @@ ohos_source_set("ace_fontmgr_standard") {
 ohos_prebuilt_etc("ace_fontconfig.json") {
   source = "$flutter_root/skia/src/ports/skia_ohos/config/fontconfig.json"
   part_name = "flutter"
+  subsystem_name = flutter_subsystem
 }
 
 # ------------------------------------------------
@@ -1904,6 +1918,7 @@ config("ace_webp_config") {
 
 ohos_source_set("ace_webp") {
   part_name = flutter_part
+  subsystem_name = flutter_subsystem
   configs = [ ":ace_webp_config" ]
   sources = [
     "$flutter_root/skia/src/codec/SkWebpCodec.cpp",
@@ -1936,6 +1951,7 @@ template("ace_png") {
 
   ohos_source_set(target_name) {
     part_name = flutter_part
+    subsystem_name = flutter_subsystem
     defines += invoker.defines
     defines += ace_skia_common_defines
     cflags_cc += invoker.cflags_cc
@@ -1993,6 +2009,7 @@ config("ace_heif_config") {
 
 ohos_source_set("ace_heif") {
   part_name = flutter_part
+  subsystem_name = flutter_subsystem
   configs = [ ":ace_heif_config" ]
   sources = [ "$flutter_root/skia/src/codec/SkHeifCodec.cpp" ]
   defines = ace_skia_common_defines
@@ -2023,6 +2040,7 @@ template("ace_svg_model") {
 
   ohos_source_set(target_name) {
     part_name = flutter_part
+    subsystem_name = flutter_subsystem
     defines += invoker.defines
     configs = []
     if (platform == "ohos" && defined(config.enable_native_view) &&

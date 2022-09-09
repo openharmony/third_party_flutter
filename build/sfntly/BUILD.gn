@@ -46,6 +46,7 @@ template("ace_libsfntly") {
 
   ohos_source_set(target_name) {
     part_name = flutter_part
+    subsystem_name = flutter_subsystem
     license_file =
         "$flutter_root/skia/third_party/externals/sfntly/cpp/COPYING.txt"
     defines += invoker.defines
