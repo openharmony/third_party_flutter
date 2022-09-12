@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "flutter/flow/layers/transform_layer.h"
+#include "include/core/SkMatrix.h"
 
 namespace flutter {
 
@@ -69,6 +70,31 @@ void TransformLayer::Paint(PaintContext& context) const {
   context.internal_nodes_canvas->concat(transform_);
 
   PaintChildren(context);
+}
+
+SkRect TransformLayer::MapRect(const SkRect& rect) {
+  SkRect dst_rect;
+  if (transform_.mapRect(&dst_rect, rect)) {
+    return dst_rect;
+  }
+  return rect;
+}
+
+void TransformLayer::MergeParentHole() {
+  auto* parent_layer = parent();
+  if (!parent_layer) {
+    return;
+  }
+  SkMatrix inverse_mat = transform_;
+  if (!inverse_mat.invert(&inverse_mat)) {
+    return;
+  }
+  for (const auto& [id, rect] : parent_layer->HoleRegions()) {
+    SkRect dst_rect;
+    if (inverse_mat.mapRect(&dst_rect, rect)) {
+      hole_regions_.try_emplace(id, dst_rect);
+    }
+  }
 }
 
 }  // namespace flutter

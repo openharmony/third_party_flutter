@@ -11,6 +11,7 @@
 #include "flutter/flow/layers/color_filter_layer.h"
 #include "flutter/flow/layers/container_layer.h"
 #include "flutter/flow/layers/filter_layer.h"
+#include "flutter/flow/layers/hole_layer.h"
 #include "flutter/flow/layers/layer.h"
 #include "flutter/flow/layers/layer_tree.h"
 #include "flutter/flow/layers/mask_layer.h"
@@ -205,6 +206,13 @@ fml::RefPtr<EngineLayer> SceneBuilder::PushFilter(const SkPaint& filterPaint) {
   auto layer =
       std::make_shared<flutter::FilterLayer>(filterPaint);
   PushLayer(layer);
+  return EngineLayer::MakeRetained(layer);
+}
+
+fml::RefPtr<EngineLayer> SceneBuilder::PushHole(const SkRect& rect, int32_t hole_id) {
+  auto layer = std::make_shared<flutter::HoleLayer>(rect, hole_id);
+  PushLayer(layer);
+  layer->MarkHole();
   return EngineLayer::MakeRetained(layer);
 }
 

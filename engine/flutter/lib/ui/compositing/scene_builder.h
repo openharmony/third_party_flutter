@@ -70,6 +70,7 @@ class SceneBuilder : public RefCountedDartWrappable<SceneBuilder> {
   fml::RefPtr<EngineLayer> PushSvgMask(const sk_sp<SkSVGDOM>& svgDom, double x, double y, double scaleX, double scaleY);
   fml::RefPtr<EngineLayer> PushPathMask(const SkPaint& maskPaint, const SkPath& maskPath);
   fml::RefPtr<EngineLayer> PushFilter(const SkPaint& filterPaint);
+  fml::RefPtr<EngineLayer> PushHole(const SkRect& rect, int32_t hole_id);
 
   void addRetained(fml::RefPtr<EngineLayer> retainedLayer);
 
