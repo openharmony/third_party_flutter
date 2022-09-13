@@ -29,6 +29,7 @@ ohos_shared_library("skia_ohos") {
     "$ace_flutter_engine_root/skia:harfbuzz_config",
   ]
 
+  external_deps = [ "c_utils:utils" ]
   deps = [
     ":jpeg",
     ":png_ohos",
@@ -51,7 +52,6 @@ ohos_shared_library("skia_ohos") {
     "$ace_flutter_engine_root/skia:make_third_party_skia_include_dir",
     "$rosen_flutter_engine_root/harfbuzz:rosen_libharfbuzz_ohos",
     "$rosen_flutter_engine_root/icu:rosen_libicu_ohos",
-    "//utils/native/base:utils",
   ]
 
   if (ace_enable_gpu) {
