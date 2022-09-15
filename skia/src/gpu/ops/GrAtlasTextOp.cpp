@@ -197,13 +197,21 @@ static void clip_quads(const SkIRect& clipRect, char* currVertex, const char* bl
             auto* blobCoordsRB = reinterpret_cast<const uint16_t*>(blobVertices + 3 * vertexStride +
                                                                    coordOffset);
             // Pull out the texel coordinates and texture index bits
+#ifdef SK_ENABLE_SMALL_PAGE
             uint16_t coordsRectL = blobCoordsLT[0] >> 3;
             uint16_t coordsRectT = blobCoordsLT[1] >> 3;
             uint16_t coordsRectR = blobCoordsRB[0] >> 3;
             uint16_t coordsRectB = blobCoordsRB[1] >> 3;
             uint16_t pageIndexX = blobCoordsLT[0] & 0x7;
             uint16_t pageIndexY = blobCoordsLT[1] & 0x7;
-
+#else
+            uint16_t coordsRectL = blobCoordsLT[0] >> 1;
+            uint16_t coordsRectT = blobCoordsLT[1] >> 1;
+            uint16_t coordsRectR = blobCoordsRB[0] >> 1;
+            uint16_t coordsRectB = blobCoordsRB[1] >> 1;
+            uint16_t pageIndexX = blobCoordsLT[0] & 0x1;
+            uint16_t pageIndexY = blobCoordsLT[1] & 0x1;
+#endif
             int positionRectWidth = positionRect.width();
             int positionRectHeight = positionRect.height();
             SkASSERT(positionRectWidth == (coordsRectR - coordsRectL));
@@ -228,11 +236,17 @@ static void clip_quads(const SkIRect& clipRect, char* currVertex, const char* bl
             positionRect.fBottom -= delta;
 
             // Repack texel coordinates and index
+#ifdef SK_ENABLE_SMALL_PAGE
             coordsRectL = coordsRectL << 3 | pageIndexX;
             coordsRectT = coordsRectT << 3 | pageIndexY;
             coordsRectR = coordsRectR << 3 | pageIndexX;
             coordsRectB = coordsRectB << 3 | pageIndexY;
-
+#else
+            coordsRectL = coordsRectL << 1 | pageIndexX;
+            coordsRectT = coordsRectT << 1 | pageIndexY;
+            coordsRectR = coordsRectR << 1 | pageIndexX;
+            coordsRectB = coordsRectB << 1 | pageIndexY;
+#endif
             // Set new positions and coords
             SkPoint* currPosition = reinterpret_cast<SkPoint*>(currVertex);
             currPosition->fX = positionRect.fLeft;
