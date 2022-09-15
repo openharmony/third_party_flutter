@@ -6,26 +6,20 @@
 
 #if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_WIN)
 #include "include/core/SkFontMgr.h"
-bool SkFontMgr::physicalDeviceFonts = false;
+std::string SkFontMgr::runtimeOS = "OHOS";
 #endif
 
 namespace txt {
 
 #if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_WIN)
 std::string GetDefaultFontFamily() {
-#ifdef OHOS_STANDARD_SYSTEM
-  if (SkFontMgr::physicalDeviceFonts) {
+  if (SkFontMgr::runtimeOS == "OHOS") {
     return "HarmonyOS-Sans";
-  } else {
-    return "Arial";
   }
-#else
-  if (SkFontMgr::physicalDeviceFonts) {
+  if (SkFontMgr::runtimeOS == "OHOS_Container") {
     return "sans-serif";
-  } else {
-    return "Arial";
   }
-#endif
+  return "Arial";
 }
 #else
 std::string GetDefaultFontFamily() {

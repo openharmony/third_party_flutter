@@ -9,17 +9,29 @@
 #include "include/ports/SkFontMgr_directory.h"
 
 #ifndef SK_FONT_FILE_PREFIX
-#    define SK_FONT_FILE_PREFIX "/usr/share/fonts/"
+#define SK_FONT_FILE_PREFIX "/usr/share/fonts/"
 #endif
 
 #ifdef SK_BUILD_FONT_MGR_FOR_PREVIEW_LINUX
-SK_API sk_sp<SkFontMgr> SkFontMgr_New_OHOS(const char* path);
+SK_API sk_sp<SkFontMgr> SkFontMgr_New_OHOS(const char *path);
 #endif
 
-sk_sp<SkFontMgr> SkFontMgr::Factory() {
 #if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_LINUX)
-    return SkFontMgr_New_OHOS(nullptr);
-#else
-    return SkFontMgr_New_Custom_Directory(SK_FONT_FILE_PREFIX);
-#endif
+#include "src/ports/SkFontMgr_preview.h"
+
+sk_sp<SkFontMgr> SkFontMgr::Factory()
+{
+    if (SkFontMgr::runtimeOS == "OHOS") {
+        return SkFontMgr_New_OHOS(nullptr);
+    }
+    if (SkFontMgr::runtimeOS == "OHOS_Container") {
+        return SkFontMgr_New_Preview();
+    }
+  return SkFontMgr_New_Custom_Directory(SK_FONT_FILE_PREFIX);
 }
+#else
+sk_sp<SkFontMgr> SkFontMgr::Factory()
+{
+    return SkFontMgr_New_Custom_Directory(SK_FONT_FILE_PREFIX);
+}
+#endif

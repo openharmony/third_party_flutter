@@ -43,11 +43,13 @@ public:
 
 #if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_WIN) or defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC) or defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_LINUX)
     /**
-     * Whether to use the physical device font for previewer flag.
-     * If true, use physical device font collecton.
-     * If false, use the font collection installed in users' pc.
+     * OHOS_Container font base path. It is empty when using OpenHarmony fonts.
      */
-    static bool physicalDeviceFonts;
+    static std::string containerFontPath;
+    /**
+     * Indicate the runtimeOS of preview(OHOS_Container and OHOS)
+     */
+    static std::string runtimeOS;
 #endif
     /**
      *  The caller must call unref() on the returned object.
@@ -135,10 +137,11 @@ public:
     static sk_sp<SkFontMgr> RefDefault();
 
 #if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_WIN) or defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC) or defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_LINUX)
-    /** Set the whether to use physical device font in previwer */
-    static void setPhysicalDeviceFonts(bool& physicalDeviceFontsEnabled)
+    /** Set the runtimeOS and container font base path */
+    static void SetFontMgrConfig(const std::string runtime, const std::string containerFontBasePath)
     {
-        physicalDeviceFonts = physicalDeviceFontsEnabled;
+        containerFontPath = containerFontBasePath;
+        runtimeOS = runtime;
     }
 #endif
 

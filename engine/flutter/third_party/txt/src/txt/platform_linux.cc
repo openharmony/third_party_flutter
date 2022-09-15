@@ -6,7 +6,7 @@
 
 #if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_LINUX)
 #include "include/core/SkFontMgr.h"
-bool SkFontMgr::physicalDeviceFonts = false;
+std::string SkFontMgr::runtimeOS = "OHOS";
 #endif
 
 #ifdef FLUTTER_USE_FONTCONFIG
@@ -18,26 +18,31 @@ bool SkFontMgr::physicalDeviceFonts = false;
 namespace txt {
 
 #if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_LINUX)
-std::string GetDefaultFontFamily() {
-#ifdef OHOS_STANDARD_SYSTEM
-  return "HarmonyOS-Sans";
-#else
-  return "Arial";
-#endif
+std::string GetDefaultFontFamily()
+{
+    if (SkFontMgr::runtimeOS == "OHOS") {
+        return "HarmonyOS-Sans";
+    }
+    if (SkFontMgr::runtimeOS == "OHOS_Container") {
+        return "sans-serif";
+    }
+    return "Arial";
 }
 #else
-std::string GetDefaultFontFamily() {
-  return "Arial";
+std::string GetDefaultFontFamily()
+{
+    return "Arial";
 }
 #endif
 
-sk_sp<SkFontMgr> GetDefaultFontManager() {
+sk_sp<SkFontMgr> GetDefaultFontManager()
+{
 #ifdef SK_BUILD_FONT_MGR_FOR_PREVIEW_LINUX
-  return SkFontMgr::RefDefault();
+    return SkFontMgr::RefDefault();
 #elif FLUTTER_USE_FONTCONFIG
-  return SkFontMgr_New_FontConfig(nullptr);
+    return SkFontMgr_New_FontConfig(nullptr);
 #else
-  return SkFontMgr_New_Custom_Directory("/usr/share/fonts/");
+    return SkFontMgr_New_Custom_Directory("/usr/share/fonts/");
 #endif
 }
 

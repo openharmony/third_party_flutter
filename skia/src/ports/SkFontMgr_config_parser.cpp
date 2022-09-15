@@ -18,17 +18,13 @@
 #include "src/core/SkTSearch.h"
 
 #define SK_FONT_CONFIG_FILE_NAME "fonts.xml"
+std::string SkFontMgr::containerFontPath = "";
 
 namespace {
 
 std::string g_lmpSystemFontsFile = "INVALID_FILE_PATH";
 
 }
-#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_WIN)
-std::string SkFontMgr_Config_Parser::basePath = "..\\..\\resources\\fonts\\";
-#elif defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC) || defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_LINUX)
-std::string SkFontMgr_Config_Parser::basePath = "../../resources/fonts/";
-#endif
 
 /**
  * This parser file for android contains TWO 'familyset' handlers:
@@ -552,12 +548,12 @@ static int append_system_font_families(SkTDArray<FontFamily*>& fontFamilies,
 
 void SkFontMgr_Config_Parser::GetSystemFontFamilies(SkTDArray<FontFamily*>& fontFamilies)
 {
-    std::string fontBasePath = this->basePath;
-    if (fontBasePath.empty()) {
-        printf("error getting font base path '%s'\n", fontBasePath.c_str());
+    std::string containerFontBasePath = SkFontMgr::containerFontPath;
+    if (containerFontBasePath.empty()) {
+        printf("error getting font base path '%s'\n", containerFontBasePath.c_str());
     }
-    SkString basePath(fontBasePath.c_str());
-    g_lmpSystemFontsFile = fontBasePath.append(SK_FONT_CONFIG_FILE_NAME);
+    SkString basePath(containerFontBasePath.c_str());
+    g_lmpSystemFontsFile = containerFontBasePath.append(SK_FONT_CONFIG_FILE_NAME);
     append_system_font_families(fontFamilies, basePath);
 }
 
