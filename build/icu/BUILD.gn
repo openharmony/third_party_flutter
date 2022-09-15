@@ -116,6 +116,7 @@ template("ace_libicu") {
 
   ohos_source_set(target_name) {
     part_name = flutter_part
+    subsystem_name = flutter_subsystem
     license_file = "$flutter_root/skia/third_party/externals/icu/LICENSE"
     public_configs = [ ":icu_config_$platform" ]
     configs = [ ":icu_compile_flags" ]

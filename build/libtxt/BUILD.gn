@@ -28,6 +28,7 @@ template("thirdparty_lib_txt") {
 
   ohos_source_set(target_name) {
     part_name = flutter_part
+    subsystem_name = flutter_subsystem
     defines += invoker.defines
     cflags_cc += invoker.cflags_cc
 

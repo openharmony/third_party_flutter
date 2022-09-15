@@ -64,7 +64,7 @@ ohos_shared_library("skia_ohos") {
   ]
 
   part_name = "flutter"
-  subsystem_name = "thirdparty"
+  subsystem_name = flutter_subsystem
 }
 
 # ------------------------------------------------
