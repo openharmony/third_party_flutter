@@ -26,6 +26,7 @@ void ContainerLayer::Preroll(PrerollContext* context, const SkMatrix& matrix) {
 void ContainerLayer::PrerollChildren(PrerollContext* context,
                                      const SkMatrix& child_matrix,
                                      SkRect* child_paint_bounds) {
+  MergeParentHole();
   for (auto& layer : layers_) {
     layer->Preroll(context, child_matrix);
 
@@ -45,6 +46,35 @@ void ContainerLayer::PaintChildren(PaintContext& context) const {
     if (layer->needs_painting()) {
       layer->Paint(context);
     }
+  }
+}
+
+void ContainerLayer::MarkHole(int hole_id, const SkRect& rect) {
+  hole_regions_.try_emplace(hole_id, rect);
+  SkRect dst_rect = MapRect(rect);
+  auto* parent_layer = parent();
+  if (parent_layer != nullptr) {
+    parent_layer->MarkHole(hole_id, dst_rect);
+  }
+}
+
+void ContainerLayer::RemoveHole(int hole_id) {
+  hole_regions_.erase(hole_id);
+  for (auto& layer : layers_) {
+    if (layer->IsContainer()) {
+      auto* containerLayer = static_cast<ContainerLayer*>(layer.get());
+      containerLayer->RemoveHole(hole_id);
+    }
+  }
+}
+
+void ContainerLayer::MergeParentHole() {
+  auto* parent_layer = parent();
+  if (!parent_layer) {
+    return;
+  }
+  for (const auto& [id, rect] : parent_layer->HoleRegions()) {
+    hole_regions_.try_emplace(id, rect);
   }
 }
 

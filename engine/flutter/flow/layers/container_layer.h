@@ -5,6 +5,7 @@
 #ifndef FLUTTER_FLOW_LAYERS_CONTAINER_LAYER_H_
 #define FLUTTER_FLOW_LAYERS_CONTAINER_LAYER_H_
 
+#include <unordered_map>
 #include <vector>
 #include "flutter/flow/layers/layer.h"
 
@@ -25,6 +26,18 @@ class ContainerLayer : public Layer {
 
   const std::vector<std::shared_ptr<Layer>>& layers() const { return layers_; }
 
+  bool IsContainer() override { return true; }
+
+  void MarkHole(int hole_id, const SkRect& rect);
+
+  void RemoveHole(int hole_id);
+
+  virtual void MergeParentHole();
+
+  virtual SkRect MapRect(const SkRect& rect) { return rect; }
+
+  const std::unordered_map<int, SkRect>& HoleRegions() { return hole_regions_; }
+
  protected:
   void PrerollChildren(PrerollContext* context,
                        const SkMatrix& child_matrix,
@@ -37,6 +50,8 @@ class ContainerLayer : public Layer {
 
   // For OpacityLayer to restructure to have a single child.
   void ClearChildren() { layers_.clear(); }
+
+  std::unordered_map<int, SkRect> hole_regions_;
 
  private:
   std::vector<std::shared_ptr<Layer>> layers_;

@@ -24,6 +24,10 @@ class TransformLayer : public ContainerLayer {
   void UpdateScene(SceneUpdateContext& context) override;
 #endif  // defined(OS_FUCHSIA)
 
+  SkRect MapRect(const SkRect& rect) override;
+
+  void MergeParentHole() override;
+
  private:
   SkMatrix transform_;
 

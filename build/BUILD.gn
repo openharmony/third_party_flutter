@@ -330,6 +330,7 @@ template("flutter_engine_flow") {
       "$flutter_root/engine/flutter/flow/layers/color_filter_layer.cc",
       "$flutter_root/engine/flutter/flow/layers/container_layer.cc",
       "$flutter_root/engine/flutter/flow/layers/filter_layer.cc",
+      "$flutter_root/engine/flutter/flow/layers/hole_layer.cc",
       "$flutter_root/engine/flutter/flow/layers/layer.cc",
       "$flutter_root/engine/flutter/flow/layers/layer_tree.cc",
       "$flutter_root/engine/flutter/flow/layers/mask_layer.cc",

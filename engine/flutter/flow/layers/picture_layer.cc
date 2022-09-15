@@ -4,6 +4,7 @@
 
 #include "flutter/flow/layers/picture_layer.h"
 
+#include "flutter/flow/layers/container_layer.h"
 #include "flutter/fml/logging.h"
 
 namespace flutter {
@@ -42,6 +43,14 @@ void PictureLayer::Paint(PaintContext& context) const {
   FML_DCHECK(needs_painting());
 
   SkAutoCanvasRestore save(context.leaf_nodes_canvas, true);
+  auto* parent_layer = parent();
+  if (parent_layer != nullptr) {
+    const auto& hole_regions = parent_layer->HoleRegions();
+    for (const auto& [id, rect] : hole_regions) {
+      context.leaf_nodes_canvas->clipRect(rect, SkClipOp::kDifference);
+    }
+  }
+
   context.leaf_nodes_canvas->translate(offset_.x(), offset_.y());
 #ifndef SUPPORT_FRACTIONAL_TRANSLATION
   context.leaf_nodes_canvas->setMatrix(RasterCache::GetIntegralTransCTM(

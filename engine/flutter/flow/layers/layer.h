@@ -120,6 +120,8 @@ class Layer {
 
   virtual void Paint(PaintContext& context) const = 0;
 
+  virtual bool IsContainer() { return false; }
+
 #if defined(OS_FUCHSIA)
   // Updates the system composited scene.
   virtual void UpdateScene(SceneUpdateContext& context);
