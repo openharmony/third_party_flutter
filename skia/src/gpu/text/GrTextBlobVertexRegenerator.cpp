@@ -66,6 +66,7 @@ static void regen_texcoords(char* vertex, size_t vertexStride, const GrGlyph* gl
     // We pack the 2bit page index in the low bit of the u and v texture coords
     uint32_t pageIndex = glyph->pageIndex();
     SkASSERT(pageIndex < 16);
+#ifdef SK_ENABLE_SMALL_PAGE
     uint16_t uBit = (pageIndex >> 3) & 0x7;
     uint16_t vBit = pageIndex & 0x7;
     u0 <<= 3;
@@ -76,6 +77,18 @@ static void regen_texcoords(char* vertex, size_t vertexStride, const GrGlyph* gl
     u1 |= uBit;
     v1 <<= 3;
     v1 |= vBit;
+#else
+    uint16_t uBit = (pageIndex >> 1) & 0x1;
+    uint16_t vBit = pageIndex & 0x1;
+    u0 <<= 1;
+    u0 |= uBit;
+    v0 <<= 1;
+    v0 |= vBit;
+    u1 <<= 1;
+    u1 |= uBit;
+    v1 <<= 1;
+    v1 |= vBit;
+#endif
 
     uint16_t* textureCoords = reinterpret_cast<uint16_t*>(vertex + texCoordOffset);
     textureCoords[0] = u0;

@@ -28,8 +28,13 @@ static void append_index_uv_varyings(GrGLSLPrimitiveProcessor::EmitArgs& args,
     if (args.fShaderCaps->integerSupport()) {
         args.fVertBuilder->codeAppendf("int2 signedCoords = int2(%s.x, %s.y);",
                                        inTexCoordsName, inTexCoordsName);
+#ifdef SK_ENABLE_SMALL_PAGE
         args.fVertBuilder->codeAppend("int texIdx = 8*(signedCoords.x & 0x7) + (signedCoords.y & 0x7);");
         args.fVertBuilder->codeAppend("float2 unormTexCoords = float2(signedCoords.x/8, signedCoords.y/8);");
+#else
+        args.fVertBuilder->codeAppend("int texIdx = 2*(signedCoords.x & 0x1) + (signedCoords.y & 0x1);");
+        args.fVertBuilder->codeAppend("float2 unormTexCoords = float2(signedCoords.x/2, signedCoords.y/2);");
+#endif
     } else {
         args.fVertBuilder->codeAppendf("float2 indexTexCoords = float2(%s.x, %s.y);",
                                        inTexCoordsName, inTexCoordsName);
