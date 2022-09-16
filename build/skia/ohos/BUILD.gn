@@ -179,10 +179,6 @@ skia_common_defines = [
   "SK_ENABLE_DUMP_GPU",
 ]
 
-if (flutter_feature_skia_small_page_enable) {
-  skia_common_defines += [ "SK_ENABLE_SMALL_PAGE" ]
-}
-
 # ------------------------------------------------
 #      Skia core source
 # ------------------------------------------------
@@ -609,6 +605,9 @@ ohos_source_set("skia_core_ohos") {
   } else {
     if (is_standard_system) {
       public_deps = [ "//foundation/graphic/graphic_2d:libgl" ]
+      if (flutter_feature_skia_small_page_enable) {
+        defines += [ "SK_ENABLE_SMALL_PAGE" ]
+      }
     } else {
       aosp_deps = [
         "shared_library:libEGL",
