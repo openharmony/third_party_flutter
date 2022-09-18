@@ -383,11 +383,38 @@ GrDrawOpAtlas::ErrorCode GrDrawOpAtlas::addToAtlas(GrResourceProvider* resourceP
     return ErrorCode::kSucceeded;
 }
 
-void GrDrawOpAtlas::compact(GrDeferredUploadToken startTokenForNextFlush) {
+void GrDrawOpAtlas::compactRadicals(GrDeferredUploadToken startTokenForNextFlush) {
+    if (fNumActivePages <= 1) {
+        return;
+    }
+    PlotList::Iter plotIter;
+    unsigned short usedAtlasLastFlush = 0;
+    for (uint32_t pageIndex = 0; pageIndex < fNumActivePages; ++pageIndex) {
+        plotIter.init(fPages[pageIndex].fPlotList, PlotList::Iter::kHead_IterStart);
+        while (Plot* plot = plotIter.get()) {
+            if (plot->lastUseToken().inInterval(fPrevFlushToken, startTokenForNextFlush)) {
+                usedAtlasLastFlush |= (1 << pageIndex);
+                break;
+            }
+            plotIter.next();
+        }
+    }
+    int lastPageIndex = fNumActivePages-1;
+    while (lastPageIndex > 0 && !(usedAtlasLastFlush & (1 << lastPageIndex))) {
+        deactivateLastPage();
+        lastPageIndex--;
+    }
+}
+
+void GrDrawOpAtlas::compact(GrDeferredUploadToken startTokenForNextFlush, bool isRadicals) {
+    if (isRadicals) {
+        compactRadicals(startTokenForNextFlush);
+    }
     if (fNumActivePages <= 1) {
         fPrevFlushToken = startTokenForNextFlush;
         return;
     }
+    int threshold = isRadicals ? 1 : fPlotOldThreshold;
 
     // For all plots, reset number of flushes since used if used this frame.
     PlotList::Iter plotIter;
@@ -438,7 +465,7 @@ void GrDrawOpAtlas::compact(GrDeferredUploadToken startTokenForNextFlush) {
 #endif
                 // Count plots we can potentially upload to in all pages except the last one
                 // (the potential compactee).
-                if (plot->flushesSinceLastUsed() > fPlotOldThreshold) {
+                if (plot->flushesSinceLastUsed() > threshold) {
                     availablePlots.push_back() = plot;
                 }
 
@@ -473,7 +500,7 @@ void GrDrawOpAtlas::compact(GrDeferredUploadToken startTokenForNextFlush) {
             }
 #endif
             // If this plot was used recently
-            if (plot->flushesSinceLastUsed() <= fPlotOldThreshold) {
+            if (plot->flushesSinceLastUsed() <= threshold) {
                 usedPlots++;
             } else if (plot->lastUseToken() != GrDeferredUploadToken::AlreadyFlushedToken()) {
                 // otherwise if aged out just evict it.
@@ -495,7 +522,7 @@ void GrDrawOpAtlas::compact(GrDeferredUploadToken startTokenForNextFlush) {
             plotIter.init(fPages[lastPageIndex].fPlotList, PlotList::Iter::kHead_IterStart);
             while (Plot* plot = plotIter.get()) {
                 // If this plot was used recently
-                if (plot->flushesSinceLastUsed() <= fPlotOldThreshold) {
+                if (plot->flushesSinceLastUsed() <= threshold) {
                     // See if there's room in an earlier page and if so evict.
                     // We need to be somewhat harsh here so that a handful of plots that are
                     // consistently in use don't end up locking the page in memory.
@@ -625,15 +652,6 @@ inline void GrDrawOpAtlas::deactivateLastPage() {
 #ifdef SK_DEBUG_PAGE
     SkDebugf("----- deactivateLastPage %{public}d.", lastPageIndex);
 #endif
-}
-
-void GrDrawOpAtlas::deactivateHalfPage() {
-    SkASSERT(fNumActivePages);
-    int pageCount = fNumActivePages / 2;
-    while (pageCount > 1) {
-        deactivateLastPage();
-        pageCount--;
-    }
 }
 
 GrDrawOpAtlasConfig::GrDrawOpAtlasConfig(int maxTextureSize, size_t maxBytes) {

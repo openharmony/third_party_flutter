@@ -72,8 +72,6 @@ public:
         fAtlasMissCount = 0;
     }
 
-    void deactiveAtlases();
-
     // To ensure the GrDrawOpAtlas does not evict the Glyph Mask from its texture backing store,
     // the client must pass in the current op token along with the GrGlyph.
     // A BulkUseTokenUpdater is used to manage bulk last use token updating in the Atlas.
