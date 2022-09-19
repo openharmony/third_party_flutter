@@ -399,7 +399,7 @@ void GrDrawOpAtlas::compactRadicals(GrDeferredUploadToken startTokenForNextFlush
             plotIter.next();
         }
     }
-    int lastPageIndex = fNumActivePages-1;
+    int lastPageIndex = fNumActivePages - 1;
     while (lastPageIndex > 0 && !(usedAtlasLastFlush & (1 << lastPageIndex))) {
         deactivateLastPage();
         lastPageIndex--;
