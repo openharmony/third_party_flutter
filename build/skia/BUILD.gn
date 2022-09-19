@@ -13,6 +13,7 @@
 
 import("//build/ohos.gni")
 import("//foundation/arkui/ace_engine/ace_config.gni")
+import("//foundation/graphic/graphic_2d/graphic_config.gni")
 import("//third_party/flutter/flutter_config.gni")
 
 # ------------------------------------------------
@@ -1861,7 +1862,9 @@ ohos_source_set("ace_fontmgr_standard") {
   if (is_standard_system) {
     deps += [ "$jsoncpp_root:jsoncpp_static" ]
 
-    if (ace_engine_standard_fonts_enable) {
+    if (graphic_standard_feature_wuji_enable) {
+      deps += [ "//foundation/graphic/graphic_2d_ext:ohos_fonts_wuji" ]
+    } else if (ace_engine_standard_fonts_enable) {
       deps += [ "//utils/system_resources:ohos_fonts" ]
     }
   }
