@@ -148,7 +148,7 @@ bool OhosSurfaceSoftware::PresentBackingStore(
         .height = requestConfig_.height,
         .strideAlignment = alignment,
         .format = PIXEL_FMT_RGBA_8888,
-        .usage = BUFFER_USAGE_CPU_READ | BUFFER_USAGE_CPU_WRITE | BUFFER_USAGE_MEM_DMA,
+        .usage = OHOS::BUFFER_USAGE_CPU_READ | OHOS::BUFFER_USAGE_CPU_WRITE | OHOS::BUFFER_USAGE_MEM_DMA,
         .timeout = 0,
     };
     OHOS::sptr<OHOS::SurfaceBuffer> surfaceBuffer;
