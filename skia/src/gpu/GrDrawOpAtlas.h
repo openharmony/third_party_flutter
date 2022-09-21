@@ -161,7 +161,6 @@ public:
     }
 
     uint32_t numActivePages() { return fNumActivePages; }
-    void deactivateHalfPage();
 
     /**
      * A class which can be handed back to GrDrawOpAtlas for updating last use tokens in bulk.  The
@@ -233,7 +232,7 @@ public:
         }
     }
 
-    void compact(GrDeferredUploadToken startTokenForNextFlush);
+    void compact(GrDeferredUploadToken startTokenForNextFlush, bool isRadicals);
 
     static uint32_t GetPageIndexFromID(AtlasID id) {
         return id & 0xff;
@@ -381,6 +380,7 @@ private:
     bool createPages(GrProxyProvider*);
     bool activateNewPage(GrResourceProvider*);
     void deactivateLastPage();
+    void compactRadicals(GrDeferredUploadToken startTokenForNextFlush);
 
     void processEviction(AtlasID);
     inline void processEvictionAndResetRects(Plot* plot) {
