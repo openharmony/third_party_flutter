@@ -260,6 +260,7 @@ ace_skia_common_cflags = [
   "-Wno-suggest-destructor-override",
   "-Wno-tautological-value-range-compare",
   "-Wno-suggest-override",
+  "-Wno-reserved-identifier",
   "-fvisibility=hidden",
   "-Os",
   "-DSKIA_DLL",
