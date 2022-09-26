@@ -605,9 +605,6 @@ ohos_source_set("skia_core_ohos") {
   } else {
     if (is_standard_system) {
       public_deps = [ "//foundation/graphic/graphic_2d:libgl" ]
-      if (flutter_feature_skia_small_page_enable) {
-        defines += [ "SK_ENABLE_SMALL_PAGE" ]
-      }
     } else {
       aosp_deps = [
         "shared_library:libEGL",
@@ -949,6 +946,9 @@ ohos_source_set("gpu_ohos") {
     # Ohos platform
     if (is_standard_system) {
       public_deps = [ "//foundation/graphic/graphic_2d:libgl" ]
+      if (flutter_feature_skia_small_page_enable) {
+        defines += [ "SK_ENABLE_SMALL_PAGE" ]
+      }
     } else {
       aosp_deps = [
         "shared_library:libEGL",
