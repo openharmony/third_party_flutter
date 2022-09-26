@@ -16,35 +16,26 @@
 
 #if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC)
 #include "include/core/SkFontMgr.h"
-bool SkFontMgr::physicalDeviceFonts = false;
+std::string SkFontMgr::runtimeOS = "OHOS";
 #endif
 
 namespace txt {
 
 #if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC)
 std::string GetDefaultFontFamily() {
-#ifdef OHOS_STANDARD_SYSTEM
-  if (SkFontMgr::physicalDeviceFonts) {
+  if (SkFontMgr::runtimeOS == "OHOS") {
     return "HarmonyOS-Sans";
-  } else {
-    if (fml::IsPlatformVersionAtLeast(9)) {
-      return [FONT_CLASS systemFontOfSize:14].familyName.UTF8String;
-    } else {
-      return "Helvetica";
-    }
   }
-#else
-  if (SkFontMgr::physicalDeviceFonts) {
+  if (SkFontMgr::runtimeOS == "OHOS_Container") {
     return "sans-serif";
-  } else {
-    if (fml::IsPlatformVersionAtLeast(9)) {
-      return [FONT_CLASS systemFontOfSize:14].familyName.UTF8String;
-    } else {
-      return "Helvetica";
-    }
   }
-#endif
+  if (fml::IsPlatformVersionAtLeast(9)) {
+    return [FONT_CLASS systemFontOfSize:14].familyName.UTF8String;
+  } else {
+    return "Helvetica";
+  }
 }
+
 #else
 std::string GetDefaultFontFamily() {
   if (fml::IsPlatformVersionAtLeast(9)) {

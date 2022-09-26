@@ -2912,25 +2912,20 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC) and !defined(OHOS_STANDARD_SYSTEM)
+#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC)
 #include "src/ports/SkFontMgr_preview.h"
-sk_sp<SkFontMgr> SkFontMgr::Factory()
-{
-    if (SkFontMgr::physicalDeviceFonts) {
-        return SkFontMgr_New_Preview();
-    } else {
-        return sk_make_sp<SkFontMgr_Mac>();
-    }
-}
-#elif defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC) and defined(OHOS_STANDARD_SYSTEM)
+
 SK_API sk_sp<SkFontMgr> SkFontMgr_New_OHOS(const char* path);
+
 sk_sp<SkFontMgr> SkFontMgr::Factory()
 {
-    if (SkFontMgr::physicalDeviceFonts) {
+    if (SkFontMgr::runtimeOS == "OHOS") {
         return SkFontMgr_New_OHOS(nullptr);
-    } else {
-        return sk_make_sp<SkFontMgr_Mac>();
     }
+    if (SkFontMgr::runtimeOS == "OHOS_Container") {
+        return SkFontMgr_New_Preview();
+    }
+    return sk_make_sp<SkFontMgr_Mac>();
 }
 #else
 sk_sp<SkFontMgr> SkFontMgr::Factory() { return sk_make_sp<SkFontMgr_Mac>(); }

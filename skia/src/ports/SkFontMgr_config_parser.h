@@ -10,8 +10,8 @@
 #ifndef SkFontMgr_config_parser_DEFINED
 #define SkFontMgr_config_parser_DEFINED
 
-#include <string>
 #include <climits>
+#include <string>
 
 #include "include/core/SkFontMgr.h"
 #include "include/core/SkString.h"
@@ -125,9 +125,6 @@ public:
 
     /** Parses system font configuration files and appends result to fontFamilies. */
     void GetSystemFontFamilies(SkTDArray<FontFamily *> &fontFamilies);
-
-private:
-    static std::string basePath;
 
 };
 
