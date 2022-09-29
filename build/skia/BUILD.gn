@@ -1863,7 +1863,7 @@ ohos_source_set("ace_fontmgr_standard") {
     if (graphic_standard_feature_wuji_enable) {
       deps += [ "//foundation/graphic/graphic_2d_ext:ohos_fonts_wuji" ]
     } else if (ace_engine_standard_fonts_enable) {
-      deps += [ "//utils/system_resources:ohos_fonts" ]
+      deps += [ "//base/global/system_resources:ohos_fonts" ]
     }
   }
 
