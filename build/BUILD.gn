@@ -185,7 +185,7 @@ template("flutter_engine_fml") {
         "$flutter_root/engine/flutter/fml/platform/posix/shared_mutex_posix.cc",
       ]
 
-      libs = [
+      frameworks = [
         "CoreFoundation.framework",
         "Foundation.framework",
       ]

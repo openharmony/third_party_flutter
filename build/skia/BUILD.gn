@@ -879,7 +879,7 @@ template("ace_skia_core") {
         "$flutter_root/skia/src/ports/SkImageGeneratorCG.cpp",
       ]
 
-      libs = [
+      frameworks = [
         # AppKit symbols NSFontWeightXXX may be dlsym'ed.
         "AppKit.framework",
         "ApplicationServices.framework",
