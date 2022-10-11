@@ -41,7 +41,6 @@ bool GetSkColorType(int32_t buffer_format,
 
 OhosSurfaceSoftware::OhosSurfaceSoftware()
 {
-    FML_LOG(ERROR) << "OhosSurfaceSoftware Constructor";
     GetSkColorType(PIXEL_FMT_RGBA_8888, &target_color_type_, &target_alpha_type_);
 }
 
