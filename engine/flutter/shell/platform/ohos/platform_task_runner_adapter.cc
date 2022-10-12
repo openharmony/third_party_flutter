@@ -48,9 +48,6 @@ fml::TaskQueueId PlatformTaskRunnerAdapter::GetTaskQueueId()
 
 fml::RefPtr<fml::TaskRunner> PlatformTaskRunnerAdapter::CurrentTaskRunner(bool useCurrentEventRunner)
 {
-    if (useCurrentEventRunner) {
-        return fml::MakeRefCounted<PlatformTaskRunnerAdapter>(useCurrentEventRunner);
-    }
     if (taskRunner_) {
         return taskRunner_;
     }
