@@ -22,6 +22,8 @@ class ClipRRectLayer : public ContainerLayer {
   void UpdateScene(SceneUpdateContext& context) override;
 #endif  // defined(OS_FUCHSIA)
 
+  SkRect MapRect(const SkRect& rect) override;
+
  private:
   SkRRect clip_rrect_;
   Clip clip_behavior_;
