@@ -8,26 +8,24 @@
 
 #include <memory>
 #include <vector>
-
+#include "surface_type.h"
 #include "flutter/fml/logging.h"
 #include "flutter/fml/trace_event.h"
-
-#include "display_type.h"
 
 namespace flutter {
 
 namespace {
-
+using namespace OHOS;
 bool GetSkColorType(int32_t buffer_format,
                     SkColorType* color_type,
                     SkAlphaType* alpha_type)
 {
     switch (buffer_format) {
-        case PIXEL_FMT_RGB_565:
+        case GRAPHIC_PIXEL_FMT_RGB_565:
             *color_type = kRGB_565_SkColorType;
             *alpha_type = kOpaque_SkAlphaType;
             return true;
-        case PIXEL_FMT_RGBA_8888:
+        case GRAPHIC_PIXEL_FMT_RGBA_8888:
             *color_type = kRGBA_8888_SkColorType;
             *alpha_type = kPremul_SkAlphaType;
             return true;
@@ -42,7 +40,7 @@ bool GetSkColorType(int32_t buffer_format,
 OhosSurfaceSoftware::OhosSurfaceSoftware()
 {
     FML_LOG(ERROR) << "OhosSurfaceSoftware Constructor";
-    GetSkColorType(PIXEL_FMT_RGBA_8888, &target_color_type_, &target_alpha_type_);
+    GetSkColorType(GRAPHIC_PIXEL_FMT_RGBA_8888, &target_color_type_, &target_alpha_type_);
 }
 
 bool OhosSurfaceSoftware::IsValid() const
