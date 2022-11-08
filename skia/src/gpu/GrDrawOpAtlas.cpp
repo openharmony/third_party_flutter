@@ -394,7 +394,8 @@ void GrDrawOpAtlas::compactRadicals(GrDeferredUploadToken startTokenForNextFlush
         while (Plot* plot = plotIter.get()) {
             if (plot->lastUseToken().inInterval(fPrevFlushToken, startTokenForNextFlush)) {
                 usedAtlasLastFlush |= (1 << pageIndex);
-                break;
+            } else if (plot->lastUploadToken() != GrDeferredUploadToken::AlreadyFlushedToken()) {
+                this->processEvictionAndResetRects(plot);
             }
             plotIter.next();
         }
