@@ -204,7 +204,8 @@ bool OhosSurfaceGL::InitRenderSurface()
         return false;
     }
 
-    eglRenderSurface_ = OHOS::EglRenderSurface::CreateEglRenderSurfaceAsProducer(bufferProducer);
+    // can not create eglRenderSurface now
+    // eglRenderSurface_ = OHOS::EglRenderSurface::CreateEglRenderSurfaceAsProducer(bufferProducer);
     if (eglRenderSurface_ == nullptr) {
         FML_LOG(ERROR) << "eglRenderSurface_ is nullptr";
         return false;
