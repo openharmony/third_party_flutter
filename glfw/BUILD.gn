@@ -67,7 +67,7 @@ template("glfw") {
         "src/posix_tls.h",
       ]
       include_dirs += [ "deps" ]
-      libs = [
+      frameworks = [
         "Cocoa.framework",
         "IOKit.framework",
         "CoreFoundation.framework",
