@@ -30,13 +30,17 @@ bool isWordSpace(uint16_t code_unit) {
   return code_unit == ' ' || code_unit == CHAR_NBSP;
 }
 
+bool isCJK(uint16_t code_unit) {
+    return (code_unit >= 0x3400 && code_unit <= 0x9fff);
+}
+
 /**
  * For the purpose of layout, a word break is a boundary with no
  * kerning or complex script processing. This is necessarily a
  * heuristic, but should be accurate most of the time.
  */
 static bool isWordBreakAfter(uint16_t c) {
-  if (isWordSpace(c) || (c >= 0x2000 && c <= 0x200a) || c == 0x3000) {
+  if (isWordSpace(c) || (c >= 0x2000 && c <= 0x200a) || c == 0x3000 || isCJK(c)) {
     // spaces
     return true;
   }
@@ -46,7 +50,7 @@ static bool isWordBreakAfter(uint16_t c) {
 
 static bool isWordBreakBefore(uint16_t c) {
   // CJK ideographs (and yijing hexagram symbols)
-  return isWordBreakAfter(c) || (c >= 0x3400 && c <= 0x9fff);
+  return isWordBreakAfter(c) || isCJK(c);
 }
 
 /**

@@ -49,6 +49,7 @@ struct LayoutContext {
   MinikinPaint paint;
   FontStyle style;
   std::vector<hb_font_t*> hbFonts;  // parallel to mFaces
+  float extraWordSpacing = 0.0f;
 
   void clearHbFonts() {
     for (size_t i = 0; i < hbFonts.size(); i++) {
@@ -644,6 +645,25 @@ float Layout::measureText(const uint16_t* buf,
   return advance;
 }
 
+// CJK Unified Ideographs
+inline static bool isCJK(uint16_t codepoint) {
+  return (codepoint >= 0x3400 && codepoint <= 0x9fff);
+}
+
+// TODO: Now only judge numbers, upper and lower case letters.
+// Objectives: Basic Latin alphabet, Latin alphabet extension,
+// Cyrillic alphabet and Greek alphabet
+inline static bool isEnOrNum(uint16_t codepoint) {
+  return (codepoint >= 0x0041 && codepoint <= 0x005a) ||
+         (codepoint >= 0x0061 && codepoint <= 0x007a) ||
+         (codepoint >= 0x0030 && codepoint <= 0x0039);
+}
+
+inline static bool isBetweenCJKandLatin(uint16_t codepoint, uint16_t nextCodepoint) {
+  return (isCJK(codepoint) && isEnOrNum(nextCodepoint)) ||
+          (isEnOrNum(codepoint) && isCJK(nextCodepoint));
+}
+
 float Layout::doLayoutRunCached(
     const uint16_t* buf,
     size_t start,
@@ -657,6 +677,13 @@ float Layout::doLayoutRunCached(
     float* advances) {
   const uint32_t originalHyphen = ctx->paint.hyphenEdit.getHyphen();
   float advance = 0;
+  // character height
+  double fontSize = ctx->paint.size;
+  // extra space between CJK and Latin
+  // fontSize is eauql to the width of the Chinese character
+  // The width we increase is one twentieth of the width of Chinese character  
+  float extraSpace = fontSize * 0.05;
+
   if (!isRtl) {
     // left to right
     size_t wordstart = start == bufSize
@@ -675,6 +702,13 @@ float Layout::doLayoutRunCached(
       }
       ctx->paint.hyphenEdit = hyphen;
       size_t wordcount = std::min(start + count, wordend) - iter;
+
+      ctx->extraWordSpacing =
+          (wordend < start + count &&
+           isBetweenCJKandLatin(buf[wordend - 1], buf[wordend]))
+              ? extraSpace
+              : 0.0f;
+
       advance += doLayoutWord(buf + wordstart, iter - wordstart, wordcount,
                               wordend - wordstart, isRtl, ctx, iter - dstStart,
                               collection, layout,
@@ -700,6 +734,13 @@ float Layout::doLayoutRunCached(
       }
       ctx->paint.hyphenEdit = hyphen;
       size_t bufStart = std::max(start, wordstart);
+
+      ctx->extraWordSpacing =
+          ((wordstart > start &&
+           isBetweenCJKandLatin(buf[wordstart], buf[wordstart - 1])))
+              ? extraSpace
+              : 0.0f;
+
       advance += doLayoutWord(
           buf + wordstart, bufStart - wordstart, iter - bufStart,
           wordend - wordstart, isRtl, ctx, bufStart - dstStart, collection,
@@ -732,7 +773,7 @@ float Layout::doLayoutWord(const uint16_t* buf,
     Layout layoutForWord;
     key.doLayout(&layoutForWord, ctx, collection);
     if (layout) {
-      layout->appendLayout(&layoutForWord, bufStart, wordSpacing);
+      layout->appendLayout(&layoutForWord, bufStart, wordSpacing, ctx->extraWordSpacing);
     }
     if (advances) {
       layoutForWord.getAdvances(advances);
@@ -741,7 +782,7 @@ float Layout::doLayoutWord(const uint16_t* buf,
   } else {
     Layout* layoutForWord = cache.get(key, ctx, collection);
     if (layout) {
-      layout->appendLayout(layoutForWord, bufStart, wordSpacing);
+      layout->appendLayout(layoutForWord, bufStart, wordSpacing, ctx->extraWordSpacing);
     }
     if (advances) {
       layoutForWord->getAdvances(advances);
@@ -753,6 +794,13 @@ float Layout::doLayoutWord(const uint16_t* buf,
     advance += wordSpacing;
     if (advances) {
       advances[0] += wordSpacing;
+    }
+  }
+  // add extra word spacing to the last character
+  if (ctx->extraWordSpacing != 0) {
+    advance += ctx->extraWordSpacing;
+    if (advances) {
+      advances[count - 1] += ctx->extraWordSpacing;
     }
   }
   return advance;
@@ -1125,7 +1173,7 @@ void Layout::doLayoutRun(const uint16_t* buf,
   mAdvance = x;
 }
 
-void Layout::appendLayout(Layout* src, size_t start, float extraAdvance) {
+void Layout::appendLayout(Layout* src, size_t start, float extraAdvance, float extraWordSpacing) {
   int fontMapStack[16];
   int* fontMap;
   if (src->mFaces.size() < sizeof(fontMapStack) / sizeof(fontMapStack[0])) {
@@ -1158,7 +1206,7 @@ void Layout::appendLayout(Layout* src, size_t start, float extraAdvance) {
   MinikinRect srcBounds(src->mBounds);
   srcBounds.offset(x0, 0);
   mBounds.join(srcBounds);
-  mAdvance += src->mAdvance + extraAdvance;
+  mAdvance += src->mAdvance + extraAdvance + extraWordSpacing;
 
   if (fontMap != fontMapStack) {
     delete[] fontMap;

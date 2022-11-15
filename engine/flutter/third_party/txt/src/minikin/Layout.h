@@ -163,7 +163,7 @@ class Layout {
                    const std::shared_ptr<FontCollection>& collection);
 
   // Append another layout (for example, cached value) into this one
-  void appendLayout(Layout* src, size_t start, float extraAdvance);
+  void appendLayout(Layout* src, size_t start, float extraAdvance, float extraWordSpacing);
 
   std::vector<LayoutGlyph> mGlyphs;
   std::vector<float> mAdvances;
