@@ -13,6 +13,7 @@
 
 import("//build/ohos.gni")
 import("//foundation/arkui/ace_engine/ace_config.gni")
+import("//foundation/arkui/ace_engine/build/ace_ext.gni")
 import("//third_party/flutter/flutter_config.gni")
 
 # ------------------------------------------------
@@ -21,7 +22,13 @@ import("//third_party/flutter/flutter_config.gni")
 config("flutter_config") {
   visibility = [ ":*" ]
 
-  include_dirs = [
+  include_dirs = []
+
+  if (defined(vendor_configs.vendor_root)) {
+    include_dirs += vendor_configs.vendor_root
+  }
+
+  include_dirs += [
     "$flutter_root",
     "$flutter_root/engine",
     "$flutter_root/engine/flutter",
@@ -459,9 +466,12 @@ template("flutter_engine_shell") {
       ]
       if ((!defined(config.disable_gpu) || !config.disable_gpu) && (!defined(
                                                                         config.enable_rosen_backend) || !config.enable_rosen_backend)) {
-        sources += [
-          "$flutter_root/engine/flutter/shell/platform/ohos/ohos_surface_gl.cc",
-        ]
+        if (defined(vendor_configs.flutter_vendor_sources)) {
+          sources -= [ "$flutter_root/engine/flutter/shell/platform/ohos/ace_vsync_waiter_embedder.cc" ]
+          sources += vendor_configs.flutter_vendor_sources
+        } else {
+          sources += [ "$flutter_root/engine/flutter/shell/platform/ohos/ohos_surface_gl.cc" ]
+        }
 
         public_deps = [ "//foundation/graphic/graphic_2d:libgl" ]
       }
