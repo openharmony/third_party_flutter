@@ -525,6 +525,21 @@ FlutterEngineResult FlutterEngineRun(const FlutterRendererConfig* config,
                                      void* user_data,
                                      FLUTTER_API_SYMBOL(FlutterEngine) *
                                          engine_out) {
+  auto result =
+      FlutterEngineInitialize(config, args, user_data, engine_out);
+
+  if (result != kSuccess) {
+    return result;
+  }
+
+  return FlutterEngineRunInitialized(*engine_out);
+}
+
+FlutterEngineResult FlutterEngineInitialize(const FlutterRendererConfig* config,
+                                            const FlutterProjectArgs* args,
+                                            void* user_data,
+                                            FLUTTER_API_SYMBOL(FlutterEngine) *
+                                                engine_out) {
   // Step 0: Figure out arguments for shell creation.
   if (engine_out == nullptr) {
     return LOG_EMBEDDER_ERROR(kInvalidArguments);
@@ -647,44 +662,77 @@ FlutterEngineResult FlutterEngineRun(const FlutterRendererConfig* config,
     return LOG_EMBEDDER_ERROR(kInvalidArguments);
   }
 
-  // Step 1: Create the engine.
-  auto embedder_engine =
-      std::make_unique<flutter::EmbedderEngine>(std::move(thread_host),    //
-                                                std::move(task_runners),   //
-                                                settings,                  //
-                                                on_create_platform_view,   //
-                                                on_create_rasterizer,      //
-                                                external_texture_callback  //
-      );
-
-  if (!embedder_engine->IsValid()) {
-    return LOG_EMBEDDER_ERROR(kInvalidArguments);
-  }
-
-  // Step 2: Setup the rendering surface.
-  if (!embedder_engine->NotifyCreated()) {
-    return LOG_EMBEDDER_ERROR(kInvalidArguments);
-  }
-
-  // Step 3: Run the engine.
   flutter::RunConfiguration run_configuration;
-  if (!embedder_engine->Run(std::move(run_configuration))) {
-    return LOG_EMBEDDER_ERROR(kInvalidArguments);
-  }
+  // Create the engine but don't launch the shell or run the root isolate.
+  auto embedder_engine = std::make_unique<flutter::EmbedderEngine>(
+      std::move(thread_host),        //
+      std::move(task_runners),       //
+      std::move(settings),           //
+      std::move(run_configuration),  //
+      on_create_platform_view,       //
+      on_create_rasterizer,          //
+      external_texture_callback      //
+  );
 
-  // Finally! Release the ownership of the embedder engine to the caller.
+  // Release the ownership of the embedder engine to the caller.
   *engine_out = reinterpret_cast<FLUTTER_API_SYMBOL(FlutterEngine)>(
       embedder_engine.release());
   return kSuccess;
 }
 
-FlutterEngineResult FlutterEngineShutdown(FLUTTER_API_SYMBOL(FlutterEngine)
-                                              engine) {
+FlutterEngineResult FlutterEngineRunInitialized(
+    FLUTTER_API_SYMBOL(FlutterEngine) engine) {
+  if (!engine) {
+    return LOG_EMBEDDER_ERROR(kInvalidArguments);
+  }
+
+  auto embedder_engine = reinterpret_cast<flutter::EmbedderEngine*>(engine);
+
+  // The engine must not already be running. Initialize may only be called once
+  // on an engine instance.
+  if (embedder_engine->IsValid()) {
+    return LOG_EMBEDDER_ERROR(kInvalidArguments);
+  }
+
+  // Step 1: Launch the shell.
+  if (!embedder_engine->LaunchShell()) {
+    FML_LOG(ERROR) << "Could not launch the engine using supplied "
+                      "initialization arguments.";
+    return LOG_EMBEDDER_ERROR(kInvalidArguments);
+  }
+
+  // Step 2: Tell the platform view to initialize itself.
+  if (!embedder_engine->NotifyCreated()) {
+    return LOG_EMBEDDER_ERROR(kInvalidArguments);
+  }
+
+  // Step 3: Launch the root isolate.
+  if (!embedder_engine->RunRootIsolate()) {
+    return LOG_EMBEDDER_ERROR(kInvalidArguments);
+  }
+
+  return kSuccess;
+}
+
+FLUTTER_EXPORT
+FlutterEngineResult FlutterEngineDeinitialize(FLUTTER_API_SYMBOL(FlutterEngine)
+                                                  engine) {
   if (engine == nullptr) {
     return LOG_EMBEDDER_ERROR(kInvalidArguments);
   }
   auto embedder_engine = reinterpret_cast<flutter::EmbedderEngine*>(engine);
   embedder_engine->NotifyDestroyed();
+  embedder_engine->CollectShell();
+  return kSuccess;
+}
+
+FlutterEngineResult FlutterEngineShutdown(FLUTTER_API_SYMBOL(FlutterEngine)
+                                              engine) {
+  auto result = FlutterEngineDeinitialize(engine);
+  if (result != kSuccess) {
+    return result;
+  }
+  auto embedder_engine = reinterpret_cast<flutter::EmbedderEngine*>(engine);
   delete embedder_engine;
   return kSuccess;
 }
