@@ -30,6 +30,12 @@ public:
 
     virtual void SetPlatformWindow(const ::OHOS::sptr<::OHOS::Rosen::Window> &window) = 0;
 
+    virtual void SetPlatformSurface(const ::OHOS::sptr<::OHOS::Surface> &surface) {}
+
+    virtual void OnNativeSurfaceCreated() {}
+
+    virtual void OnNativeSurfaceDestroyed() {}
+
     virtual bool ResourceContextMakeCurrent() = 0;
 
     virtual bool ResourceContextClearCurrent() = 0;
