@@ -878,13 +878,21 @@ template("ace_skia_core") {
         "$flutter_root/skia/src/ports/SkImageEncoder_CG.cpp",
         "$flutter_root/skia/src/ports/SkImageGeneratorCG.cpp",
       ]
-
-      frameworks = [
+      if(defined(enable_gn_2021)){
+        frameworks = [
         # AppKit symbols NSFontWeightXXX may be dlsym'ed.
         "AppKit.framework",
         "ApplicationServices.framework",
         "OpenGL.framework",
       ]
+      }else{
+        libs = [
+        # AppKit symbols NSFontWeightXXX may be dlsym'ed.
+        "AppKit.framework",
+        "ApplicationServices.framework",
+        "OpenGL.framework",
+      ]
+      }
     } else if (platform == "ios") {
       sources += [
         "$flutter_root/skia/src/ports/SkDebug_stdio.cpp",

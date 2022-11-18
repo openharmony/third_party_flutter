@@ -184,11 +184,17 @@ template("flutter_engine_fml") {
         "$flutter_root/engine/flutter/fml/platform/posix/paths_posix.cc",
         "$flutter_root/engine/flutter/fml/platform/posix/shared_mutex_posix.cc",
       ]
-
-      frameworks = [
+      if(defined(enable_gn_2021)) {
+              frameworks = [
         "CoreFoundation.framework",
         "Foundation.framework",
       ]
+      }else {
+        libs = [
+        "CoreFoundation.framework",
+        "Foundation.framework",
+      ]
+      }
     } else if (platform == "linux") {
       sources += [
         "$flutter_root/engine/flutter/fml/platform/linux/message_loop_linux.cc",
