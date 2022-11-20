@@ -67,22 +67,22 @@ template("glfw") {
         "src/posix_tls.h",
       ]
       include_dirs += [ "deps" ]
-      if(defined(enable_gn_2021)){
+      if (defined(enable_gn_2021)) {
         frameworks = [
-        "Cocoa.framework",
-        "IOKit.framework",
-        "CoreFoundation.framework",
-        "CoreVideo.framework",
-      ]
-      }else{
+          "Cocoa.framework",
+          "IOKit.framework",
+          "CoreFoundation.framework",
+          "CoreVideo.framework",
+        ]
+      } else {
         libs = [
-        "Cocoa.framework",
-        "IOKit.framework",
-        "CoreFoundation.framework",
-        "CoreVideo.framework",
-      ]
+          "Cocoa.framework",
+          "IOKit.framework",
+          "CoreFoundation.framework",
+          "CoreVideo.framework",
+        ]
       }
-      
+
       cflags = [
         "-Wno-deprecated-declarations",
         "-Wno-objc-multiple-method-names",

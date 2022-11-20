@@ -184,16 +184,16 @@ template("flutter_engine_fml") {
         "$flutter_root/engine/flutter/fml/platform/posix/paths_posix.cc",
         "$flutter_root/engine/flutter/fml/platform/posix/shared_mutex_posix.cc",
       ]
-      if(defined(enable_gn_2021)) {
-              frameworks = [
-        "CoreFoundation.framework",
-        "Foundation.framework",
-      ]
-      }else {
+      if (defined(enable_gn_2021)) {
+        frameworks = [
+          "CoreFoundation.framework",
+          "Foundation.framework",
+        ]
+      } else {
         libs = [
-        "CoreFoundation.framework",
-        "Foundation.framework",
-      ]
+          "CoreFoundation.framework",
+          "Foundation.framework",
+        ]
       }
     } else if (platform == "linux") {
       sources += [
@@ -470,8 +470,9 @@ template("flutter_engine_shell") {
         "$flutter_root/engine/flutter/shell/platform/ohos/platform_task_runner_adapter.cc",
         "$flutter_root/engine/flutter/shell/platform/ohos/platform_view_ohos.cc",
       ]
-      if ((!defined(config.disable_gpu) || !config.disable_gpu) && (!defined(
-                                                                        config.enable_rosen_backend) || !config.enable_rosen_backend)) {
+      if ((!defined(config.disable_gpu) || !config.disable_gpu) &&
+          (!defined(config.enable_rosen_backend) ||
+           !config.enable_rosen_backend)) {
         if (defined(vendor_configs.flutter_vendor_sources)) {
           sources -= [
             "$flutter_root/engine/flutter/shell/platform/ohos/ace_vsync_waiter_embedder.cc",
