@@ -67,15 +67,15 @@ static void regen_texcoords(char* vertex, size_t vertexStride, const GrGlyph* gl
     uint32_t pageIndex = glyph->pageIndex();
     SkASSERT(pageIndex < 16);
 #ifdef SK_ENABLE_SMALL_PAGE
-    uint16_t uBit = (pageIndex >> 3) & 0x7;
-    uint16_t vBit = pageIndex & 0x7;
-    u0 <<= 3;
+    uint16_t uBit = (pageIndex >> 2) & 0x3;
+    uint16_t vBit = pageIndex & 0x3;
+    u0 <<= 2;
     u0 |= uBit;
-    v0 <<= 3;
+    v0 <<= 2;
     v0 |= vBit;
-    u1 <<= 3;
+    u1 <<= 2;
     u1 |= uBit;
-    v1 <<= 3;
+    v1 <<= 2;
     v1 |= vBit;
 #else
     uint16_t uBit = (pageIndex >> 1) & 0x1;
