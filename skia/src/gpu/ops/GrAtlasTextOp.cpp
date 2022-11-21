@@ -198,12 +198,12 @@ static void clip_quads(const SkIRect& clipRect, char* currVertex, const char* bl
                                                                    coordOffset);
             // Pull out the texel coordinates and texture index bits
 #ifdef SK_ENABLE_SMALL_PAGE
-            uint16_t coordsRectL = blobCoordsLT[0] >> 3;
-            uint16_t coordsRectT = blobCoordsLT[1] >> 3;
-            uint16_t coordsRectR = blobCoordsRB[0] >> 3;
-            uint16_t coordsRectB = blobCoordsRB[1] >> 3;
-            uint16_t pageIndexX = blobCoordsLT[0] & 0x7;
-            uint16_t pageIndexY = blobCoordsLT[1] & 0x7;
+            uint16_t coordsRectL = blobCoordsLT[0] >> 2;
+            uint16_t coordsRectT = blobCoordsLT[1] >> 2;
+            uint16_t coordsRectR = blobCoordsRB[0] >> 2;
+            uint16_t coordsRectB = blobCoordsRB[1] >> 2;
+            uint16_t pageIndexX = blobCoordsLT[0] & 0x3;
+            uint16_t pageIndexY = blobCoordsLT[1] & 0x3;
 #else
             uint16_t coordsRectL = blobCoordsLT[0] >> 1;
             uint16_t coordsRectT = blobCoordsLT[1] >> 1;
@@ -238,10 +238,10 @@ static void clip_quads(const SkIRect& clipRect, char* currVertex, const char* bl
 
             // Repack texel coordinates and index
 #ifdef SK_ENABLE_SMALL_PAGE
-            coordsRectL = coordsRectL << 3 | pageIndexX;
-            coordsRectT = coordsRectT << 3 | pageIndexY;
-            coordsRectR = coordsRectR << 3 | pageIndexX;
-            coordsRectB = coordsRectB << 3 | pageIndexY;
+            coordsRectL = coordsRectL << 2 | pageIndexX;
+            coordsRectT = coordsRectT << 2 | pageIndexY;
+            coordsRectR = coordsRectR << 2 | pageIndexX;
+            coordsRectB = coordsRectB << 2 | pageIndexY;
 #else
             coordsRectL = coordsRectL << 1 | pageIndexX;
             coordsRectT = coordsRectT << 1 | pageIndexY;

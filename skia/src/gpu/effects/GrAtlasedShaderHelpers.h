@@ -29,8 +29,8 @@ static void append_index_uv_varyings(GrGLSLPrimitiveProcessor::EmitArgs& args,
         args.fVertBuilder->codeAppendf("int2 signedCoords = int2(%s.x, %s.y);",
                                        inTexCoordsName, inTexCoordsName);
 #ifdef SK_ENABLE_SMALL_PAGE
-        args.fVertBuilder->codeAppend("int texIdx = 8*(signedCoords.x & 0x7) + (signedCoords.y & 0x7);");
-        args.fVertBuilder->codeAppend("float2 unormTexCoords = float2(signedCoords.x/8, signedCoords.y/8);");
+        args.fVertBuilder->codeAppend("int texIdx = 4*(signedCoords.x & 0x3) + (signedCoords.y & 0x3);");
+        args.fVertBuilder->codeAppend("float2 unormTexCoords = float2(signedCoords.x/4, signedCoords.y/4);");
 #else
         args.fVertBuilder->codeAppend("int texIdx = 2*(signedCoords.x & 0x1) + (signedCoords.y & 0x1);");
         args.fVertBuilder->codeAppend("float2 unormTexCoords = float2(signedCoords.x/2, signedCoords.y/2);");
@@ -38,9 +38,10 @@ static void append_index_uv_varyings(GrGLSLPrimitiveProcessor::EmitArgs& args,
     } else {
         args.fVertBuilder->codeAppendf("float2 indexTexCoords = float2(%s.x, %s.y);",
                                        inTexCoordsName, inTexCoordsName);
-        args.fVertBuilder->codeAppend("float2 unormTexCoords = floor(0.5*indexTexCoords);");
-        args.fVertBuilder->codeAppend("float2 diff = indexTexCoords - 2.0*unormTexCoords;");
-        args.fVertBuilder->codeAppend("float texIdx = 2.0*diff.x + diff.y;");
+        args.fVertBuilder->codeAppend("float2 unormTexCoords = floor(0.25*indexTexCoords);");
+        args.fVertBuilder->codeAppend("float2 diff0 = indexTexCoords - 2.0*floor(0.5*indexTexCoords);");
+        args.fVertBuilder->codeAppend("float2 diff1 = floor(0.5*indexTexCoords) - 2.0*floor(0.25*indexTexCoords);");
+        args.fVertBuilder->codeAppend("float texIdx = 8.0*diff1.x + 4.0*diff0.x + 2.0*diff1.y + diff0.y;");
     }
 
     // Multiply by 1/atlasSize to get normalized texture coordinates
