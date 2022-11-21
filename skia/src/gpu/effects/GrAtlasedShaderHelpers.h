@@ -38,10 +38,16 @@ static void append_index_uv_varyings(GrGLSLPrimitiveProcessor::EmitArgs& args,
     } else {
         args.fVertBuilder->codeAppendf("float2 indexTexCoords = float2(%s.x, %s.y);",
                                        inTexCoordsName, inTexCoordsName);
+#ifdef SK_ENABLE_SMALL_PAGE
         args.fVertBuilder->codeAppend("float2 unormTexCoords = floor(0.25*indexTexCoords);");
         args.fVertBuilder->codeAppend("float2 diff0 = indexTexCoords - 2.0*floor(0.5*indexTexCoords);");
         args.fVertBuilder->codeAppend("float2 diff1 = floor(0.5*indexTexCoords) - 2.0*floor(0.25*indexTexCoords);");
         args.fVertBuilder->codeAppend("float texIdx = 8.0*diff1.x + 4.0*diff0.x + 2.0*diff1.y + diff0.y;");
+#else
+        args.fVertBuilder->codeAppend("float2 unormTexCoords = floor(0.5*indexTexCoords);");
+        args.fVertBuilder->codeAppend("float2 diff = indexTexCoords - 2.0*unormTexCoords;");
+        args.fVertBuilder->codeAppend("float texIdx = 2.0*diff.x + diff.y;");
+#endif
     }
 
     // Multiply by 1/atlasSize to get normalized texture coordinates
