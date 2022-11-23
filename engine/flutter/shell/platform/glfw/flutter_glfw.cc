@@ -511,6 +511,7 @@ FlutterDesktopWindowControllerRef FlutterDesktopCreateWindow(
   FlutterCustomTaskRunners custom_task_runners = {};
   custom_task_runners.struct_size = sizeof(FlutterCustomTaskRunners);
   custom_task_runners.platform_task_runner = &platform_task_runner;
+  custom_task_runners.render_task_runner = &platform_task_runner;
 
   // Start the engine.
   state->engine =
