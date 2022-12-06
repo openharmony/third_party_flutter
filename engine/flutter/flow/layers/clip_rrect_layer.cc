@@ -58,4 +58,13 @@ void ClipRRectLayer::Paint(PaintContext& context) const {
   }
 }
 
+SkRect ClipRRectLayer::MapRect(const SkRect& rect) {
+  SkRect clip_rect = clip_rrect_.rect();
+  SkRect dst_rect(rect);
+  if (dst_rect.intersect(clip_rect)) {
+    return dst_rect;
+  }
+  return SkRect::MakeEmpty();
+}
+
 }  // namespace flutter
