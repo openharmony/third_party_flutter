@@ -476,7 +476,6 @@ template("flutter_engine_shell") {
         if (defined(vendor_configs.flutter_vendor_sources)) {
           sources -= [
             "$flutter_root/engine/flutter/shell/platform/ohos/ace_vsync_waiter_embedder.cc",
-            "$flutter_root/engine/flutter/shell/platform/ohos/ohos_surface_software.cc",
             "$flutter_root/engine/flutter/shell/platform/ohos/platform_view_ohos.cc",
           ]
           sources += vendor_configs.flutter_vendor_sources

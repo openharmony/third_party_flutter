@@ -53,9 +53,9 @@ OhosShellHolder::OhosShellHolder(
   Shell::CreateCallback<PlatformView> on_create_platform_view =
       [&weak_platform_view](Shell& shell) {
         std::unique_ptr<PlatformViewOhos> platform_view_ohos;
-        if (shell.GetSettings().enable_software_rendering) {
-          platform_view_ohos = std::make_unique<PlatformViewOhos>(shell, shell.GetTaskRunners(), true);
-        }
+        FML_LOG(INFO) << "enable_software_rendering: " << shell.GetSettings().enable_software_rendering;
+        platform_view_ohos = std::make_unique<PlatformViewOhos>(shell, shell.GetTaskRunners(),
+          shell.GetSettings().enable_software_rendering);
         weak_platform_view = platform_view_ohos->GetWeakPtr();
         return platform_view_ohos;
       };
