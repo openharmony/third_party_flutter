@@ -24,10 +24,6 @@ config("flutter_config") {
 
   include_dirs = []
 
-  if (defined(vendor_configs.vendor_root)) {
-    include_dirs += vendor_configs.vendor_root
-  }
-
   include_dirs += [
     "$flutter_root",
     "$flutter_root/engine",
@@ -413,6 +409,13 @@ template("flutter_engine_shell") {
     ]
     cflags_cc += invoker.cflags_cc
 
+    include_dirs = []
+
+    if ((!defined(config.enable_rosen_backend) ||
+         !config.enable_rosen_backend) && defined(vendor_configs.vendor_root)) {
+      include_dirs += vendor_configs.vendor_root
+    }
+
     configs = [
       ":flutter_config",
       "icu:icu_config_$platform",
@@ -458,7 +461,7 @@ template("flutter_engine_shell") {
     ]
 
     if (is_standard_system && platform == "ohos") {
-      include_dirs = [
+      include_dirs += [
         "//foundation/window/window_manager/interfaces/innerkits",
         "//commonlibrary/c_utils/base/include",
       ]
