@@ -295,7 +295,7 @@ bool GrSoftwarePathRenderer::onDrawPath(const DrawPathArgs& args) {
         static const GrUniqueKey::Domain kDomain = GrUniqueKey::GenerateDomain();
         GrUniqueKey::Builder builder(&maskKey, kDomain, 5 + args.fShape->unstyledKeySize(),
                                      "SW Path Mask");
-#ifdef SK_BUILD_FOR_ANDROID_FRAMEWORK
+#if defined(SK_BUILD_FOR_ANDROID_FRAMEWORK) || defined(OHOS_STANDARD_SYSTEM)
         // Fractional translate does not affect caching on Android. This is done for better cache
         // hit ratio and speed, but it is matching HWUI behavior, which doesn't consider the matrix
         // at all when caching paths.
