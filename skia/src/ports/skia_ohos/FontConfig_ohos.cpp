@@ -770,7 +770,7 @@ int FontConfig_OHOS::parseVariation(const Json::Value& root, std::vector<Variati
             continue;
         }
         if (!strcmp(key, "weight")) {
-            if (root[key].isInt()) {
+            if (!root[key].isInt()) {
                 return logErrInfo(ERROR_CONFIG_INVALID_VALUE_TYPE, key, Json::intValue, root[key].type());
             }
             info.weight = root[key].asInt();
