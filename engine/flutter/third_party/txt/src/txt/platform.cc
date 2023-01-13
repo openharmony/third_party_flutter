@@ -6,7 +6,6 @@
 
 #if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_WIN)
 #include "include/core/SkFontMgr.h"
-std::string SkFontMgr::runtimeOS = "OHOS";
 #endif
 
 namespace txt {
