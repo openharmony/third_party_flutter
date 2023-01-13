@@ -6,7 +6,7 @@
 
 #if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_LINUX)
 #include "include/core/SkFontMgr.h"
-std::string SkFontMgr::runtimeOS = "OHOS";
+
 #endif
 
 #ifdef FLUTTER_USE_FONTCONFIG

@@ -1846,7 +1846,7 @@ ohos_source_set("ace_fontmgr_standard") {
     "$flutter_root/skia/src/ports/skia_ohos/SkFontStyleSet_ohos.cpp",
     "$flutter_root/skia/src/ports/skia_ohos/SkTypeface_ohos.cpp",
   ]
-
+  defines = []
   cflags_cc = ace_skia_common_ccflags
   cflags_cc += [
     "-Wsign-compare",
@@ -1867,16 +1867,14 @@ ohos_source_set("ace_fontmgr_standard") {
     }
   }
 
-  defines = [ "SK_BUILD_FONT_MGR_FOR_OHOS" ]
   if (use_mingw_win) {
     defines += [ "SK_BUILD_FONT_MGR_FOR_PREVIEW_WIN" ]
-    defines -= [ "SK_BUILD_FONT_MGR_FOR_OHOS" ]
   } else if (use_mac) {
     defines += [ "SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC" ]
-    defines -= [ "SK_BUILD_FONT_MGR_FOR_OHOS" ]
   } else if (use_linux) {
     defines += [ "SK_BUILD_FONT_MGR_FOR_PREVIEW_LINUX" ]
-    defines -= [ "SK_BUILD_FONT_MGR_FOR_OHOS" ]
+  } else {
+    defines += [ "SK_BUILD_FONT_MGR_FOR_OHOS" ]
   }
 }
 

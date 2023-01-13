@@ -12,13 +12,10 @@
 #define SK_FONT_FILE_PREFIX "/usr/share/fonts/"
 #endif
 
-#ifdef SK_BUILD_FONT_MGR_FOR_PREVIEW_LINUX
-SK_API sk_sp<SkFontMgr> SkFontMgr_New_OHOS(const char *path);
-#endif
-
 #if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_LINUX)
 #include "src/ports/SkFontMgr_preview.h"
-
+std::string SkFontMgr::runtimeOS = "OHOS";
+SK_API sk_sp<SkFontMgr> SkFontMgr_New_OHOS(const char *path);
 sk_sp<SkFontMgr> SkFontMgr::Factory()
 {
     if (SkFontMgr::runtimeOS == "OHOS") {
