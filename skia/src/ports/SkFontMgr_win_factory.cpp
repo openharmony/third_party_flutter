@@ -13,6 +13,7 @@
 #include "include/ports/SkTypeface_win.h"
 #include "src/ports/SkFontMgr_preview.h"
 
+std::string SkFontMgr::runtimeOS = "OHOS";
 SK_API sk_sp<SkFontMgr> SkFontMgr_New_OHOS(const char *path);
 
 sk_sp<SkFontMgr> SkFontMgr::Factory()

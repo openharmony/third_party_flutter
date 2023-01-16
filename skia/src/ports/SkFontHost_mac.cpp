@@ -2916,7 +2916,7 @@ protected:
 #include "src/ports/SkFontMgr_preview.h"
 
 SK_API sk_sp<SkFontMgr> SkFontMgr_New_OHOS(const char* path);
-
+std::string SkFontMgr::runtimeOS = "OHOS";
 sk_sp<SkFontMgr> SkFontMgr::Factory()
 {
     if (SkFontMgr::runtimeOS == "OHOS") {
