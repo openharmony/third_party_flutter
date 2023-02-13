@@ -84,10 +84,10 @@ template("make_skia_deps") {
     part_name = flutter_part
     subsystem_name = flutter_subsystem
     license_file = "$flutter_root/skia/LICENSE"
-    if ((platform == "ohos" && (defined(vendor_configs.use_ext_surface) &&
+    if (platform == "ohos" && (((defined(vendor_configs.use_ext_surface) &&
                                 vendor_configs.use_ext_surface)) ||
         ((!defined(config.disable_gpu) || !config.disable_gpu) &&
-         defined(config.enable_rosen_backend) && config.enable_rosen_backend)) {
+         defined(config.enable_rosen_backend) && config.enable_rosen_backend))) {
       public_configs = [
         ":skia_config",
         ":harfbuzz_config",
