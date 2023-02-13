@@ -149,3 +149,11 @@ glfw("glfw_linux") {
   defines += [ "PREVIEW" ]
   platform = "linux"
 }
+
+group("glfw") {
+  if (current_os == "mingw") {
+    public_deps = [ ":glfw_windows" ]
+  } else {
+    public_deps = [ ":glfw_$current_os" ]
+  }
+}
