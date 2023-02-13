@@ -50,6 +50,11 @@ template("glfw") {
       ]
 
       defines += [ "_GLFW_WIN32" ]
+
+      libs = [
+        "gdi32",
+        "opengl32",
+      ]
     }
     if (platform == "mac") {
       sources += [
