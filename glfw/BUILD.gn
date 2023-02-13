@@ -14,7 +14,7 @@ config("glfw_config_mac") {
 template("glfw") {
   forward_variables_from(invoker, "*")
 
-  ohos_static_library(target_name) {
+  ohos_shared_library(target_name) {
     defines += invoker.defines
     include_dirs = [ "src" ]
     public = [
@@ -129,6 +129,9 @@ template("glfw") {
       ]
       defines += [ "_GLFW_X11" ]
     }
+
+    part_name = "graphic_standard"
+    subsystem_name = "graphic"
   }
 }
 
