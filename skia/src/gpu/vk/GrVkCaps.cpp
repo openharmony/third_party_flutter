@@ -1606,6 +1606,8 @@ GrBackendFormat GrVkCaps::getBackendFormatFromCompressionType(
     switch (compressionType) {
         case SkImage::kETC1_CompressionType:
             return GrBackendFormat::MakeVk(VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK);
+        case SkImage::kASTC_CompressionType | SkImage::kLast_CompressionType:
+            return GrBackendFormat::MakeVk(VK_FORMAT_ASTC_4x4_UNORM_BLOCK);
     }
     SK_ABORT("Invalid compression type");
 }

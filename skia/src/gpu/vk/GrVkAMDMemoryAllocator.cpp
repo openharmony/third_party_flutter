@@ -41,6 +41,7 @@ GrVkAMDMemoryAllocator::GrVkAMDMemoryAllocator(VkPhysicalDevice physicalDevice,
     functions.vkGetImageMemoryRequirements2KHR = nullptr;
 
     VmaAllocatorCreateInfo info;
+    memset(&info, 0, sizeof(info));
     info.flags = 0;
     info.physicalDevice = physicalDevice;
     info.device = device;
@@ -67,6 +68,7 @@ bool GrVkAMDMemoryAllocator::allocateMemoryForImage(VkImage image, AllocationPro
                                                     GrVkBackendMemory* backendMemory) {
     TRACE_EVENT0("skia.gpu", TRACE_FUNC);
     VmaAllocationCreateInfo info;
+    memset(&info, 0, sizeof(info));
     info.flags = 0;
     info.usage = VMA_MEMORY_USAGE_UNKNOWN;
     info.requiredFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
@@ -101,6 +103,7 @@ bool GrVkAMDMemoryAllocator::allocateMemoryForBuffer(VkBuffer buffer, BufferUsag
                                                      GrVkBackendMemory* backendMemory) {
     TRACE_EVENT0("skia.gpu", TRACE_FUNC);
     VmaAllocationCreateInfo info;
+    memset(&info, 0, sizeof(info));
     info.flags = 0;
     info.usage = VMA_MEMORY_USAGE_UNKNOWN;
     info.memoryTypeBits = 0;

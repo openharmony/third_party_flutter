@@ -8,6 +8,9 @@
 #include <map>
 #include <vector>
 
+#ifdef RS_ENABLE_VK
+#include "flutter/vulkan/vulkan_hilog.h"
+#endif
 #include "flutter/vulkan/vulkan_proc_table.h"
 #include "flutter/vulkan/vulkan_surface.h"
 #include "flutter/vulkan/vulkan_utilities.h"
@@ -18,6 +21,16 @@ namespace vulkan {
 constexpr auto kVulkanInvalidGraphicsQueueIndex =
     std::numeric_limits<uint32_t>::max();
 
+#ifdef RS_ENABLE_VK
+static uint32_t FindQueueIndex(const std::vector<VkQueueFamilyProperties>& properties, VkQueueFlagBits flagBits) {
+  for (uint32_t i = 0, count = static_cast<uint32_t>(properties.size()); i < count; i++) {
+    if (properties[i].queueFlags & flagBits) {
+      return i;
+    }
+  }
+  return kVulkanInvalidGraphicsQueueIndex;
+}
+#else
 static uint32_t FindGraphicsQueueIndex(
     const std::vector<VkQueueFamilyProperties>& properties) {
   for (uint32_t i = 0, count = static_cast<uint32_t>(properties.size());
@@ -28,7 +41,123 @@ static uint32_t FindGraphicsQueueIndex(
   }
   return kVulkanInvalidGraphicsQueueIndex;
 }
+#endif
 
+#ifdef RS_ENABLE_VK
+VulkanDevice::VulkanDevice(VulkanProcTable& p_vk, VulkanHandle<VkPhysicalDevice> physical_device)
+    : vk(p_vk), physical_device_(std::move(physical_device)),
+      graphics_queue_index_(std::numeric_limits<uint32_t>::max()),
+      compute_queue_index_(std::numeric_limits<uint32_t>::max()), valid_(false)
+{
+  if (!physical_device_ || !vk.AreInstanceProcsSetup()) {
+    return;
+  }
+
+  std::vector<VkQueueFamilyProperties> properties = GetQueueFamilyProperties();
+  graphics_queue_index_ = FindQueueIndex(properties, VK_QUEUE_GRAPHICS_BIT);
+  compute_queue_index_ = FindQueueIndex(properties, VK_QUEUE_COMPUTE_BIT);
+
+  if (graphics_queue_index_ == kVulkanInvalidGraphicsQueueIndex) {
+    LOGE("Could not find the graphics queue index.");
+    return;
+  }
+
+  const float priorities[1] = {1.0f};
+
+  std::vector<VkDeviceQueueCreateInfo> queue_create { {
+      .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+      .pNext = nullptr,
+      .flags = 0,
+      .queueFamilyIndex = graphics_queue_index_,
+      .queueCount = 1,
+      .pQueuePriorities = priorities,
+  } };
+
+  if (compute_queue_index_ != kVulkanInvalidGraphicsQueueIndex && compute_queue_index_ != graphics_queue_index_) {
+    queue_create.push_back({
+        .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+        .pNext = nullptr,
+        .flags = 0,
+        .queueFamilyIndex = graphics_queue_index_,
+        .queueCount = 1,
+        .pQueuePriorities = priorities,
+    });
+  }
+
+  const char* extensions[] = {
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+  };
+
+  auto enabled_layers = DeviceLayersToEnable(vk, physical_device_);
+
+  const char* layers[enabled_layers.size()];
+
+  for (size_t i = 0; i < enabled_layers.size(); i++) {
+    layers[i] = enabled_layers[i].c_str();
+  }
+
+  const VkDeviceCreateInfo create_info = {
+      .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+      .pNext = nullptr,
+      .flags = 0,
+      .queueCreateInfoCount = queue_create.size(),
+      .pQueueCreateInfos = queue_create.data(),
+      .enabledLayerCount = static_cast<uint32_t>(enabled_layers.size()),
+      .ppEnabledLayerNames = layers,
+      .enabledExtensionCount = sizeof(extensions) / sizeof(const char*),
+      .ppEnabledExtensionNames = extensions,
+      .pEnabledFeatures = nullptr,
+  };
+
+  VkDevice device = VK_NULL_HANDLE;
+
+  if (VK_CALL_LOG_ERROR(vk.CreateDevice(physical_device_, &create_info, nullptr,
+                                        &device)) != VK_SUCCESS) {
+    LOGE("Could not create device.");
+    return;
+  }
+
+  device_ = {device,
+              [this](VkDevice device) { vk.DestroyDevice(device, nullptr); }};
+
+  if (!vk.SetupDeviceProcAddresses(device_)) {
+    LOGE("Could not setup device proc addresses.");
+    return;
+  }
+
+  VkQueue queue = VK_NULL_HANDLE;
+
+  vk.GetDeviceQueue(device_, graphics_queue_index_, 0, &queue);
+
+  if (queue == VK_NULL_HANDLE) {
+    LOGE("Could not get the device queue handle.");
+    return;
+  }
+
+  queue_ = queue;
+
+  const VkCommandPoolCreateInfo command_pool_create_info = {
+      .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+      .pNext = nullptr,
+      .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+      .queueFamilyIndex = 0,
+  };
+
+  VkCommandPool command_pool = VK_NULL_HANDLE;
+  if (VK_CALL_LOG_ERROR(vk.CreateCommandPool(device_, &command_pool_create_info,
+                                             nullptr, &command_pool)) !=
+      VK_SUCCESS) {
+    LOGE("Could not create the command pool.");
+    return;
+  }
+
+  command_pool_ = {command_pool, [this](VkCommandPool pool) {
+                    vk.DestroyCommandPool(device_, pool, nullptr);
+                  }};
+
+  valid_ = true;
+}
+#else
 VulkanDevice::VulkanDevice(VulkanProcTable& p_vk,
                            VulkanHandle<VkPhysicalDevice> physical_device)
     : vk(p_vk),
@@ -138,9 +267,14 @@ VulkanDevice::VulkanDevice(VulkanProcTable& p_vk,
 
   valid_ = true;
 }
+#endif
 
 VulkanDevice::~VulkanDevice() {
+#ifdef RS_ENABLE_VK
+  WaitIdle();
+#else
   FML_ALLOW_UNUSED_LOCAL(WaitIdle());
+#endif
 }
 
 bool VulkanDevice::IsValid() const {
@@ -179,6 +313,40 @@ uint32_t VulkanDevice::GetGraphicsQueueIndex() const {
 bool VulkanDevice::GetSurfaceCapabilities(
     const VulkanSurface& surface,
     VkSurfaceCapabilitiesKHR* capabilities) const {
+#ifdef RS_ENABLE_VK
+if (!surface.IsValid() || capabilities == nullptr) {
+    LOGE("GetSurfaceCapabilities surface is not valid or capabilities is null");
+    return false;
+  }
+
+  bool success =
+      VK_CALL_LOG_ERROR(vk.GetPhysicalDeviceSurfaceCapabilitiesKHR(
+          physical_device_, surface.Handle(), capabilities)) == VK_SUCCESS;
+
+  if (!success) {
+    LOGE("GetPhysicalDeviceSurfaceCapabilitiesKHR not success");
+    return false;
+  }
+
+  // Check if the physical device surface capabilities are valid. If so, there
+  // is nothing more to do.
+  if (capabilities->currentExtent.width != 0xFFFFFFFF &&
+      capabilities->currentExtent.height != 0xFFFFFFFF) {
+    return true;
+  }
+
+  // Ask the native surface for its size as a fallback.
+  SkISize size = surface.GetSize();
+
+  if (size.width() == 0 || size.height() == 0) {
+    LOGE("GetSurfaceCapabilities surface size is 0");
+    return false;
+  }
+
+  capabilities->currentExtent.width = size.width();
+  capabilities->currentExtent.height = size.height();
+  return true;
+#else
 #if OS_ANDROID
   if (!surface.IsValid() || capabilities == nullptr) {
     return false;
@@ -211,7 +379,8 @@ bool VulkanDevice::GetSurfaceCapabilities(
   return true;
 #else
   return false;
-#endif
+#endif // OS_ANDROID
+#endif // RS_ENABLE_VK
 }
 
 bool VulkanDevice::GetPhysicalDeviceFeatures(
@@ -268,6 +437,48 @@ std::vector<VkQueueFamilyProperties> VulkanDevice::GetQueueFamilyProperties()
 int VulkanDevice::ChooseSurfaceFormat(const VulkanSurface& surface,
                                       std::vector<VkFormat> desired_formats,
                                       VkSurfaceFormatKHR* format) const {
+#ifdef RS_ENABLE_VK
+  if (!surface.IsValid() || format == nullptr) {
+    LOGE("ChooseSurfaceFormat surface not valid or format == null");
+    return -1;
+  }
+
+  uint32_t format_count = 0;
+  if (VK_CALL_LOG_ERROR(vk.GetPhysicalDeviceSurfaceFormatsKHR(
+          physical_device_, surface.Handle(), &format_count, nullptr)) !=
+      VK_SUCCESS) {
+    LOGE("ChooseSurfaceFormat sGetPhysicalDeviceSurfaceFormatsKHR not success");
+    return -1;
+  }
+
+  if (format_count == 0) {
+    LOGE("ChooseSurfaceFormat format count = 0");
+    return -1;
+  }
+
+  VkSurfaceFormatKHR formats[format_count];
+  if (VK_CALL_LOG_ERROR(vk.GetPhysicalDeviceSurfaceFormatsKHR(
+          physical_device_, surface.Handle(), &format_count, formats)) !=
+      VK_SUCCESS) {
+    LOGE("ChooseSurfaceFormat sGetPhysicalDeviceSurfaceFormatsKHR not success 2");
+    return -1;
+  }
+
+  std::map<VkFormat, VkSurfaceFormatKHR> supported_formats;
+  for (uint32_t i = 0; i < format_count; i++) {
+    supported_formats[formats[i].format] = formats[i];
+  }
+
+  // Try to find the first supported format in the list of desired formats.
+  for (size_t i = 0; i < desired_formats.size(); ++i) {
+    auto found = supported_formats.find(desired_formats[i]);
+    if (found != supported_formats.end()) {
+      *format = found->second;
+      return static_cast<int>(i);
+    }
+  }
+  LOGE("ChooseSurfaceFormat failded");
+#else
 #if OS_ANDROID
   if (!surface.IsValid() || format == nullptr) {
     return -1;
@@ -304,13 +515,17 @@ int VulkanDevice::ChooseSurfaceFormat(const VulkanSurface& surface,
       return static_cast<int>(i);
     }
   }
-#endif
+#endif // OS_ANDROID
+#endif // RS_ENABLE_VK
   return -1;
 }
 
 bool VulkanDevice::ChoosePresentMode(const VulkanSurface& surface,
                                      VkPresentModeKHR* present_mode) const {
   if (!surface.IsValid() || present_mode == nullptr) {
+#ifdef RS_ENABLE_VK
+    LOGE("ChoosePresentMode surface not valid or presentmode is null");
+#endif
     return false;
   }
 

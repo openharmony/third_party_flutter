@@ -9,8 +9,10 @@
 #include <utility>
 #include <vector>
 
+#ifndef RS_ENABLE_VK
 #include "flutter/fml/compiler_specific.h"
 #include "flutter/fml/macros.h"
+#endif
 #include "flutter/vulkan/vulkan_handle.h"
 #include "third_party/skia/include/core/SkSize.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -56,11 +58,42 @@ class VulkanSwapchain {
 
   /// Submit a previously acquired. There must not be consecutive calls to
   /// |Submit| without and interleaving |AcquireFrame|.
+#ifndef RS_ENABLE_VK
   FML_WARN_UNUSED_RESULT
+#endif
   bool Submit();
 
   SkISize GetSize() const;
 
+#ifdef RS_ENABLE_VK
+ private:
+  const VulkanProcTable& vk;
+  const VulkanDevice& device_;
+  VkSurfaceCapabilitiesKHR capabilities_;
+  VkSurfaceFormatKHR surface_format_;
+  VulkanHandle<VkSwapchainKHR> swapchain_;
+  std::vector<std::unique_ptr<VulkanBackbuffer>> backbuffers_;
+  std::vector<std::unique_ptr<VulkanImage>> images_;
+  std::vector<sk_sp<SkSurface>> surfaces_;
+  VkPipelineStageFlagBits current_pipeline_stage_;
+  size_t current_backbuffer_index_;
+  size_t current_image_index_;
+  bool valid_;
+
+  std::vector<VkImage> GetImages() const;
+
+  bool CreateSwapchainImages(GrContext* skia_context,
+                             SkColorType color_type,
+                             sk_sp<SkColorSpace> color_space);
+
+  sk_sp<SkSurface> CreateSkiaSurface(GrContext* skia_context,
+                                     VkImage image,
+                                     const SkISize& size,
+                                     SkColorType color_type,
+                                     sk_sp<SkColorSpace> color_space) const;
+
+  VulkanBackbuffer* GetNextBackbuffer();
+#else
 #if OS_ANDROID
  private:
   const VulkanProcTable& vk;
@@ -90,8 +123,11 @@ class VulkanSwapchain {
 
   VulkanBackbuffer* GetNextBackbuffer();
 #endif  // OS_ANDROID
+#endif  // RS_ENABLE_VK
 
+#ifndef RS_ENABLE_VK
   FML_DISALLOW_COPY_AND_ASSIGN(VulkanSwapchain);
+#endif
 };
 
 }  // namespace vulkan

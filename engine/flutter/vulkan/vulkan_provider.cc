@@ -5,7 +5,7 @@
 #include "flutter/vulkan/vulkan_provider.h"
 
 namespace vulkan {
-
+#ifndef RS_ENABLE_VK
 vulkan::VulkanHandle<VkFence> VulkanProvider::CreateFence() {
   const VkFenceCreateInfo create_info = {
       .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
@@ -21,5 +21,6 @@ vulkan::VulkanHandle<VkFence> VulkanProvider::CreateFence() {
             vk().DestroyFence(vk_device(), fence, nullptr);
           }};
 }
+#endif
 
 }  // namespace vulkan

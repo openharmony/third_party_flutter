@@ -6,6 +6,9 @@
 
 #include <limits>
 
+#ifdef RS_ENABLE_VK
+#include "flutter/vulkan/vulkan_hilog.h"
+#endif
 #include "flutter/vulkan/vulkan_proc_table.h"
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
 #include "vulkan/vulkan.h"
@@ -21,17 +24,29 @@ VulkanBackbuffer::VulkanBackbuffer(const VulkanProcTable& p_vk,
       render_command_buffer_(p_vk, device, pool),
       valid_(false) {
   if (!usage_command_buffer_.IsValid() || !render_command_buffer_.IsValid()) {
+#ifdef RS_ENABLE_VK
+    LOGE("Command buffers were not valid.");
+#else
     FML_DLOG(INFO) << "Command buffers were not valid.";
+#endif
     return;
   }
 
   if (!CreateSemaphores()) {
+#ifdef RS_ENABLE_VK
+    LOGE("Could not create semaphores.");
+#else
     FML_DLOG(INFO) << "Could not create semaphores.";
+#endif
     return;
   }
 
   if (!CreateFences()) {
+#ifdef RS_ENABLE_VK
+    LOGE("Could not create fences.");
+#else
     FML_DLOG(INFO) << "Could not create fences.";
+#endif
     return;
   }
 
@@ -39,7 +54,11 @@ VulkanBackbuffer::VulkanBackbuffer(const VulkanProcTable& p_vk,
 }
 
 VulkanBackbuffer::~VulkanBackbuffer() {
+#ifdef RS_ENABLE_VK
+  WaitFences();
+#else
   FML_ALLOW_UNUSED_LOCAL(WaitFences());
+#endif
 }
 
 bool VulkanBackbuffer::IsValid() const {
