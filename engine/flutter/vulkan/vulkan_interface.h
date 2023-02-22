@@ -7,9 +7,12 @@
 
 #include <string>
 
+#ifndef RS_ENABLE_VK
 #include "flutter/fml/build_config.h"
 #include "flutter/fml/logging.h"
+#endif
 
+#ifndef RS_ENABLE_VK
 #if !defined(FUCHSIA_SDK)
 #define VULKAN_LINK_STATICALLY OS_FUCHSIA
 #endif  //  !defined(FUCHSIA_SDK)
@@ -28,6 +31,13 @@
 #define VK_USE_PLATFORM_FUCHSIA 1
 #endif  // VK_USE_PLATFORM_FUCHSIA
 #endif  // OS_FUCHSIA
+#endif  // not define RS_ENABLE_VK
+
+#ifdef RS_ENABLE_VK
+#ifndef VK_USE_PLATFORM_OHOS_KHR
+#define VK_USE_PLATFORM_OHOS_KHR
+#endif  // VK_USE_PLATFORM_OHOS_KHR
+#endif  // RS_ENABLE_VK
 
 #if !VULKAN_LINK_STATICALLY
 #define VK_NO_PROTOTYPES 1
@@ -37,6 +47,17 @@
 
 #ifndef NDEBUG
 
+#ifdef RS_ENABLE_VK
+#define VK_CALL_LOG_ERROR(expression)                            \
+  ({                                                             \
+    __typeof__(expression) _rc = (expression);                   \
+    if (_rc != VK_SUCCESS) {                                     \
+      LOGE("Vulkan call '" #expression "' failed with error %s", \
+           vulkan::VulkanResultToString(_rc));                   \
+    }                                                            \
+    _rc;                                                         \
+  })
+#else
 #define VK_CALL_LOG_ERROR(expression)                      \
   ({                                                       \
     __typeof__(expression) _rc = (expression);             \
@@ -47,6 +68,7 @@
     }                                                      \
     _rc;                                                   \
   })
+#endif
 
 #else  // NDEBUG
 

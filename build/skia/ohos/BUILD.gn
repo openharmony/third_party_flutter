@@ -88,6 +88,9 @@ skia_common_ccflags = [
   "-Wno-suggest-destructor-override",
   "-Wno-suggest-override",
   "-Wno-psabi",
+  "-Wno-unused-variable",
+  "-Wno-extra-semi-stmt",
+  "-Wno-missing-field-initializers",
   "-Os",
 ]
 
@@ -162,6 +165,7 @@ skia_common_defines = [
   "GR_TEST_UTILS=1",
   "SKIA_IMPLEMENTATION=1",
   "SK_GL",
+  "SK_VULKAN",
   "SK_SUPPORT_PDF",
   "SK_HAS_JPEG_LIBRARY",
   "SK_HAS_HEIF_LIBRARY",
@@ -184,7 +188,10 @@ skia_common_defines = [
 # ------------------------------------------------
 config("skia_core_config") {
   visibility = [ ":*" ]
-  include_dirs = [ "$flutter_root/skia" ]
+  include_dirs = [
+    "$flutter_root/skia",
+    "//third_party/skia/third_party/vulkanmemoryallocator",
+  ]
   cflags_cc = skia_common_ccflags
   cflags_cc += [ "-Wno-extra-semi" ]
   cflags = skia_common_cflags
@@ -453,6 +460,47 @@ ohos_source_set("skia_core_ohos") {
     "$flutter_root/skia/src/effects/imagefilters/SkPictureImageFilter.cpp",
     "$flutter_root/skia/src/effects/imagefilters/SkTileImageFilter.cpp",
     "$flutter_root/skia/src/effects/imagefilters/SkXfermodeImageFilter.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkAMDMemoryAllocator.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkBuffer.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkBufferView.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkCaps.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkCommandBuffer.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkCommandPool.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkDescriptorPool.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkDescriptorSet.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkDescriptorSetManager.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkExtensions.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkFramebuffer.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkGpu.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkGpuCommandBuffer.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkGpuCommandBuffer.h",
+    "$flutter_root/skia/src/gpu/vk/GrVkImage.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkImageView.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkIndexBuffer.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkInterface.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkMemory.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkPipeline.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkPipelineState.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkPipelineStateBuilder.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkPipelineStateCache.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkPipelineStateDataManager.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkRenderPass.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkRenderTarget.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkResourceProvider.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkSampler.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkSamplerYcbcrConversion.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkSecondaryCBDrawContext.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkSemaphore.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkStencilAttachment.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkTexture.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkTextureRenderTarget.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkTransferBuffer.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkTypesPriv.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkUniformBuffer.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkUniformHandler.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkUtil.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkVaryingHandler.cpp",
+    "$flutter_root/skia/src/gpu/vk/GrVkVertexBuffer.cpp",
     "$flutter_root/skia/src/image/SkImage.cpp",
     "$flutter_root/skia/src/image/SkImage_Lazy.cpp",
     "$flutter_root/skia/src/image/SkImage_Raster.cpp",
@@ -581,6 +629,7 @@ ohos_source_set("skia_core_ohos") {
     "$flutter_root/skia/src/utils/win/SkWGL_win.cpp",
     "$flutter_root/skia/src/xps/SkXPSDevice.cpp",
     "$flutter_root/skia/src/xps/SkXPSDocument.cpp",
+    "//third_party/skia/third_party/vulkanmemoryallocator/GrVulkanMemoryAllocator.cpp",
   ]
 
   if (enable_dump_drawcmd) {

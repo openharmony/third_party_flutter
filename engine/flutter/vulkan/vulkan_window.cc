@@ -9,6 +9,9 @@
 
 #include "flutter/vulkan/vulkan_application.h"
 #include "flutter/vulkan/vulkan_device.h"
+#ifdef RS_ENABLE_VK
+#include "flutter/vulkan/vulkan_hilog.h"
+#endif
 #include "flutter/vulkan/vulkan_native_surface.h"
 #include "flutter/vulkan/vulkan_surface.h"
 #include "flutter/vulkan/vulkan_swapchain.h"
@@ -16,6 +19,88 @@
 
 namespace vulkan {
 
+#ifdef RS_ENABLE_VK
+VulkanProcTable* VulkanWindow::vk;
+std::unique_ptr<VulkanApplication> VulkanWindow::application_;
+std::unique_ptr<VulkanDevice> VulkanWindow::logical_device_;
+
+void VulkanWindow::InitializeVulkan()
+{
+  if (logical_device_ != nullptr) {
+    LOGI("Vulkan Already Initialized");
+    return;
+  }
+  LOGI("First Initialize Vulkan");
+  vk = new VulkanProcTable();
+  if (!vk->HasAcquiredMandatoryProcAddresses()) {
+    LOGE("Proc table has not acquired mandatory proc addresses.");
+    return;
+  }
+
+  // Create the application instance.
+  std::vector<std::string> extensions = {
+      VK_KHR_SURFACE_SPEC_VERSION,               // parent extension
+      VK_OPENHARMONY_OHOS_SURFACE_EXTENSION_NAME // child extension
+  };
+
+  application_ = std::make_unique<VulkanApplication>(*vk, "Rosen", std::move(extensions));
+  if (!application_->IsValid() || !vk->AreInstanceProcsSetup()) {
+    // Make certain the application instance was created and it setup the
+    // instance proc table entries.
+    LOGE("Instance proc addresses have not been setup.");
+    return;
+  }
+
+  // Create the device.
+  logical_device_ = application_->AcquireFirstCompatibleLogicalDevice();
+  if (logical_device_ == nullptr || !logical_device_->IsValid() || !vk->AreDeviceProcsSetup()) {
+    // Make certain the device was created and it setup the device proc table
+    // entries.
+    LOGE("Device proc addresses have not been setup.");
+    return;
+  }
+}
+
+VulkanWindow::VulkanWindow(std::unique_ptr<VulkanNativeSurface> native_surface, bool is_offscreen)
+    : valid_(false), is_offscreen_(is_offscreen)
+{
+  LOGE("VulkanWindow init enter");
+
+  InitializeVulkan();
+  if (logical_device_ == nullptr) {
+    LOGE("InitializeVulkan failed");
+    return;
+  }
+
+  if (!is_offscreen && (native_surface == nullptr || !native_surface->IsValid())) {
+    LOGE("Native surface is invalid.");
+    return;
+  }
+
+  // Create the logical surface from the native platform surface.
+  if (!is_offscreen) {
+    surface_ = std::make_unique<VulkanSurface>(*vk, *application_, std::move(native_surface));
+    if (!surface_->IsValid()) {
+      LOGE("Vulkan surface is invalid.");
+      return;
+    }
+  }
+
+  // Create the Skia GrContext.
+  if (!CreateSkiaGrContext()) {
+    LOGE("Could not create Skia context.");
+    return;
+  }
+
+  // Create the swapchain.
+  if (!is_offscreen && !RecreateSwapchain()) {
+    LOGE("Could not setup the swapchain initially.");
+    return;
+  }
+  LOGE("VulkanWindow init success");
+  valid_ = true;
+}
+#else
 VulkanWindow::VulkanWindow(fml::RefPtr<VulkanProcTable> proc_table,
                            std::unique_ptr<VulkanNativeSurface> native_surface)
     : valid_(false), vk(std::move(proc_table)) {
@@ -84,6 +169,7 @@ VulkanWindow::VulkanWindow(fml::RefPtr<VulkanProcTable> proc_table,
 
   valid_ = true;
 }
+#endif
 
 VulkanWindow::~VulkanWindow() = default;
 
@@ -99,12 +185,18 @@ bool VulkanWindow::CreateSkiaGrContext() {
   GrVkBackendContext backend_context;
 
   if (!CreateSkiaBackendContext(&backend_context)) {
+#ifdef RS_ENABLE_VK
+    LOGE("CreateSkiaGrContext CreateSkiaBackendContext is false");
+#endif
     return false;
   }
 
   sk_sp<GrContext> context = GrContext::MakeVulkan(backend_context);
 
   if (context == nullptr) {
+#ifdef RS_ENABLE_VK
+    LOGE("CreateSkiaGrContext context is null");
+#endif
     return false;
   }
 
@@ -119,11 +211,17 @@ bool VulkanWindow::CreateSkiaBackendContext(GrVkBackendContext* context) {
   auto getProc = vk->CreateSkiaGetProc();
 
   if (getProc == nullptr) {
+#ifdef RS_ENABLE_VK
+    LOGE("CreateSkiaBackendContext getProc is null");
+#endif
     return false;
   }
 
   uint32_t skia_features = 0;
   if (!logical_device_->GetPhysicalDeviceFeaturesSkia(&skia_features)) {
+#ifdef RS_ENABLE_VK
+    LOGE("CreateSkiaBackendContext GetPhysicalDeviceFeaturesSkia is false");
+#endif
     return false;
   }
 
@@ -133,9 +231,18 @@ bool VulkanWindow::CreateSkiaBackendContext(GrVkBackendContext* context) {
   context->fQueue = logical_device_->GetQueueHandle();
   context->fGraphicsQueueIndex = logical_device_->GetGraphicsQueueIndex();
   context->fMinAPIVersion = application_->GetAPIVersion();
+#ifdef RS_ENABLE_VK
+  uint32_t extensionFlags = kKHR_surface_GrVkExtensionFlag;
+  if (!is_offscreen_) {
+    extensionFlags |= kKHR_swapchain_GrVkExtensionFlag;
+    extensionFlags |= surface_->GetNativeSurface().GetSkiaExtensionName();
+  }
+  context->fExtensions = extensionFlags;
+#else
   context->fExtensions = kKHR_surface_GrVkExtensionFlag |
                          kKHR_swapchain_GrVkExtensionFlag |
                          surface_->GetNativeSurface().GetSkiaExtensionName();
+#endif
   context->fFeatures = skia_features;
   context->fGetProc = std::move(getProc);
   context->fOwnsInstanceAndDevice = false;
@@ -143,10 +250,17 @@ bool VulkanWindow::CreateSkiaBackendContext(GrVkBackendContext* context) {
 }
 
 sk_sp<SkSurface> VulkanWindow::AcquireSurface() {
+#ifdef RS_ENABLE_VK
+  if (is_offscreen_ || !IsValid()) {
+    LOGE("Surface is invalid or offscreen.");
+    return nullptr;
+  }
+#else
   if (!IsValid()) {
     FML_DLOG(INFO) << "Surface is invalid.";
     return nullptr;
   }
+#endif
 
   auto surface_size = surface_->GetSize();
 
@@ -158,10 +272,18 @@ sk_sp<SkSurface> VulkanWindow::AcquireSurface() {
   // size.
   if (surface_size != SkISize::Make(0, 0) &&
       surface_size != swapchain_->GetSize()) {
+#ifdef RS_ENABLE_VK
+    LOGE("Swapchain and surface sizes are out of sync. Recreating swapchain.");
+#else
     FML_DLOG(INFO) << "Swapchain and surface sizes are out of sync. Recreating "
                       "swapchain.";
+#endif
     if (!RecreateSwapchain()) {
+#ifdef RS_ENABLE_VK
+      LOGE("Could not recreate swapchain.");
+#else
       FML_DLOG(INFO) << "Could not recreate swapchain.";
+#endif
       valid_ = false;
       return nullptr;
     }
@@ -180,21 +302,34 @@ sk_sp<SkSurface> VulkanWindow::AcquireSurface() {
 
     if (acquire_result == VulkanSwapchain::AcquireStatus::ErrorSurfaceLost) {
       // Surface is lost. This is an unrecoverable error.
+#ifdef RS_ENABLE_VK
+      LOGE("Swapchain reported surface was lost.");
+#else
       FML_DLOG(INFO) << "Swapchain reported surface was lost.";
+#endif
       return nullptr;
     }
 
     if (acquire_result ==
         VulkanSwapchain::AcquireStatus::ErrorSurfaceOutOfDate) {
+#ifdef RS_ENABLE_VK
+      LOGE("AcquireSurface surface out of date");
+#endif
       // Surface out of date. Recreate the swapchain at the new configuration.
       if (RecreateSwapchain()) {
         // Swapchain was recreated, try surface acquisition again.
         continue;
       } else {
         // Could not recreate the swapchain at the new configuration.
+#ifdef RS_ENABLE_VK
+        LOGE("Swapchain reported surface was out of date but "
+                           "could not recreate the swapchain at the new "
+                           "configuration.");
+#else
         FML_DLOG(INFO) << "Swapchain reported surface was out of date but "
                           "could not recreate the swapchain at the new "
                           "configuration.";
+#endif
         valid_ = false;
         return nullptr;
       }
@@ -203,37 +338,66 @@ sk_sp<SkSurface> VulkanWindow::AcquireSurface() {
     break;
   }
 
+#ifdef RS_ENABLE_VK
+  LOGE("Unhandled VulkanSwapchain::AcquireResult");
+#else
   FML_DCHECK(false) << "Unhandled VulkanSwapchain::AcquireResult";
+#endif
   return nullptr;
 }
 
 bool VulkanWindow::SwapBuffers() {
+#ifdef RS_ENABLE_VK
+  if (is_offscreen_ || !IsValid()) {
+      LOGE("Window was invalid or offscreen.");
+      return false;
+  }
+#else
   if (!IsValid()) {
     FML_DLOG(INFO) << "Window was invalid.";
     return false;
   }
+#endif
 
   return swapchain_->Submit();
 }
 
 bool VulkanWindow::RecreateSwapchain() {
+#ifdef RS_ENABLE_VK
+  if (is_offscreen_) {
+      LOGE("offscreen vulkan window, don't need swapchian");
+      return false;
+  }
+#endif
   // This way, we always lose our reference to the old swapchain. Even if we
   // cannot create a new one to replace it.
   auto old_swapchain = std::move(swapchain_);
 
   if (!vk->IsValid()) {
+#ifdef RS_ENABLE_VK
+    LOGE("RecreateSwapchain vk not valid");
+#endif
     return false;
   }
 
   if (logical_device_ == nullptr || !logical_device_->IsValid()) {
+#ifdef RS_ENABLE_VK
+    LOGE("RecreateSwapchain logical_device_ not valid");
+#endif
     return false;
   }
 
   if (surface_ == nullptr || !surface_->IsValid()) {
+#ifdef RS_ENABLE_VK
+    LOGE("RecreateSwapchain surface_ not valid");
+#endif
     return false;
   }
 
   if (skia_gr_context_ == nullptr) {
+#ifdef RS_ENABLE_VK
+    LOGE("RecreateSwapchain skia_gr_context_ not valid");
+#endif
     return false;
   }
 
@@ -242,6 +406,9 @@ bool VulkanWindow::RecreateSwapchain() {
       std::move(old_swapchain), logical_device_->GetGraphicsQueueIndex());
 
   if (!swapchain->IsValid()) {
+#ifdef RS_ENABLE_VK
+    LOGE("RecreateSwapchain swapchain not valid");
+#endif
     return false;
   }
 

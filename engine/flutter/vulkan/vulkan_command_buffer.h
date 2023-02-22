@@ -5,8 +5,10 @@
 #ifndef FLUTTER_VULKAN_VULKAN_COMMAND_BUFFER_H_
 #define FLUTTER_VULKAN_VULKAN_COMMAND_BUFFER_H_
 
+#ifndef RS_ENABLE_VK
 #include "flutter/fml/compiler_specific.h"
 #include "flutter/fml/macros.h"
+#endif
 #include "flutter/vulkan/vulkan_handle.h"
 
 namespace vulkan {
@@ -25,13 +27,19 @@ class VulkanCommandBuffer {
 
   VkCommandBuffer Handle() const;
 
+#ifndef RS_ENABLE_VK
   FML_WARN_UNUSED_RESULT
+#endif
   bool Begin() const;
 
+#ifndef RS_ENABLE_VK
   FML_WARN_UNUSED_RESULT
+#endif
   bool End() const;
 
+#ifndef RS_ENABLE_VK
   FML_WARN_UNUSED_RESULT
+#endif
   bool InsertPipelineBarrier(
       VkPipelineStageFlagBits src_stage_flags,
       VkPipelineStageFlagBits dest_stage_flags,
@@ -50,7 +58,9 @@ class VulkanCommandBuffer {
   VulkanHandle<VkCommandBuffer> handle_;
   bool valid_;
 
+#ifndef RS_ENABLE_VK
   FML_DISALLOW_COPY_AND_ASSIGN(VulkanCommandBuffer);
+#endif
 };
 
 }  // namespace vulkan

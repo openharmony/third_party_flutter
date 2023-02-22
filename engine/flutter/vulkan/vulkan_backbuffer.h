@@ -7,8 +7,10 @@
 
 #include <array>
 
+#ifndef RS_ENABLE_VK
 #include "flutter/fml/compiler_specific.h"
 #include "flutter/fml/macros.h"
+#endif
 #include "flutter/vulkan/vulkan_command_buffer.h"
 #include "flutter/vulkan/vulkan_handle.h"
 #include "third_party/skia/include/core/SkSize.h"
@@ -26,10 +28,14 @@ class VulkanBackbuffer {
 
   bool IsValid() const;
 
+#ifndef RS_ENABLE_VK
   FML_WARN_UNUSED_RESULT
+#endif
   bool WaitFences();
 
+#ifndef RS_ENABLE_VK
   FML_WARN_UNUSED_RESULT
+#endif
   bool ResetFences();
 
   const VulkanHandle<VkFence>& GetUsageFence() const;
@@ -57,7 +63,9 @@ class VulkanBackbuffer {
 
   bool CreateFences();
 
+#ifndef RS_ENABLE_VK
   FML_DISALLOW_COPY_AND_ASSIGN(VulkanBackbuffer);
+#endif
 };
 
 }  // namespace vulkan

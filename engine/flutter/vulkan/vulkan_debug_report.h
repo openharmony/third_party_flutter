@@ -5,7 +5,9 @@
 #ifndef FLUTTER_VULKAN_VULKAN_DEBUG_REPORT_H_
 #define FLUTTER_VULKAN_VULKAN_DEBUG_REPORT_H_
 
+#ifndef RS_ENABLE_VK
 #include "flutter/fml/macros.h"
+#endif
 #include "flutter/vulkan/vulkan_handle.h"
 #include "flutter/vulkan/vulkan_interface.h"
 #include "flutter/vulkan/vulkan_proc_table.h"
@@ -29,7 +31,9 @@ class VulkanDebugReport {
   VulkanHandle<VkDebugReportCallbackEXT> handle_;
   bool valid_;
 
+#ifndef RS_ENABLE_VK
   FML_DISALLOW_COPY_AND_ASSIGN(VulkanDebugReport);
+#endif
 };
 
 }  // namespace vulkan

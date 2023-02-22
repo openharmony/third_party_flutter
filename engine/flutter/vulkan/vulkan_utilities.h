@@ -8,7 +8,9 @@
 #include <string>
 #include <vector>
 
+#ifndef RS_ENABLE_VK
 #include "flutter/fml/macros.h"
+#endif
 #include "flutter/vulkan/vulkan_handle.h"
 #include "flutter/vulkan/vulkan_proc_table.h"
 

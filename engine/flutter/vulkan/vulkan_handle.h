@@ -7,8 +7,10 @@
 
 #include <functional>
 
+#ifndef RS_ENABLE_VK
 #include "flutter/fml/logging.h"
 #include "flutter/fml/macros.h"
+#endif
 #include "vulkan_interface.h"
 
 namespace vulkan {
@@ -72,7 +74,9 @@ class VulkanHandle {
     disposer_ = nullptr;
   }
 
+#ifndef RS_ENABLE_VK
   FML_DISALLOW_COPY_AND_ASSIGN(VulkanHandle);
+#endif
 };
 
 }  // namespace vulkan

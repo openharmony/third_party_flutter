@@ -5,6 +5,9 @@
 #include "flutter/vulkan/vulkan_surface.h"
 
 #include "flutter/vulkan/vulkan_application.h"
+#ifdef RS_ENABLE_VK
+#include "flutter/vulkan/vulkan_hilog.h"
+#endif
 #include "flutter/vulkan/vulkan_native_surface.h"
 
 namespace vulkan {
@@ -18,7 +21,11 @@ VulkanSurface::VulkanSurface(
       native_surface_(std::move(native_surface)),
       valid_(false) {
   if (native_surface_ == nullptr || !native_surface_->IsValid()) {
+#ifdef RS_ENABLE_VK
+    LOGE("Native surface was invalid.");
+#else
     FML_DLOG(INFO) << "Native surface was invalid.";
+#endif
     return;
   }
 
@@ -26,7 +33,11 @@ VulkanSurface::VulkanSurface(
       native_surface_->CreateSurfaceHandle(vk, application.GetInstance());
 
   if (surface == VK_NULL_HANDLE) {
+#ifdef RS_ENABLE_VK
+    LOGE("Could not create the surface handle.");
+#else
     FML_DLOG(INFO) << "Could not create the surface handle.";
+#endif
     return;
   }
 

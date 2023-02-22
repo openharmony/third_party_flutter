@@ -5,7 +5,9 @@
 #ifndef FLUTTER_VULKAN_VULKAN_NATIVE_SURFACE_H_
 #define FLUTTER_VULKAN_VULKAN_NATIVE_SURFACE_H_
 
+#ifndef RS_ENABLE_VK
 #include "flutter/fml/macros.h"
+#endif
 #include "third_party/skia/include/core/SkSize.h"
 #include "vulkan_handle.h"
 #include "vulkan_proc_table.h"

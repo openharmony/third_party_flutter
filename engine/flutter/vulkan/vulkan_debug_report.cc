@@ -7,17 +7,28 @@
 #include <iomanip>
 #include <vector>
 
+#ifndef RS_ENABLE_VK
 #include "flutter/fml/compiler_specific.h"
+#endif
 #include "flutter/vulkan/vulkan_utilities.h"
 
 namespace vulkan {
+#ifdef RS_ENABLE_VK
+static const VkDebugReportFlagsEXT kVulkanErrorFlags =
+    VK_DEBUG_REPORT_WARNING_BIT_EXT |
+    VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT | VK_DEBUG_REPORT_ERROR_BIT_EXT;
 
+
+static const VkDebugReportFlagsEXT kVulkanInfoFlags =
+    VK_DEBUG_REPORT_INFORMATION_BIT_EXT | VK_DEBUG_REPORT_DEBUG_BIT_EXT;
+#else
 static const VkDebugReportFlagsEXT kVulkanErrorFlags FML_ALLOW_UNUSED_TYPE =
     VK_DEBUG_REPORT_WARNING_BIT_EXT |
     VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT | VK_DEBUG_REPORT_ERROR_BIT_EXT;
 
 static const VkDebugReportFlagsEXT kVulkanInfoFlags FML_ALLOW_UNUSED_TYPE =
     VK_DEBUG_REPORT_INFORMATION_BIT_EXT | VK_DEBUG_REPORT_DEBUG_BIT_EXT;
+#endif
 
 std::string VulkanDebugReport::DebugExtensionName() {
   return VK_EXT_DEBUG_REPORT_EXTENSION_NAME;
@@ -148,6 +159,7 @@ OnVulkanDebugReportCallback(VkDebugReportFlagsEXT flags,
 
   padding += 1;
 
+#ifndef RS_ENABLE_VK
   std::stringstream stream;
 
   stream << std::endl;
@@ -172,6 +184,7 @@ OnVulkanDebugReportCallback(VkDebugReportFlagsEXT flags,
   } else {
     FML_LOG(INFO) << stream.str();
   }
+#endif
 
   // Returning false tells the layer not to stop when the event occurs, so
   // they see the same behavior with and without validation layers enabled.

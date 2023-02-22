@@ -36,7 +36,9 @@ class VulkanNativeSurfaceAndroid : public VulkanNativeSurface {
  private:
   ANativeWindow* native_window_;
 
+#ifndef RS_ENABLE_VK
   FML_DISALLOW_COPY_AND_ASSIGN(VulkanNativeSurfaceAndroid);
+#endif
 };
 
 }  // namespace vulkan

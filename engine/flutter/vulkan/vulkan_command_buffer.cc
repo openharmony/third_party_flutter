@@ -4,6 +4,9 @@
 
 #include "flutter/vulkan/vulkan_command_buffer.h"
 
+#ifdef RS_ENABLE_VK
+#include "flutter/vulkan/vulkan_hilog.h"
+#endif
 #include "flutter/vulkan/vulkan_proc_table.h"
 
 namespace vulkan {
@@ -25,7 +28,11 @@ VulkanCommandBuffer::VulkanCommandBuffer(
 
   if (VK_CALL_LOG_ERROR(vk.AllocateCommandBuffers(device_, &allocate_info,
                                                   &buffer)) != VK_SUCCESS) {
+#ifdef RS_ENABLE_VK
+    LOGE("Could not allocate command buffers.");
+#else
     FML_DLOG(INFO) << "Could not allocate command buffers.";
+#endif
     return;
   }
 
