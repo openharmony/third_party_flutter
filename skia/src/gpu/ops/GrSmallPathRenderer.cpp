@@ -628,7 +628,19 @@ private:
         shapeData->fBounds.fBottom /= scale;
 
         // We pack the 2bit page index in the low bit of the u and v texture coords
+        // SK_ENABLE_SMALL_PAGE 4bit
         uint16_t pageIndex = GrDrawOpAtlas::GetPageIndexFromID(id);
+#ifdef SK_ENABLE_SMALL_PAGE
+        SkASSERT(pageIndex < 16);
+        uint16_t uBit = (pageIndex >> 2) & 0x3;
+        uint16_t vBit = pageIndex & 0x3;
+        shapeData->fTextureCoords.set((atlasLocation.fX+SK_DistanceFieldPad) << 2 | uBit,
+                                      (atlasLocation.fY+SK_DistanceFieldPad) << 2 | vBit,
+                                      (atlasLocation.fX+SK_DistanceFieldPad+
+                                       devPathBounds.width()) << 2 | uBit,
+                                      (atlasLocation.fY+SK_DistanceFieldPad+
+                                       devPathBounds.height()) << 2 | vBit);
+#else
         SkASSERT(pageIndex < 4);
         uint16_t uBit = (pageIndex >> 1) & 0x1;
         uint16_t vBit = pageIndex & 0x1;
@@ -638,6 +650,7 @@ private:
                                        devPathBounds.width()) << 1 | uBit,
                                       (atlasLocation.fY+SK_DistanceFieldPad+
                                        devPathBounds.height()) << 1 | vBit);
+#endif
 
         fShapeCache->add(shapeData);
         fShapeList->addToTail(shapeData);
@@ -726,13 +739,23 @@ private:
         shapeData->fBounds.offset(-translateX, -translateY);
 
         // We pack the 2bit page index in the low bit of the u and v texture coords
+        // SK_ENABLE_SMALL_PAGE 4bit
         uint16_t pageIndex = GrDrawOpAtlas::GetPageIndexFromID(id);
+#ifdef SK_ENABLE_SMALL_PAGE
+        SkASSERT(pageIndex < 16);
+        uint16_t uBit = (pageIndex >> 2) & 0x3;
+        uint16_t vBit = pageIndex & 0x3;
+        shapeData->fTextureCoords.set(atlasLocation.fX << 2 | uBit, atlasLocation.fY << 2 | vBit,
+                                      (atlasLocation.fX+width) << 2 | uBit,
+                                      (atlasLocation.fY+height) << 2 | vBit);
+#else
         SkASSERT(pageIndex < 4);
         uint16_t uBit = (pageIndex >> 1) & 0x1;
         uint16_t vBit = pageIndex & 0x1;
         shapeData->fTextureCoords.set(atlasLocation.fX << 1 | uBit, atlasLocation.fY << 1 | vBit,
                                       (atlasLocation.fX+width) << 1 | uBit,
                                       (atlasLocation.fY+height) << 1 | vBit);
+#endif
 
         fShapeCache->add(shapeData);
         fShapeList->addToTail(shapeData);
