@@ -159,6 +159,22 @@ struct GrSurfaceDesc {
      * internal format used by 3D API.
      */
     GrPixelConfig          fConfig;
+
+    // 4 ids.
+    uint32_t fGrTag[4] { 0, 0, 0, 0 };
+
+    bool isGrTagValid() const {
+        // 0, 1, 2, 3: index of array fGrTag.
+        return fGrTag[0] || fGrTag[1] || fGrTag[2] || fGrTag[3];
+    }
+
+    void setGrTag(uint32_t pid, uint32_t tid, uint32_t wid, uint32_t fid) {
+        // 0, 1, 2, 3: index of array fGrTag.
+        fGrTag[0] = pid;
+        fGrTag[1] = tid;
+        fGrTag[2] = wid;
+        fGrTag[3] = fid;
+    }
 };
 
 /** Ownership rules for external GPU resources imported into Skia. */

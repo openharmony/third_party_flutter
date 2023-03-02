@@ -267,6 +267,72 @@ void GrResourceCache::releaseAll() {
     SkASSERT(!fResourcesAwaitingUnref.count());
 }
 
+void GrResourceCache::releaseByTag(GrGpuResourceTag tag) {
+    AutoValidate av(this);
+    this->processFreedGpuResources();
+    SkASSERT(fProxyProvider); // better have called setProxyProvider
+    int count = fNonpurgeableResources.count();
+    for (int i = 0; i < count; i++) {
+        GrGpuResource* resource = fNonpurgeableResources[i];
+        if (tag.filter(resource->getResourceTag()) && resource->getUniqueKey().isValid()) {
+            fProxyProvider->processInvalidUniqueKey(resource->getUniqueKey(), nullptr,
+                GrProxyProvider::InvalidateGPUResource::kNo);
+        }
+    }
+
+    std::vector<GrGpuResource*> purgeableVector;
+    for (int i = 0; i < fPurgeableQueue.count(); i++) {
+        GrGpuResource* resource = fPurgeableQueue.at(i);
+        if (tag.filter(resource->getResourceTag())) {
+            purgeableVector.push_back(resource);
+            if (resource->getUniqueKey().isValid()){
+                fProxyProvider->processInvalidUniqueKey(resource->getUniqueKey(), nullptr,
+                    GrProxyProvider::InvalidateGPUResource::kNo);
+            }
+        }
+    }
+
+    ResourceArray tempArray;
+    for (int i = 0; i < count; i++) {
+        if (tag.filter(fNonpurgeableResources.getAt(i)->getResourceTag())) {
+            fNonpurgeableResources.getAt(i)->cacheAccess().release();
+        } else {
+            *tempArray.append() = fNonpurgeableResources.getAt(i);
+            *(*(tempArray.end() - 1))->cacheAccess().accessCacheIndex() = tempArray.count() - 1;
+        }
+    }
+    fNonpurgeableResources = tempArray;
+    std::vector<GrGpuResource*> tmpPurgeableVector;
+    while(fPurgeableQueue.count()) {
+        GrGpuResource* top = fPurgeableQueue.peek();
+        if (std::find(purgeableVector.begin(), purgeableVector.end(), top) == purgeableVector.end()) {
+            fPurgeableQueue.remove(top);
+            tmpPurgeableVector.push_back(top);
+        } else {
+            SkASSERT(!top->wasDestroyed());
+            top->cacheAccess().release();
+        }
+    }
+    for (auto iter = tmpPurgeableVector.begin(); iter != tmpPurgeableVector.end(); iter++) {
+        fPurgeableQueue.insert(*iter);
+    }
+}
+
+void GrResourceCache::setCurrentGrResourceTag(GrGpuResourceTag tag) {
+    if (tag.isGrTagValid()) {
+        grResourceTagCacheStack.push(tag);
+    } else {
+        grResourceTagCacheStack.pop();
+    }
+}
+
+GrGpuResourceTag GrResourceCache::getCurrentGrResourceTag() const {
+    if (grResourceTagCacheStack.empty()) {
+        return {};
+    }
+    return grResourceTagCacheStack.top();
+}
+
 void GrResourceCache::refResource(GrGpuResource* resource) {
     SkASSERT(resource);
     SkASSERT(resource->getContext()->priv().getResourceCache() == this);
@@ -780,6 +846,19 @@ void GrResourceCache::dumpMemoryStatistics(SkTraceMemoryDump* traceMemoryDump) c
     }
     for (int i = 0; i < fPurgeableQueue.count(); ++i) {
         fPurgeableQueue.at(i)->dumpMemoryStatistics(traceMemoryDump);
+    }
+}
+
+void GrResourceCache::dumpMemoryStatistics(SkTraceMemoryDump* traceMemoryDump, GrGpuResourceTag tag) const {
+    for (int i = 0; i < fNonpurgeableResources.count(); ++i) {
+        if (tag.filter(fNonpurgeableResources[i]->getResourceTag())) {
+            fNonpurgeableResources[i]->dumpMemoryStatistics(traceMemoryDump);
+        }
+    }
+    for (int i = 0; i < fPurgeableQueue.count(); ++i) {
+        if (tag.filter(fPurgeableQueue.at(i)->getResourceTag())) {
+            fPurgeableQueue.at(i)->dumpMemoryStatistics(traceMemoryDump);
+        }
     }
 }
 

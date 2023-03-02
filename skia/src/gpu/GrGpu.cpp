@@ -202,6 +202,11 @@ sk_sp<GrTexture> GrGpu::createTexture(const GrSurfaceDesc& desc,
             }
         }
         SkASSERT(tex->backendFormat() == format);
+        if (desc.isGrTagValid()) {
+            // 0, 1, 2, 3: index of array fGrTag.
+            GrGpuResourceTag tag(desc.fGrTag[0], desc.fGrTag[1], desc.fGrTag[2], desc.fGrTag[3]);
+            tex->setResourceTag(tag);
+        }
     }
     return tex;
 }
