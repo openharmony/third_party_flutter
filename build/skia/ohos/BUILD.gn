@@ -150,6 +150,10 @@ skia_common_cflags = [
   "-Wno-newline-eof",
   "-Wno-implicit-fallthrough",
   "-Wno-unused-parameter",
+  "-Wno-unused-but-set-variable",
+  "-Wno-array-parameter",
+  "-Wno-reserved-identifier",
+  "-Wno-bitwise-instead-of-logical",
   "-Os",
 ]
 
