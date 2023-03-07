@@ -709,8 +709,8 @@ sk_sp<GrSurfaceProxy> GrProxyProvider::wrapBackendRenderTarget(
     GrSwizzle texSwizzle = caps->getTextureSwizzle(rt->backendFormat(), grColorType);
     GrSwizzle outSwizzle = caps->getOutputSwizzle(rt->backendFormat(), grColorType);
 
-    return sk_sp<GrRenderTargetProxy>(new GrRenderTargetProxy(std::move(rt), origin, texSwizzle,
-                                                              outSwizzle));
+    return assignTagToProxy(sk_sp<GrRenderTargetProxy>(new GrRenderTargetProxy(std::move(rt), origin, texSwizzle,
+                                                              outSwizzle)));
 }
 
 sk_sp<GrSurfaceProxy> GrProxyProvider::wrapBackendTextureAsRenderTarget(
@@ -784,10 +784,10 @@ sk_sp<GrRenderTargetProxy> GrProxyProvider::wrapVulkanSecondaryCBAsRenderTarget(
     }
 
     // All Vulkan surfaces uses top left origins.
-    return sk_sp<GrRenderTargetProxy>(
+    return assignTagToProxy(sk_sp<GrRenderTargetProxy>(
             new GrRenderTargetProxy(std::move(rt),
                                     kTopLeft_GrSurfaceOrigin, texSwizzle, outSwizzle,
-                                    GrRenderTargetProxy::WrapsVkSecondaryCB::kYes));
+                                    GrRenderTargetProxy::WrapsVkSecondaryCB::kYes)));
 }
 
 sk_sp<GrTextureProxy> GrProxyProvider::createLazyProxy(LazyInstantiateCallback&& callback,
@@ -896,19 +896,19 @@ sk_sp<GrRenderTargetProxy> GrProxyProvider::createLazyRenderTargetProxy(
         // Wrapped vulkan secondary command buffers don't support texturing since we won't have an
         // actual VkImage to texture from.
         SkASSERT(!wrapsVkSecondaryCB);
-        return sk_sp<GrRenderTargetProxy>(new GrTextureRenderTargetProxy(
+        return assignTagToProxy(sk_sp<GrRenderTargetProxy>(new GrTextureRenderTargetProxy(
                 std::move(callback), lazyType, format, desc, sampleCnt, origin,
                 textureInfo->fMipMapped, mipMapsStatus, texSwizzle, outSwizzle, fit, budgeted,
-                isProtected, surfaceFlags));
+                isProtected, surfaceFlags)));
     }
 
     GrRenderTargetProxy::WrapsVkSecondaryCB vkSCB =
             wrapsVkSecondaryCB ? GrRenderTargetProxy::WrapsVkSecondaryCB::kYes
                                : GrRenderTargetProxy::WrapsVkSecondaryCB::kNo;
 
-    return sk_sp<GrRenderTargetProxy>(new GrRenderTargetProxy(
+    return assignTagToProxy(sk_sp<GrRenderTargetProxy>(new GrRenderTargetProxy(
             std::move(callback), lazyType, format, desc, sampleCnt, origin, texSwizzle, outSwizzle,
-            fit, budgeted, isProtected, surfaceFlags, vkSCB));
+            fit, budgeted, isProtected, surfaceFlags, vkSCB)));
 }
 
 sk_sp<GrTextureProxy> GrProxyProvider::MakeFullyLazyProxy(
