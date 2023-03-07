@@ -283,6 +283,8 @@ private:
     // GrColorType is used to determine the proxy's texture swizzle.
     sk_sp<GrTextureProxy> createWrapped(sk_sp<GrTexture> tex, GrColorType, GrSurfaceOrigin origin);
 
+    template <class T> sk_sp<T> assignTagToProxy(sk_sp<T> proxy);
+
     struct UniquelyKeyedProxyHashTraits {
         static const GrUniqueKey& GetKey(const GrTextureProxy& p) { return p.getUniqueKey(); }
 

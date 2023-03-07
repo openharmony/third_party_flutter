@@ -140,6 +140,7 @@ sk_sp<GrSurface> GrSurfaceProxy::createSurfaceImpl(GrResourceProvider* resourceP
     desc.fWidth = fWidth;
     desc.fHeight = fHeight;
     desc.fConfig = fConfig;
+    desc.setGrTag(fGrProxyTag.fPid, fGrProxyTag.fTid, fGrProxyTag.fWid, fGrProxyTag.fFid);
 
     // The explicit resource allocator requires that any resources it pulls out of the
     // cache have no pending IO.
