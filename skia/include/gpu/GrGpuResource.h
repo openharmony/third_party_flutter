@@ -161,8 +161,8 @@ private:
 struct GrGpuResourceTag {
     GrGpuResourceTag() : fPid(0), fTid(0), fWid(0), fFid(0) {}
 
-    GrGpuResourceTag(uint32_t pid, uint32_t tid, uint32_t wid, uint32_t fid) :
-        fPid(pid), fTid(tid), fWid(wid), fFid(fid) {}
+    GrGpuResourceTag(uint32_t pid, uint32_t tid, uint32_t wid, uint32_t fid)
+        : fPid(pid), fTid(tid), fWid(wid), fFid(fid) {}
 
     bool isGrTagValid() const {
         return fPid || fTid || fWid || fFid;

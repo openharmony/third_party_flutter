@@ -285,7 +285,7 @@ void GrResourceCache::releaseByTag(GrGpuResourceTag tag) {
         GrGpuResource* resource = fPurgeableQueue.at(i);
         if (tag.filter(resource->getResourceTag())) {
             purgeableVector.push_back(resource);
-            if (resource->getUniqueKey().isValid()){
+            if (resource->getUniqueKey().isValid()) {
                 fProxyProvider->processInvalidUniqueKey(resource->getUniqueKey(), nullptr,
                     GrProxyProvider::InvalidateGPUResource::kNo);
             }
@@ -303,7 +303,7 @@ void GrResourceCache::releaseByTag(GrGpuResourceTag tag) {
     }
     fNonpurgeableResources = tempArray;
     std::vector<GrGpuResource*> tmpPurgeableVector;
-    while(fPurgeableQueue.count()) {
+    while (fPurgeableQueue.count()) {
         GrGpuResource* top = fPurgeableQueue.peek();
         if (std::find(purgeableVector.begin(), purgeableVector.end(), top) == purgeableVector.end()) {
             fPurgeableQueue.remove(top);
