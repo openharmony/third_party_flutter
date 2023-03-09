@@ -1,4 +1,4 @@
-# Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+# Copyright (c) 2021-2023 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -107,11 +107,21 @@ template("make_skia_deps") {
       ]
 
       sources = [ "$flutter_root/skia/src/utils/SkParsePath.cpp" ]
+    } else if ((platform == "linux" || platform == "mac" ||
+                platform == "windows") &&
+               defined(config.enable_rosen_backend) &&
+               config.enable_rosen_backend) {
+      public_configs = [
+        ":skia_config",
+        ":harfbuzz_config",
+      ]
+      public_deps = [ ":skia_shared" ]
     } else {
       public_configs = [
         ":skia_config",
         ":harfbuzz_config",
       ]
+      configs = [ ":skia_visibility_hidden_config" ]
 
       deps = [
         ":ace_fontmgr_$platform",
@@ -166,6 +176,57 @@ foreach(item, ace_platforms) {
 #      Skia main target config end
 # ------------------------------------------------
 
+ohos_shared_library("skia_shared") {
+  platform = current_os
+  if (current_os == "mingw") {
+    platform = "windows"
+  }
+  part_name = flutter_part
+  subsystem_name = flutter_subsystem
+  public_configs = [
+    ":skia_config",
+    ":harfbuzz_config",
+  ]
+
+  deps = [
+    ":ace_fontmgr_$platform",
+    ":ace_gif",
+    ":ace_gpu_$platform",
+    ":ace_heif",
+    ":ace_jpeg",
+    ":ace_pdf_$platform",
+    ":ace_png_$platform",
+    ":ace_skcms",
+    ":ace_skia_core_$platform",
+    ":ace_skia_opts_$platform",
+    ":ace_svg_model_$platform",
+    ":ace_typeface_freetype",
+    ":ace_webp",
+    ":ace_xml",
+    ":make_third_party_skia_include_dir",
+    "$ace_flutter_engine_root/freetype:ace_libfreetype2",
+    "$ace_flutter_engine_root/harfbuzz:ace_libharfbuzz_$platform",
+    "$ace_flutter_engine_root/icu:ace_libicu_$platform",
+    "$ace_flutter_engine_root/libjpeg:ace_libjpeg",
+    "$ace_flutter_engine_root/libpng:ace_libpng",
+    "$ace_flutter_engine_root/libwebp:ace_libwebp",
+    "$ace_flutter_engine_root/sfntly:ace_libsfntly_$platform",
+  ]
+
+  if (defined(disable_gpu) && disable_gpu) {
+    deps -= [ ":ace_gpu_$platform" ]
+  } else {
+    public_deps = [ "//foundation/graphic/graphic_2d:libgl" ]
+  }
+
+  public_configs += [
+    ":ace_svg_model_config",
+    ":skia_deps_include_config",
+  ]
+
+  deps += [ "//third_party/bounds_checking_function:libsec_shared" ]
+}
+
 # ------------------------------------------------
 #      Skia common config begin
 # ------------------------------------------------
@@ -176,6 +237,12 @@ config("skia_deps_include_config") {
     "$libs_root/shared_library/${target_os}_${target_cpu}/include/frameworks/native/libs/nativewindow/include",
     "$libs_root/shared_library/${target_os}_${target_cpu}/include/frameworks/native/libs/arect/include",
   ]
+}
+
+config("skia_visibility_hidden_config") {
+  cflags_cc = [ "-fvisibility-inlines-hidden" ]
+
+  cflags = [ "-fvisibility=hidden" ]
 }
 
 ace_skia_common_ccflags = [
@@ -196,7 +263,6 @@ ace_skia_common_ccflags = [
   "-Wno-suggest-override",
   "-Wno-psabi",
   "-Wno-four-char-constants",
-  "-fvisibility-inlines-hidden",
   "-Os",
   "-DSKIA_DLL",
 ]
@@ -261,7 +327,6 @@ ace_skia_common_cflags = [
   "-Wno-tautological-value-range-compare",
   "-Wno-suggest-override",
   "-Wno-reserved-identifier",
-  "-fvisibility=hidden",
   "-Os",
   "-DSKIA_DLL",
 ]
