@@ -107,6 +107,21 @@ template("thirdparty_lib_txt") {
       if (use_mac) {
         defines += [ "SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC" ]
       }
+      if (defined(enable_gn_2021)) {
+        frameworks = [
+          # AppKit symbols NSFontWeightXXX may be dlsym'ed.
+          "AppKit.framework",
+          "ApplicationServices.framework",
+          "OpenGL.framework",
+        ]
+      } else {
+        libs = [
+          # AppKit symbols NSFontWeightXXX may be dlsym'ed.
+          "AppKit.framework",
+          "ApplicationServices.framework",
+          "OpenGL.framework",
+        ]
+      }
     } else if (platform == "android") {
       sources += [ "$flutter_root/engine/flutter/third_party/txt/src/txt/platform_android.cc" ]
     } else if (platform == "linux") {
