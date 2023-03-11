@@ -2287,6 +2287,10 @@ static void op_bounds(SkRect* bounds, const GrOp* op) {
 }
 
 void GrRenderTargetContext::addOp(std::unique_ptr<GrOp> op) {
+    auto direct = fContext->priv().asDirectContext();
+    if (direct && op) {
+        op->setGrOpTag(direct->getCurrentGrResourceTag());
+    }
     this->getRTOpList()->addOp(
             std::move(op), GrTextureResolveManager(this->drawingManager()), *this->caps());
 }
@@ -2346,6 +2350,10 @@ void GrRenderTargetContext::addDrawOp(const GrClip& clip, std::unique_ptr<GrDraw
     auto opList = this->getRTOpList();
     if (willAddFn) {
         willAddFn(op.get(), opList->uniqueID());
+    }
+    auto direct = fContext->priv().asDirectContext();
+    if (direct && op) {
+        op->setGrOpTag(direct->getCurrentGrResourceTag());
     }
     opList->addDrawOp(std::move(op), analysis, std::move(appliedClip), dstProxy,
                       GrTextureResolveManager(this->drawingManager()), *this->caps());

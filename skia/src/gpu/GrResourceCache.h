@@ -78,7 +78,7 @@ public:
     /**
      * Set current resource tag for gpu cache recycle.
      */
-    void setCurrentGrResourceTag(GrGpuResourceTag tag);
+    void setCurrentGrResourceTag(const GrGpuResourceTag tag);
 
     /** Unique ID of the owning GrContext. */
     uint32_t contextUniqueID() const { return fContextUniqueID; }
@@ -138,7 +138,7 @@ public:
     /**
      * Releases GrGpuResource objects and removes them from the cache by tag.
      */
-    void releaseByTag(GrGpuResourceTag tag);
+    void releaseByTag(const GrGpuResourceTag tag);
 
     enum class ScratchFlags {
         kNone = 0,

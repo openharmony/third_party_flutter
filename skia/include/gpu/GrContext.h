@@ -446,7 +446,7 @@ public:
     /**
      * Set current resource tag for gpu cache recycle.
      */
-    void setCurrentGrResourceTag(GrGpuResourceTag tag);
+    void setCurrentGrResourceTag(const GrGpuResourceTag tag);
 
     /**
      * Get current resource tag for gpu cache recycle.
@@ -456,7 +456,7 @@ public:
     /**
      * Releases GrGpuResource objects and removes them from the cache by tag.
      */
-    void releaseByTag(GrGpuResourceTag tag);
+    void releaseByTag(const GrGpuResourceTag tag);
 
 protected:
     GrContext(GrBackendApi, const GrContextOptions&, int32_t contextID = SK_InvalidGenID);

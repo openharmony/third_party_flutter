@@ -323,7 +323,7 @@ public:
     /**
      * Set the resource tag.
      */
-    void setResourceTag(GrGpuResourceTag tag) { fGrResourceTag = tag; }
+    void setResourceTag(const GrGpuResourceTag tag) { fGrResourceTag = tag; }
 
     /**
      * Get the resource tag.
