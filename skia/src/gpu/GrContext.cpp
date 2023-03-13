@@ -314,7 +314,7 @@ void GrContext::setResourceCacheLimits(int maxResources, size_t maxResourceBytes
     fResourceCache->setLimits(maxResources, maxResourceBytes);
 }
 
-void GrContext::setCurrentGrResourceTag(GrGpuResourceTag tag) {
+void GrContext::setCurrentGrResourceTag(const GrGpuResourceTag tag) {
     if (fResourceCache) {
         fResourceCache->setCurrentGrResourceTag(tag);
     }
@@ -327,7 +327,7 @@ GrGpuResourceTag GrContext::getCurrentGrResourceTag() const {
     return {};
 }
 
-void GrContext::releaseByTag(GrGpuResourceTag tag) {
+void GrContext::releaseByTag(const GrGpuResourceTag tag) {
     if (fResourceCache) {
         fResourceCache->releaseByTag(tag);
     }

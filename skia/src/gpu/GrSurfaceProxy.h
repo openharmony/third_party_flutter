@@ -326,7 +326,7 @@ public:
     bool isProtected() const { return fIsProtected == GrProtected::kYes; }
 
     // Get the proxy tag.
-    void setGrProxyTag(GrGpuResourceTag tag) { fGrProxyTag = tag; }
+    void setGrProxyTag(const GrGpuResourceTag tag) { fGrProxyTag = tag; }
 
 protected:
     // Deferred version

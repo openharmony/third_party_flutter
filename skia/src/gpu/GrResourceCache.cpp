@@ -267,7 +267,7 @@ void GrResourceCache::releaseAll() {
     SkASSERT(!fResourcesAwaitingUnref.count());
 }
 
-void GrResourceCache::releaseByTag(GrGpuResourceTag tag) {
+void GrResourceCache::releaseByTag(const GrGpuResourceTag tag) {
     AutoValidate av(this);
     this->processFreedGpuResources();
     SkASSERT(fProxyProvider); // better have called setProxyProvider
@@ -318,7 +318,7 @@ void GrResourceCache::releaseByTag(GrGpuResourceTag tag) {
     }
 }
 
-void GrResourceCache::setCurrentGrResourceTag(GrGpuResourceTag tag) {
+void GrResourceCache::setCurrentGrResourceTag(const GrGpuResourceTag tag) {
     if (tag.isGrTagValid()) {
         grResourceTagCacheStack.push(tag);
     } else {
