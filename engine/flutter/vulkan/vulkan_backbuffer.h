@@ -50,6 +50,14 @@ class VulkanBackbuffer {
 
   VulkanCommandBuffer& GetRenderCommandBuffer();
 
+#ifdef RS_ENABLE_VK
+  void SetMultiThreading() { multi_threading_ = true; }
+
+  void UnsetMultiThreading() { multi_threading_ = false; }
+
+  bool IsMultiThreading() { return multi_threading_; }
+#endif
+
  private:
   const VulkanProcTable& vk;
   const VulkanHandle<VkDevice>& device_;
@@ -62,6 +70,10 @@ class VulkanBackbuffer {
   bool CreateSemaphores();
 
   bool CreateFences();
+
+#ifdef RS_ENABLE_VK
+  bool multi_threading_ = false;
+#endif
 
 #ifndef RS_ENABLE_VK
   FML_DISALLOW_COPY_AND_ASSIGN(VulkanBackbuffer);

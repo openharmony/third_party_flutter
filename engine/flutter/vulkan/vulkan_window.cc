@@ -23,8 +23,12 @@ namespace vulkan {
 VulkanProcTable* VulkanWindow::vk;
 std::unique_ptr<VulkanApplication> VulkanWindow::application_;
 std::unique_ptr<VulkanDevice> VulkanWindow::logical_device_;
+std::thread::id VulkanWindow::device_thread_;
+std::vector<VulkanHandle<VkFence>> VulkanWindow::shared_fences_;
+uint32_t VulkanWindow::shared_fence_index_;
+bool VulkanWindow::presenting_ = false;
 
-void VulkanWindow::InitializeVulkan()
+void VulkanWindow::InitializeVulkan(size_t thread_num)
 {
   if (logical_device_ != nullptr) {
     LOGI("Vulkan Already Initialized");
@@ -58,6 +62,13 @@ void VulkanWindow::InitializeVulkan()
     // entries.
     LOGE("Device proc addresses have not been setup.");
     return;
+  }
+
+  device_thread_ = std::this_thread::get_id();
+
+  if (shared_fences_.empty() && thread_num > 0) {
+    shared_fences_.resize(thread_num);
+    shared_fence_index_ = 0;
   }
 }
 
@@ -352,15 +363,76 @@ bool VulkanWindow::SwapBuffers() {
       LOGE("Window was invalid or offscreen.");
       return false;
   }
+  if (device_thread_ != std::this_thread::get_id()) {
+    LOGI("MT mode in VulkanWindow::SwapBuffers()");
+    swapchain_->AddToPresent();
+    return swapchain_->FlushCommands();
+  }
 #else
   if (!IsValid()) {
     FML_DLOG(INFO) << "Window was invalid.";
     return false;
   }
 #endif
-
+  LOGI("ST mode in VulkanWindow::SwapBuffers()");
   return swapchain_->Submit();
 }
+
+#ifdef RS_ENABLE_VK
+void VulkanWindow::PresentAll() {
+  //-----------------------------------------
+  // create shared fences if not already
+  //-----------------------------------------
+  if (!shared_fences_[shared_fence_index_]) {
+    const VkFenceCreateInfo create_info = {
+      .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+      .pNext = nullptr,
+      .flags = VK_FENCE_CREATE_SIGNALED_BIT,
+    };
+
+    auto fence_collect = [](VkFence fence) {
+      VulkanWindow::vk->DestroyFence(VulkanWindow::logical_device_->GetHandle(), fence, nullptr);
+    };
+
+    VkFence fence = VK_NULL_HANDLE;
+
+    if (VK_CALL_LOG_ERROR(vk->CreateFence(logical_device_->GetHandle(), &create_info, nullptr, &fence)) != VK_SUCCESS) {
+      return;
+    }
+    shared_fences_[shared_fence_index_] = {fence, fence_collect};
+  }
+  VulkanSwapchain::PresentAll(shared_fences_[shared_fence_index_]);
+  shared_fence_index_++;
+  if (shared_fence_index_ >= shared_fences_.size()) {
+    shared_fence_index_ = 0;
+  }
+  presenting_ = true;
+}
+
+bool VulkanWindow::WaitForSharedFence() {
+  if (presenting_) {
+    if (shared_fences_[shared_fence_index_]) {
+      VkFence fence = shared_fences_[shared_fence_index_];
+      return VK_CALL_LOG_ERROR(vk->WaitForFences(
+        logical_device_->GetHandle(), 1, &fence, true,
+        std::numeric_limits<uint64_t>::max())) == VK_SUCCESS;
+    }
+  }
+  return false;
+}
+
+bool VulkanWindow::ResetSharedFence() {
+  if (presenting_) {
+      presenting_ = false;
+      if (shared_fences_[shared_fence_index_]) {
+        VkFence fence = shared_fences_[shared_fence_index_];
+        return VK_CALL_LOG_ERROR(vk->ResetFences(
+            logical_device_->GetHandle(), 1, &fence)) == VK_SUCCESS;
+      }
+  }
+  return false;
+}
+#endif
 
 bool VulkanWindow::RecreateSwapchain() {
 #ifdef RS_ENABLE_VK
