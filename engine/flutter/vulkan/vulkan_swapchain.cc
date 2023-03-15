@@ -727,7 +727,7 @@ void VulkanSwapchain::PresentAll(VulkanHandle<VkFence>& shared_fence) {
   const VkPresentInfoKHR present_info = {
     .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
     .pNext = nullptr,
-    .waitSemaphoreCount = 
+    .waitSemaphoreCount =
       static_cast<uint32_t> (queue_signal_semaphores.size()),
     .pWaitSemaphores = queue_signal_semaphores.data(),
     .swapchainCount = static_cast<uint32_t>(swapchains.size()),

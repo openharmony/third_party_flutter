@@ -30,11 +30,19 @@ bool VulkanWindow::presenting_ = false;
 
 void VulkanWindow::InitializeVulkan(size_t thread_num)
 {
+  if (shared_fences_.size() < thread_num) {
+    shared_fences_.resize(thread_num);
+    shared_fence_index_ = 0;
+  }
+
   if (logical_device_ != nullptr) {
     LOGI("Vulkan Already Initialized");
     return;
   }
+
   LOGI("First Initialize Vulkan");
+  device_thread_ = std::this_thread::get_id();
+
   vk = new VulkanProcTable();
   if (!vk->HasAcquiredMandatoryProcAddresses()) {
     LOGE("Proc table has not acquired mandatory proc addresses.");
@@ -62,13 +70,6 @@ void VulkanWindow::InitializeVulkan(size_t thread_num)
     // entries.
     LOGE("Device proc addresses have not been setup.");
     return;
-  }
-
-  device_thread_ = std::this_thread::get_id();
-
-  if (shared_fences_.empty() && thread_num > 0) {
-    shared_fences_.resize(thread_num);
-    shared_fence_index_ = 0;
   }
 }
 
