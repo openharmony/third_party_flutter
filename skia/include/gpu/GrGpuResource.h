@@ -170,7 +170,7 @@ struct GrGpuResourceTag {
 
     bool filter(GrGpuResourceTag& tag) const {
         if (!isGrTagValid()) {
-            return false;
+            return !tag.isGrTagValid();
         }
         if (fPid && fPid != tag.fPid) {
             return false;
@@ -189,7 +189,7 @@ struct GrGpuResourceTag {
 
     bool filter(GrGpuResourceTag&& tag) const {
         if (!isGrTagValid()) {
-            return false;
+            return !tag.isGrTagValid();
         }
         if (fPid && fPid != tag.fPid) {
             return false;
