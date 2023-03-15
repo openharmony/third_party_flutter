@@ -9,6 +9,7 @@
 #include <tuple>
 #include <utility>
 #include <vector>
+#include <thread>
 
 #ifndef RS_ENABLE_VK
 #include "flutter/fml/compiler_specific.h"
@@ -56,7 +57,7 @@ class VulkanWindow {
   bool FlushCommands();
   static void PresentAll();
   static void InitializeVulkan(size_t thread_num = 0);
-  static void WaitForSharedFence();
+  static bool WaitForSharedFence();
   static bool ResetSharedFence();
 #endif
 

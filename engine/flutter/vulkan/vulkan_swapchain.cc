@@ -667,6 +667,7 @@ bool VulkanSwapchain::FlushCommands() {
     LOGE("Could not end recording to the command buffer.");
     return false;
   }
+  return true;
 }
 
 void VulkanSwapchain::AddToPresent() {
@@ -689,11 +690,11 @@ void VulkanSwapchain::PresentAll(VulkanHandle<VkFence>& shared_fence) {
   std::vector<VkSemaphore> queue_signal_semaphores;
   std::vector<VkCommandBuffer> command_buffers;
   std::vector<VkSwapchainKHR> swapchains;
-  std::vector<uint32_t> present_image_index;
+  std::vector<uint32_t> present_image_indices;
   queue_signal_semaphores.reserve(to_be_present_.size());
   command_buffers.reserve(to_be_present_.size());
   swapchains.reserve(to_be_present_.size());
-  present_image_indices_.reserve(to_be_present_.size());
+  present_image_indices.reserve(to_be_present_.size());
   VulkanSwapchain* tmpSwapChain = nullptr;
   for (const auto& entry : to_be_present_) {
     auto swapchain = entry.second;
@@ -703,7 +704,7 @@ void VulkanSwapchain::PresentAll(VulkanHandle<VkFence>& shared_fence) {
     queue_signal_semaphores.push_back(backbuffer->GetRenderSemaphore());
     command_buffers.push_back(backbuffer->GetRenderCommandBuffer().Handle());
     swapchains.push_back(swapchain->swapchain_);
-    present_image_indices_.push_back(static_cast<uint32_t>(swapchain->current_image_index_));
+    present_image_indices.push_back(static_cast<uint32_t>(swapchain->current_image_index_));
   }
 
   const VulkanProcTable& vk = tmpSwapChain->vk;
@@ -731,7 +732,7 @@ void VulkanSwapchain::PresentAll(VulkanHandle<VkFence>& shared_fence) {
     .pWaitSemaphores = queue_signal_semaphores.data(),
     .swapchainCount = static_cast<uint32_t>(swapchains.size()),
     .pSwapchains = swapchains.data(),
-    .pImageIndices = present_image_indices_.data(),
+    .pImageIndices = present_image_indices.data(),
     .pResults = nullptr,
   };
 

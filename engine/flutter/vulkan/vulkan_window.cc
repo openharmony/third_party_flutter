@@ -368,13 +368,13 @@ bool VulkanWindow::SwapBuffers() {
     swapchain_->AddToPresent();
     return swapchain_->FlushCommands();
   }
+  LOGI("ST mode in VulkanWindow::SwapBuffers()");
 #else
   if (!IsValid()) {
     FML_DLOG(INFO) << "Window was invalid.";
     return false;
   }
 #endif
-  LOGI("ST mode in VulkanWindow::SwapBuffers()");
   return swapchain_->Submit();
 }
 
