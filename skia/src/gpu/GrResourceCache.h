@@ -8,6 +8,8 @@
 #ifndef GrResourceCache_DEFINED
 #define GrResourceCache_DEFINED
 
+#include <stack>
+
 #include "include/core/SkRefCnt.h"
 #include "include/gpu/GrGpuResource.h"
 #include "include/private/GrResourceKey.h"
@@ -68,6 +70,16 @@ public:
     class ResourceAccess;
     ResourceAccess resourceAccess();
 
+    /**
+     * Get current resource tag for gpu cache recycle.
+     */
+    GrGpuResourceTag getCurrentGrResourceTag() const;
+
+    /**
+     * Set current resource tag for gpu cache recycle.
+     */
+    void setCurrentGrResourceTag(const GrGpuResourceTag tag);
+
     /** Unique ID of the owning GrContext. */
     uint32_t contextUniqueID() const { return fContextUniqueID; }
 
@@ -122,6 +134,11 @@ public:
      * the cache.
      */
     void releaseAll();
+
+    /**
+     * Releases GrGpuResource objects and removes them from the cache by tag.
+     */
+    void releaseByTag(const GrGpuResourceTag tag);
 
     enum class ScratchFlags {
         kNone = 0,
@@ -251,6 +268,7 @@ public:
 
     // Enumerates all cached resources and dumps their details to traceMemoryDump.
     void dumpMemoryStatistics(SkTraceMemoryDump* traceMemoryDump) const;
+    void dumpMemoryStatistics(SkTraceMemoryDump* traceMemoryDump, GrGpuResourceTag tag) const;
 
     void setProxyProvider(GrProxyProvider* proxyProvider) { fProxyProvider = proxyProvider; }
 
@@ -385,6 +403,9 @@ private:
     SkDEBUGCODE(GrGpuResource*          fNewlyPurgeableResourceForValidation = nullptr;)
 
     bool                                fPreferVRAMUseOverFlushes = false;
+
+    // Indicates the cached resource tags.
+    std::stack<GrGpuResourceTag> grResourceTagCacheStack;
 };
 
 GR_MAKE_BITFIELD_CLASS_OPS(GrResourceCache::ScratchFlags);
@@ -410,6 +431,11 @@ private:
      * adding the ref.
      */
     void refResource(GrGpuResource* resource) { fCache->refResource(resource); }
+
+    /**
+     * Get current resource tag for gpu cache recycle.
+     */
+    GrGpuResourceTag getCurrentGrResourceTag() const { return fCache->getCurrentGrResourceTag(); }
 
     /**
      * Notifications that should be sent to the cache when the ref/io cnt status of resources

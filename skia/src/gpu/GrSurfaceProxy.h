@@ -325,6 +325,9 @@ public:
     // Returns true if we are working with protected content.
     bool isProtected() const { return fIsProtected == GrProtected::kYes; }
 
+    // Get the proxy tag.
+    void setGrProxyTag(const GrGpuResourceTag tag) { fGrProxyTag = tag; }
+
 protected:
     // Deferred version
     GrSurfaceProxy(const GrBackendFormat& format, const GrSurfaceDesc& desc,
@@ -441,6 +444,9 @@ private:
     // and the opList of a destination surface to which this one is being drawn or copied.
     // This pointer is unreffed. GrRenderTasks own a ref on their surface proxies.
     GrRenderTask*          fLastRenderTask;
+
+    // The proxy tag.
+    GrGpuResourceTag       fGrProxyTag;
 
     typedef GrIORefProxy INHERITED;
 };

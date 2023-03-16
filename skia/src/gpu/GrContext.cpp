@@ -314,12 +314,38 @@ void GrContext::setResourceCacheLimits(int maxResources, size_t maxResourceBytes
     fResourceCache->setLimits(maxResources, maxResourceBytes);
 }
 
+void GrContext::setCurrentGrResourceTag(const GrGpuResourceTag tag) {
+    if (fResourceCache) {
+        fResourceCache->setCurrentGrResourceTag(tag);
+    }
+}
+
+GrGpuResourceTag GrContext::getCurrentGrResourceTag() const {
+    if (fResourceCache) {
+        return fResourceCache->getCurrentGrResourceTag();
+    }
+    return {};
+}
+
+void GrContext::releaseByTag(const GrGpuResourceTag tag) {
+    if (fResourceCache) {
+        fResourceCache->releaseByTag(tag);
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////
 void GrContext::dumpMemoryStatistics(SkTraceMemoryDump* traceMemoryDump) const {
     ASSERT_SINGLE_OWNER
     fResourceCache->dumpMemoryStatistics(traceMemoryDump);
     traceMemoryDump->dumpNumericValue("skia/gr_text_blob_cache", "size", "bytes",
                                       this->getTextBlobCache()->usedBytes());
+}
+
+void GrContext::dumpMemoryStatisticsByTag(SkTraceMemoryDump* traceMemoryDump, GrGpuResourceTag tag) const {
+    ASSERT_SINGLE_OWNER
+    fResourceCache->dumpMemoryStatistics(traceMemoryDump, tag);
+    traceMemoryDump->dumpNumericValue("skia/gr_text_blob_cache", "size", "bytes",
+        this->getTextBlobCache()->usedBytes());
 }
 
 //////////////////////////////////////////////////////////////////////////////

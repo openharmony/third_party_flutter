@@ -13,6 +13,7 @@
 #include "include/core/SkTypes.h"
 #include "include/gpu/GrBackendSurface.h"
 #include "include/gpu/GrContextOptions.h"
+#include "include/gpu/GrGpuResource.h"
 #include "include/private/GrRecordingContext.h"
 
 // We shouldn't need this but currently Android is relying on this being include transitively.
@@ -336,6 +337,7 @@ public:
     /** Enumerates all cached GPU resources and dumps their memory to traceMemoryDump. */
     // Chrome is using this!
     void dumpMemoryStatistics(SkTraceMemoryDump* traceMemoryDump) const;
+    void dumpMemoryStatisticsByTag(SkTraceMemoryDump* traceMemoryDump, GrGpuResourceTag tag) const;
 
     bool supportsDistanceFieldText() const;
 
@@ -439,6 +441,22 @@ public:
     /** Returns a string with detailed information about the context & GPU, in JSON format. */
     SkString dump() const;
 #endif
+
+
+    /**
+     * Set current resource tag for gpu cache recycle.
+     */
+    void setCurrentGrResourceTag(const GrGpuResourceTag tag);
+
+    /**
+     * Get current resource tag for gpu cache recycle.
+     */
+    GrGpuResourceTag getCurrentGrResourceTag() const;
+
+    /**
+     * Releases GrGpuResource objects and removes them from the cache by tag.
+     */
+    void releaseByTag(const GrGpuResourceTag tag);
 
 protected:
     GrContext(GrBackendApi, const GrContextOptions&, int32_t contextID = SK_InvalidGenID);

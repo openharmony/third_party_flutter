@@ -45,7 +45,7 @@ void VsyncWaiter::AsyncWaitForVsync(Callback callback) {
       TRACE_EVENT_INSTANT0("flutter", "MultipleCallsToVsyncInFrameInterval");
       return;
     }
-    callback_ = std::move(callback);
+    callback_.swap(callback);
   }
   AwaitVSync();
 }
@@ -56,7 +56,7 @@ void VsyncWaiter::FireCallback(fml::TimePoint frame_start_time,
 
   {
     std::scoped_lock lock(callback_mutex_);
-    callback = std::move(callback_);
+    callback.swap(callback_);
   }
 
   if (!callback) {

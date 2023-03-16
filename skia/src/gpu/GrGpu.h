@@ -10,6 +10,7 @@
 
 #include "include/core/SkPath.h"
 #include "include/core/SkSurface.h"
+#include "include/gpu/GrContext.h"
 #include "include/gpu/GrTypes.h"
 #include "include/private/SkTArray.h"
 #include "src/gpu/GrAllocator.h"
@@ -50,6 +51,12 @@ public:
 
     GrContext* getContext() { return fContext; }
     const GrContext* getContext() const { return fContext; }
+
+    void setCurrentGrResourceTag(const GrGpuResourceTag tag) {
+        if (fContext) {
+            fContext->setCurrentGrResourceTag(tag);
+        }
+    }
 
     /**
      * Gets the capabilities of the draw target.

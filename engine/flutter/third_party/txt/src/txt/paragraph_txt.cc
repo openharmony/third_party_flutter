@@ -228,7 +228,7 @@ void ParagraphTxt::CodeUnitRun::Shift(double delta) {
 }
 
 ParagraphTxt::ParagraphTxt() {
-  breaker_.setLocale(icu::Locale(), nullptr);
+  breaker_.setLocale();
 }
 
 ParagraphTxt::~ParagraphTxt() = default;

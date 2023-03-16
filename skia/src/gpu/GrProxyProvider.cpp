@@ -73,6 +73,18 @@ bool GrProxyProvider::assignUniqueKeyToProxy(const GrUniqueKey& key, GrTexturePr
     return true;
 }
 
+template <class T>
+sk_sp<T> GrProxyProvider::assignTagToProxy(sk_sp<T> proxy) {
+    if (!proxy) {
+        return proxy;
+    }
+    GrContext* direct = fImageContext->priv().asDirectContext();
+    if (direct) {
+        proxy->setGrProxyTag(direct->getCurrentGrResourceTag());
+    }
+    return proxy;
+}
+
 void GrProxyProvider::adoptUniqueKeyFromSurface(GrTextureProxy* proxy, const GrSurface* surf) {
     SkASSERT(surf->getUniqueKey().isValid());
     proxy->cacheAccess().setUniqueKey(this, surf->getUniqueKey());
@@ -200,10 +212,11 @@ sk_sp<GrTextureProxy> GrProxyProvider::createWrapped(sk_sp<GrTexture> tex, GrCol
 
     if (tex->asRenderTarget()) {
         GrSwizzle outSwizzle = this->caps()->getOutputSwizzle(tex->backendFormat(), colorType);
-        return sk_sp<GrTextureProxy>(new GrTextureRenderTargetProxy(std::move(tex), origin,
-                                                                    texSwizzle, outSwizzle));
+        return assignTagToProxy(
+            sk_sp<GrTextureProxy>(new GrTextureRenderTargetProxy(std::move(tex), origin, texSwizzle, outSwizzle)));
     } else {
-        return sk_sp<GrTextureProxy>(new GrTextureProxy(std::move(tex), origin, texSwizzle));
+        return assignTagToProxy<GrTextureProxy>(
+            sk_sp<GrTextureProxy>(new GrTextureProxy(std::move(tex), origin, texSwizzle)));
     }
 }
 
@@ -513,14 +526,14 @@ sk_sp<GrTextureProxy> GrProxyProvider::createProxy(const GrBackendFormat& format
         // We know anything we instantiate later from this deferred path will be
         // both texturable and renderable
         GrSwizzle outSwizzle = caps->getOutputSwizzle(format, colorType);
-        return sk_sp<GrTextureProxy>(new GrTextureRenderTargetProxy(
+        return assignTagToProxy(sk_sp<GrTextureProxy>(new GrTextureRenderTargetProxy(
                 *caps, format, copyDesc, renderTargetSampleCnt, origin, mipMapped, mipMapsStatus,
-                texSwizzle, outSwizzle, fit, budgeted, isProtected, surfaceFlags));
+                texSwizzle, outSwizzle, fit, budgeted, isProtected, surfaceFlags)));
     }
 
-    return sk_sp<GrTextureProxy>(new GrTextureProxy(
+    return assignTagToProxy(sk_sp<GrTextureProxy>(new GrTextureProxy(
             format, copyDesc, origin, mipMapped, mipMapsStatus, texSwizzle, fit, budgeted,
-            isProtected, surfaceFlags));
+            isProtected, surfaceFlags)));
 }
 
 sk_sp<GrTextureProxy> GrProxyProvider::createCompressedTextureProxy(
@@ -606,7 +619,8 @@ sk_sp<GrTextureProxy> GrProxyProvider::wrapBackendTexture(const GrBackendTexture
 
     GrSwizzle texSwizzle = caps->getTextureSwizzle(tex->backendFormat(), grColorType);
 
-    return sk_sp<GrTextureProxy>(new GrTextureProxy(std::move(tex), origin, texSwizzle));
+    return assignTagToProxy(
+        sk_sp<GrTextureProxy>(new GrTextureProxy(std::move(tex), origin, texSwizzle)));
 }
 
 sk_sp<GrTextureProxy> GrProxyProvider::wrapRenderableBackendTexture(
@@ -655,8 +669,8 @@ sk_sp<GrTextureProxy> GrProxyProvider::wrapRenderableBackendTexture(
     GrSwizzle texSwizzle = caps->getTextureSwizzle(tex->backendFormat(), colorType);
     GrSwizzle outSwizzle = caps->getOutputSwizzle(tex->backendFormat(), colorType);
 
-    return sk_sp<GrTextureProxy>(new GrTextureRenderTargetProxy(std::move(tex), origin, texSwizzle,
-                                                                outSwizzle));
+    return assignTagToProxy(
+        sk_sp<GrTextureProxy>(new GrTextureRenderTargetProxy(std::move(tex), origin, texSwizzle, outSwizzle)));
 }
 
 sk_sp<GrSurfaceProxy> GrProxyProvider::wrapBackendRenderTarget(
@@ -695,8 +709,8 @@ sk_sp<GrSurfaceProxy> GrProxyProvider::wrapBackendRenderTarget(
     GrSwizzle texSwizzle = caps->getTextureSwizzle(rt->backendFormat(), grColorType);
     GrSwizzle outSwizzle = caps->getOutputSwizzle(rt->backendFormat(), grColorType);
 
-    return sk_sp<GrRenderTargetProxy>(new GrRenderTargetProxy(std::move(rt), origin, texSwizzle,
-                                                              outSwizzle));
+    return assignTagToProxy(sk_sp<GrRenderTargetProxy>(new GrRenderTargetProxy(std::move(rt), origin, texSwizzle,
+                                                              outSwizzle)));
 }
 
 sk_sp<GrSurfaceProxy> GrProxyProvider::wrapBackendTextureAsRenderTarget(
@@ -731,8 +745,8 @@ sk_sp<GrSurfaceProxy> GrProxyProvider::wrapBackendTextureAsRenderTarget(
     GrSwizzle texSwizzle = caps->getTextureSwizzle(rt->backendFormat(), grColorType);
     GrSwizzle outSwizzle = caps->getOutputSwizzle(rt->backendFormat(), grColorType);
 
-    return sk_sp<GrSurfaceProxy>(new GrRenderTargetProxy(std::move(rt), origin, texSwizzle,
-                                                         outSwizzle));
+    return assignTagToProxy(
+        sk_sp<GrSurfaceProxy>(new GrRenderTargetProxy(std::move(rt), origin, texSwizzle, outSwizzle)));
 }
 
 sk_sp<GrRenderTargetProxy> GrProxyProvider::wrapVulkanSecondaryCBAsRenderTarget(
@@ -770,10 +784,10 @@ sk_sp<GrRenderTargetProxy> GrProxyProvider::wrapVulkanSecondaryCBAsRenderTarget(
     }
 
     // All Vulkan surfaces uses top left origins.
-    return sk_sp<GrRenderTargetProxy>(
+    return assignTagToProxy(sk_sp<GrRenderTargetProxy>(
             new GrRenderTargetProxy(std::move(rt),
                                     kTopLeft_GrSurfaceOrigin, texSwizzle, outSwizzle,
-                                    GrRenderTargetProxy::WrapsVkSecondaryCB::kYes));
+                                    GrRenderTargetProxy::WrapsVkSecondaryCB::kYes)));
 }
 
 sk_sp<GrTextureProxy> GrProxyProvider::createLazyProxy(LazyInstantiateCallback&& callback,
@@ -843,14 +857,14 @@ sk_sp<GrTextureProxy> GrProxyProvider::createLazyProxy(LazyInstantiateCallback&&
     GrSwizzle texSwizzle = this->caps()->getTextureSwizzle(format, colorType);
     GrSwizzle outSwizzle = this->caps()->getOutputSwizzle(format, colorType);
 
-    return sk_sp<GrTextureProxy>((renderable == GrRenderable::kYes)
+    return assignTagToProxy(sk_sp<GrTextureProxy>((renderable == GrRenderable::kYes)
             ? new GrTextureRenderTargetProxy(
                     std::move(callback), lazyType, format, desc, renderTargetSampleCnt, origin,
                     mipMapped, mipMapsStatus, texSwizzle, outSwizzle, fit, budgeted, isProtected,
                     surfaceFlags)
             : new GrTextureProxy(
                     std::move(callback), lazyType, format, desc, origin, mipMapped, mipMapsStatus,
-                    texSwizzle, fit, budgeted, isProtected, surfaceFlags));
+                    texSwizzle, fit, budgeted, isProtected, surfaceFlags)));
 }
 
 sk_sp<GrRenderTargetProxy> GrProxyProvider::createLazyRenderTargetProxy(
@@ -882,19 +896,19 @@ sk_sp<GrRenderTargetProxy> GrProxyProvider::createLazyRenderTargetProxy(
         // Wrapped vulkan secondary command buffers don't support texturing since we won't have an
         // actual VkImage to texture from.
         SkASSERT(!wrapsVkSecondaryCB);
-        return sk_sp<GrRenderTargetProxy>(new GrTextureRenderTargetProxy(
+        return assignTagToProxy(sk_sp<GrRenderTargetProxy>(new GrTextureRenderTargetProxy(
                 std::move(callback), lazyType, format, desc, sampleCnt, origin,
                 textureInfo->fMipMapped, mipMapsStatus, texSwizzle, outSwizzle, fit, budgeted,
-                isProtected, surfaceFlags));
+                isProtected, surfaceFlags)));
     }
 
     GrRenderTargetProxy::WrapsVkSecondaryCB vkSCB =
             wrapsVkSecondaryCB ? GrRenderTargetProxy::WrapsVkSecondaryCB::kYes
                                : GrRenderTargetProxy::WrapsVkSecondaryCB::kNo;
 
-    return sk_sp<GrRenderTargetProxy>(new GrRenderTargetProxy(
+    return assignTagToProxy(sk_sp<GrRenderTargetProxy>(new GrRenderTargetProxy(
             std::move(callback), lazyType, format, desc, sampleCnt, origin, texSwizzle, outSwizzle,
-            fit, budgeted, isProtected, surfaceFlags, vkSCB));
+            fit, budgeted, isProtected, surfaceFlags, vkSCB)));
 }
 
 sk_sp<GrTextureProxy> GrProxyProvider::MakeFullyLazyProxy(

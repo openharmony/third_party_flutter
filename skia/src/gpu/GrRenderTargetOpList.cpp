@@ -416,13 +416,17 @@ void GrRenderTargetOpList::onPrepare(GrOpFlushState* flushState) {
 #ifdef SK_BUILD_FOR_ANDROID_FRAMEWORK
     TRACE_EVENT0("skia.gpu", TRACE_FUNC);
 #endif
-
+    auto grGpu = flushState->gpu();
     // Loop over the ops that haven't yet been prepared.
     for (const auto& chain : fOpChains) {
         if (chain.head()) {
 #ifdef SK_BUILD_FOR_ANDROID_FRAMEWORK
             TRACE_EVENT0("skia.gpu", chain.head()->name());
 #endif
+            auto tag = chain.head()->getGrOpTag();
+            if (grGpu && tag.isGrTagValid()) {
+                grGpu->setCurrentGrResourceTag(tag);
+            }
             GrOpFlushState::OpArgs opArgs = {
                 chain.head(),
                 fTarget->asRenderTargetProxy(),
@@ -433,6 +437,10 @@ void GrRenderTargetOpList::onPrepare(GrOpFlushState* flushState) {
             flushState->setOpArgs(&opArgs);
             chain.head()->prepare(flushState);
             flushState->setOpArgs(nullptr);
+            if (grGpu && tag.isGrTagValid()) {
+                GrGpuResourceTag grGpuResourceTag;
+                grGpu->setCurrentGrResourceTag(grGpuResourceTag);
+            }
         }
     }
 }
@@ -508,7 +516,7 @@ bool GrRenderTargetOpList::onExecute(GrOpFlushState* flushState) {
                                                     fStencilLoadOp);
     flushState->setCommandBuffer(commandBuffer);
     commandBuffer->begin();
-
+    auto grGpu = flushState->gpu();
     // Draw all the generated geometry.
     for (const auto& chain : fOpChains) {
         if (!chain.head()) {
@@ -517,7 +525,10 @@ bool GrRenderTargetOpList::onExecute(GrOpFlushState* flushState) {
 #ifdef SK_BUILD_FOR_ANDROID_FRAMEWORK
         TRACE_EVENT0("skia.gpu", chain.head()->name());
 #endif
-
+        auto tag = chain.head()->getGrOpTag();
+        if (grGpu && tag.isGrTagValid()) {
+            grGpu->setCurrentGrResourceTag(tag);
+        }
         GrOpFlushState::OpArgs opArgs {
             chain.head(),
             fTarget->asRenderTargetProxy(),
@@ -529,6 +540,10 @@ bool GrRenderTargetOpList::onExecute(GrOpFlushState* flushState) {
         flushState->setOpArgs(&opArgs);
         chain.head()->execute(flushState, chain.bounds());
         flushState->setOpArgs(nullptr);
+        if (grGpu && tag.isGrTagValid()) {
+            GrGpuResourceTag grGpuResourceTag;
+            grGpu->setCurrentGrResourceTag(grGpuResourceTag);
+        }
     }
 
     commandBuffer->end();

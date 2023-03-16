@@ -63,10 +63,10 @@ const size_t MAX_TEXT_BUF_RETAIN = 32678;
 // Maximum amount that spaces can shrink, in justified text.
 const float SHRINKABILITY = 1.0 / 3.0;
 
-void LineBreaker::setLocale(const icu::Locale& locale, Hyphenator* hyphenator) {
-  mWordBreaker.setLocale(locale);
-  mLocale = locale;
-  mHyphenator = hyphenator;
+void LineBreaker::setLocale() {
+  mWordBreaker.setLocale();
+  mLocale = icu::Locale();
+  mHyphenator = nullptr;
 }
 
 void LineBreaker::setText() {
