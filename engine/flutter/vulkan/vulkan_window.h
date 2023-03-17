@@ -9,6 +9,7 @@
 #include <tuple>
 #include <utility>
 #include <vector>
+#include <thread>
 
 #ifndef RS_ENABLE_VK
 #include "flutter/fml/compiler_specific.h"
@@ -34,6 +35,7 @@ class VulkanBackbuffer;
 class VulkanWindow {
  public:
 #ifdef RS_ENABLE_VK
+  typedef std::shared_ptr<VulkanWindow> Ptr;
   VulkanWindow(std::unique_ptr<VulkanNativeSurface> native_surface,
                bool is_offscreen = false);
 #else
@@ -51,6 +53,14 @@ class VulkanWindow {
 
   bool SwapBuffers();
 
+#ifdef RS_ENABLE_VK
+  bool FlushCommands();
+  static void PresentAll();
+  static void InitializeVulkan(size_t thread_num = 0);
+  static bool WaitForSharedFence();
+  static bool ResetSharedFence();
+#endif
+
  private:
   bool valid_;
 #ifdef RS_ENABLE_VK
@@ -58,6 +68,10 @@ class VulkanWindow {
   static std::unique_ptr<VulkanApplication> application_;
   static std::unique_ptr<VulkanDevice> logical_device_;
   bool is_offscreen_ = false;
+  static std::thread::id device_thread_;
+  static std::vector<VulkanHandle<VkFence>> shared_fences_;
+  static uint32_t shared_fence_index_;
+  static bool presenting_;
 #else
   fml::RefPtr<VulkanProcTable> vk;
   std::unique_ptr<VulkanApplication> application_;
@@ -67,9 +81,6 @@ class VulkanWindow {
   std::unique_ptr<VulkanSwapchain> swapchain_;
   sk_sp<GrContext> skia_gr_context_;
 
-#ifdef RS_ENABLE_VK
-  static void InitializeVulkan();
-#endif
   bool CreateSkiaGrContext();
 
   bool CreateSkiaBackendContext(GrVkBackendContext* context);

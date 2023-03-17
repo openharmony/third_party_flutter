@@ -39,6 +39,10 @@ static std::vector<FormatInfo> DesiredFormatInfos() {
           {VK_FORMAT_B8G8R8A8_UNORM, kRGBA_8888_SkColorType,
            SkColorSpace::MakeSRGB()}};
 }
+
+std::mutex VulkanSwapchain::map_mutex_;
+std::unordered_map<std::thread::id, VulkanSwapchain*> VulkanSwapchain::to_be_present_;
+
 #else
 static std::vector<FormatInfo> DesiredFormatInfos() {
   return {{VK_FORMAT_R8G8B8A8_SRGB, kRGBA_8888_SkColorType,
@@ -407,31 +411,42 @@ VulkanSwapchain::AcquireResult VulkanSwapchain::AcquireSurface() {
     return error;
   }
 
-  // ---------------------------------------------------------------------------
-  // Step 1:
-  // Wait for use readiness.
-  // ---------------------------------------------------------------------------
-  if (!backbuffer->WaitFences()) {
 #ifdef RS_ENABLE_VK
-    LOGE("Failed waiting on fences.");
-#else
-    FML_DLOG(INFO) << "Failed waiting on fences.";
+  // -----------------------------------------------------------------------------
+  // when back buffer is used in multi threading mode it need to wait shared fence
+  // instead of its private fence
+  // -----------------------------------------------------------------------------
+
+  if (!backbuffer->IsMultiThreading()) {
 #endif
-    return error;
-  }
+    // ---------------------------------------------------------------------------
+    // Step 1:
+    // Wait for use readiness.
+    // ---------------------------------------------------------------------------
+    if (!backbuffer->WaitFences()) {
+#ifdef RS_ENABLE_VK
+      LOGE("Failed waiting on fences.");
+#else
+      FML_DLOG(INFO) << "Failed waiting on fences.";
+#endif
+      return error;
+    }
 
   // ---------------------------------------------------------------------------
   // Step 2:
   // Put semaphores in unsignaled state.
   // ---------------------------------------------------------------------------
-  if (!backbuffer->ResetFences()) {
+    if (!backbuffer->ResetFences()) {
 #ifdef RS_ENABLE_VK
-    LOGE("Could not reset fences.");
+      LOGE("Could not reset fences.");
 #else
-    FML_DLOG(INFO) << "Could not reset fences.";
+      FML_DLOG(INFO) << "Could not reset fences.";
 #endif
-    return error;
-  }
+      return error;
+    }
+#ifdef RS_ENABLE_VK
+  } // !backbuffer->IsMultiThreading()
+#endif
 
   // ---------------------------------------------------------------------------
   // Step 3:
@@ -560,6 +575,11 @@ VulkanSwapchain::AcquireResult VulkanSwapchain::AcquireSurface() {
     return error;
   }
 
+#ifdef RS_ENABLE_VK
+  // reset to not under multi-threading by default
+  // the reality will be judged later in flush stage
+  backbuffer->UnsetMultiThreading();
+#endif
   // ---------------------------------------------------------------------------
   // Step 8:
   // Tell Skia about the updated image layout.
@@ -591,6 +611,140 @@ VulkanSwapchain::AcquireResult VulkanSwapchain::AcquireSurface() {
 
   return {AcquireStatus::Success, surface};
 }
+
+#ifdef RS_ENABLE_VK
+bool VulkanSwapchain::FlushCommands() {
+  if (!IsValid()) {
+    LOGE("Swapchain was invalid.");
+    return false;
+  }
+
+  sk_sp<SkSurface> surface = surfaces_[current_image_index_];
+  const std::unique_ptr<VulkanImage>& image = images_[current_image_index_];
+  auto backbuffer = backbuffers_[current_backbuffer_index_].get();
+
+  // ---------------------------------------------------------------------------
+  // Step 0:
+  // Make sure Skia has flushed all work for the surface to the gpu.
+  // ---------------------------------------------------------------------------
+  surface->flush();
+
+  // ---------------------------------------------------------------------------
+  // Step 1:
+  // Start recording to the command buffer.
+  // ---------------------------------------------------------------------------
+  if (!backbuffer->GetRenderCommandBuffer().Begin()) {
+    LOGE("Could not start recording to the command buffer.");
+    return false;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Step 2:
+  // Set image layout to present mode.
+  // ---------------------------------------------------------------------------
+  VkPipelineStageFlagBits destination_pipeline_stage =
+      VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+  VkImageLayout destination_image_layout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+  if (!image->InsertImageMemoryBarrier(
+          backbuffer->GetRenderCommandBuffer(),  // command buffer
+          current_pipeline_stage_,               // src_pipeline_bits
+          destination_pipeline_stage,            // dest_pipeline_bits
+          VK_ACCESS_MEMORY_READ_BIT,             // dest_access_flags
+          destination_image_layout               // dest_layout
+          )) {
+    LOGE("Could not insert memory barrier.");
+    return false;
+  } else {
+    current_pipeline_stage_ = destination_pipeline_stage;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Step 3:
+  // End recording to the command buffer
+  // ---------------------------------------------------------------------------
+  if (!backbuffer->GetRenderCommandBuffer().End()) {
+    LOGE("Could not end recording to the command buffer.");
+    return false;
+  }
+  return true;
+}
+
+void VulkanSwapchain::AddToPresent() {
+  std::lock_guard<std::mutex> lock(map_mutex_);
+  to_be_present_[std::this_thread::get_id()] = this;
+}
+
+void VulkanSwapchain::PresentAll(VulkanHandle<VkFence>& shared_fence) {
+  if (to_be_present_.empty()) {
+    LOGE("nothing to be presented");
+    return;
+  }
+
+  std::lock_guard<std::mutex> lock(map_mutex_);
+  // ---------------------------------------------------------------------------
+  // Submit all the command buffer to the device queue. Tell it to signal the render
+  // semaphore.
+  // ---------------------------------------------------------------------------
+  std::vector<VkSemaphore> wait_semaphores = {};
+  std::vector<VkSemaphore> queue_signal_semaphores;
+  std::vector<VkCommandBuffer> command_buffers;
+  std::vector<VkSwapchainKHR> swapchains;
+  std::vector<uint32_t> present_image_indices;
+  queue_signal_semaphores.reserve(to_be_present_.size());
+  command_buffers.reserve(to_be_present_.size());
+  swapchains.reserve(to_be_present_.size());
+  present_image_indices.reserve(to_be_present_.size());
+  VulkanSwapchain* tmpSwapChain = nullptr;
+  for (const auto& entry : to_be_present_) {
+    auto swapchain = entry.second;
+    if (!tmpSwapChain) tmpSwapChain = swapchain;
+    auto backbuffer = swapchain->backbuffers_[swapchain->current_backbuffer_index_].get();
+    backbuffer->SetMultiThreading();
+    queue_signal_semaphores.push_back(backbuffer->GetRenderSemaphore());
+    command_buffers.push_back(backbuffer->GetRenderCommandBuffer().Handle());
+    swapchains.push_back(swapchain->swapchain_);
+    present_image_indices.push_back(static_cast<uint32_t>(swapchain->current_image_index_));
+  }
+
+  const VulkanProcTable& vk = tmpSwapChain->vk;
+  const VulkanDevice& device = tmpSwapChain->device_;
+
+  if (!device.QueueSubmit(
+      {/*Empty, No wait Semaphores. */},
+      wait_semaphores,
+      queue_signal_semaphores,
+      command_buffers,
+      shared_fence
+      )) {
+    LOGE("Could not submit to the device queue");
+    return;
+  }
+
+  // ----------------------------------------
+  //  present multiple swapchain all at once
+  // ----------------------------------------
+  const VkPresentInfoKHR present_info = {
+    .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+    .pNext = nullptr,
+    .waitSemaphoreCount =
+      static_cast<uint32_t> (queue_signal_semaphores.size()),
+    .pWaitSemaphores = queue_signal_semaphores.data(),
+    .swapchainCount = static_cast<uint32_t>(swapchains.size()),
+    .pSwapchains = swapchains.data(),
+    .pImageIndices = present_image_indices.data(),
+    .pResults = nullptr,
+  };
+
+  if (VK_CALL_LOG_ERROR(vk.QueuePresentKHR(device.GetQueueHandle(),
+    &present_info)) != VK_SUCCESS) {
+    LOGE("Could not submit the present operation");
+    return;
+  }
+
+  to_be_present_.clear();
+}
+#endif
 
 bool VulkanSwapchain::Submit() {
   if (!IsValid()) {
@@ -689,6 +843,9 @@ bool VulkanSwapchain::Submit() {
     return false;
   }
 
+#ifdef RS_ENABLE_VK
+  backbuffer->UnsetMultiThreading();
+#endif
   // ---------------------------------------------------------------------------
   // Step 5:
   // Submit the present operation and wait on the render semaphore.

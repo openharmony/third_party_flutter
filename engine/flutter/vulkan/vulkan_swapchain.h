@@ -8,6 +8,9 @@
 #include <memory>
 #include <utility>
 #include <vector>
+#include <thread>
+#include <mutex>
+#include <unordered_map>
 
 #ifndef RS_ENABLE_VK
 #include "flutter/fml/compiler_specific.h"
@@ -66,6 +69,12 @@ class VulkanSwapchain {
   SkISize GetSize() const;
 
 #ifdef RS_ENABLE_VK
+  bool FlushCommands();
+
+  void AddToPresent();
+
+  static void PresentAll(VulkanHandle<VkFence>& shared_fence);
+
  private:
   const VulkanProcTable& vk;
   const VulkanDevice& device_;
@@ -79,6 +88,8 @@ class VulkanSwapchain {
   size_t current_backbuffer_index_;
   size_t current_image_index_;
   bool valid_;
+  static std::mutex map_mutex_;
+  static std::unordered_map<std::thread::id, VulkanSwapchain*> to_be_present_;
 
   std::vector<VkImage> GetImages() const;
 
