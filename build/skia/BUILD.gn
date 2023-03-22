@@ -199,7 +199,6 @@ if (!is_cross_platform_build) {
       ":ace_gpu_$platform",
       ":ace_heif",
       ":ace_jpeg",
-      ":ace_pdf_$platform",
       ":ace_png_$platform",
       ":ace_skcms",
       ":ace_skia_core_$platform",
@@ -210,12 +209,9 @@ if (!is_cross_platform_build) {
       ":ace_xml",
       ":make_third_party_skia_include_dir",
       "$ace_flutter_engine_root/freetype:ace_libfreetype2",
-      "$ace_flutter_engine_root/harfbuzz:ace_libharfbuzz_$platform",
-      "$ace_flutter_engine_root/icu:ace_libicu_$platform",
       "$ace_flutter_engine_root/libjpeg:ace_libjpeg",
       "$ace_flutter_engine_root/libpng:ace_libpng",
       "$ace_flutter_engine_root/libwebp:ace_libwebp",
-      "$ace_flutter_engine_root/sfntly:ace_libsfntly_$platform",
     ]
 
     if (defined(disable_gpu) && disable_gpu) {
