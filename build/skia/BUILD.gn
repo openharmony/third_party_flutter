@@ -331,6 +331,9 @@ ace_skia_common_cflags = [
   "-Wno-tautological-value-range-compare",
   "-Wno-suggest-override",
   "-Wno-reserved-identifier",
+  "-Wno-unused-but-set-variable",
+  "-Wno-array-parameter",
+  "-Wno-bitwise-instead-of-logical",
   "-Os",
   "-DSKIA_DLL",
 ]
