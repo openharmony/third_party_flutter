@@ -406,7 +406,7 @@ static void BM_ParagraphMinikinAddStyleRun(benchmark::State& state) {
   auto font_collection = GetTestFontCollection();
 
   minikin::LineBreaker breaker;
-  breaker.setLocale(icu::Locale(), nullptr);
+  breaker.setLocale();
   breaker.resize(text.size());
   memcpy(breaker.buffer(), text.data(), text.size() * sizeof(text[0]));
   breaker.setText();
