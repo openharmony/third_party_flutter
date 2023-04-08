@@ -215,6 +215,7 @@ public:
      *                               enforcing the budget requirements.
      */
     void purgeUnlockedResources(bool scratchResourcesOnly);
+    void purgeUnlockedResourcesByTag(bool scratchResourcesOnly, const GrGpuResourceTag tag);
 
     /**
      * Gets the maximum supported texture size.

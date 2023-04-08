@@ -190,6 +190,7 @@ public:
     // containing persistent data are spared. If it is false then all purgeable resources will
     // be deleted.
     void purgeUnlockedResources(bool scratchResourcesOnly);
+    void purgeUnlockedResourcesByTag(bool scratchResourcesOnly, const GrGpuResourceTag tag);
 
     /** Purge all resources not used since the passed in time. */
     void purgeResourcesNotUsedSince(GrStdSteadyClock::time_point);
