@@ -547,7 +547,15 @@ template("flutter_engine_shell") {
         "$ios_prefix",
         "$ios_prefix/framework/Headers",
         "$flutter_root/engine/flutter/shell/platform/darwin/common/framework/Headers",
+        "//foundation/appframework/ability/ability_runtime/cross_platform/frameworks/native/base/event_handler/include",
+        "//foundation/appframework/ability/ability_runtime/cross_platform/interfaces/inner_api/error",
       ]
+      sources += [
+        "$flutter_root/engine/flutter/shell/platform/ohos/platform_task_runner.cc",
+        "$flutter_root/engine/flutter/shell/platform/ohos/platform_task_runner_adapter.cc",
+      ]
+
+      deps += [ "//foundation/appframework/ability/ability_runtime/cross_platform/frameworks/native/base/event_handler:cross_platform_event_handler" ]
 
       _flutter_framework_headers = [
         "$ios_prefix/framework/Headers/Flutter.h",
