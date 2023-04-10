@@ -179,6 +179,16 @@ void GrContext::purgeUnlockedResources(bool scratchResourcesOnly) {
     this->getTextBlobCache()->purgeStaleBlobs();
 }
 
+void GrContext::purgeUnlockedResourcesByTag(bool scratchResourcesOnly, const GrGpuResourceTag tag) {
+    ASSERT_SINGLE_OWNER
+    fResourceCache->purgeUnlockedResourcesByTag(scratchResourcesOnly, tag);
+    fResourceCache->purgeAsNeeded();
+
+    // The textBlob Cache doesn't actually hold any GPU resource but this is a convenient
+    // place to purge stale blobs
+    this->getTextBlobCache()->purgeStaleBlobs();
+}
+
 void GrContext::performDeferredCleanup(std::chrono::milliseconds msNotUsed) {
     TRACE_EVENT0("skia.gpu", TRACE_FUNC);
 

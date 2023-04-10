@@ -318,10 +318,36 @@ void GrResourceCache::releaseByTag(const GrGpuResourceTag tag) {
     }
 }
 
+void GrResourceCache::purgeUnlockedResourcesByTag(bool scratchResourcesOnly, const GrGpuResourceTag tag) {
+    // Sort the queue
+    fPurgeableQueue.sort();
+
+    // Make a list of the scratch resources to delete
+    SkTDArray<GrGpuResource*> scratchResources;
+    for (int i = 0; i < fPurgeableQueue.count(); i++) {
+        GrGpuResource* resource = fPurgeableQueue.at(i);
+        SkASSERT(resource->resourcePriv().isPurgeable());
+        if (tag.filter(resource->getResourceTag()) &&
+            (!scratchResourcesOnly || !resource->getUniqueKey().isValid())) {
+            *scratchResources.append() = resource;
+        }
+    }
+
+    // Delete the scratch resources. This must be done as a separate pass
+    // to avoid messing up the sorted order of the queue
+    for (int i = 0; i < scratchResources.count(); i++) {
+        scratchResources.getAt(i)->cacheAccess().release();
+    }
+
+    this->validate();
+}
+
 void GrResourceCache::setCurrentGrResourceTag(const GrGpuResourceTag tag) {
     if (tag.isGrTagValid()) {
         grResourceTagCacheStack.push(tag);
-    } else {
+        return;
+    }
+    if (!grResourceTagCacheStack.empty()) {
         grResourceTagCacheStack.pop();
     }
 }
