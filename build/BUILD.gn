@@ -20,7 +20,13 @@ import("//third_party/flutter/flutter_config.gni")
 #      Flutter engine config begin
 # ------------------------------------------------
 config("flutter_config") {
-  visibility = [ ":*" ]
+  visibility = [ "./*" ]
+  visibility += [
+    "//foundation/arkui/ace_engine/frameworks/core/*",
+    "//foundation/graphic/graphic_2d/rosen/*",
+    "//foundation/multimedia/image_framework/plugins/common/libs/image/libjpegplugin/*",
+    "//third_party/flutter/engine/flutter/*",
+  ]
 
   include_dirs = []
 

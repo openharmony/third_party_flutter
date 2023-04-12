@@ -367,7 +367,7 @@ ace_skia_common_defines = [
 ]
 
 config("harfbuzz_config") {
-  visibility = [ ":*" ]
+  visibility = [ "./*" ]
 
   include_dirs = [ "$flutter_root/skia/third_party/externals/harfbuzz/src" ]
 
@@ -380,7 +380,9 @@ config("harfbuzz_config") {
 }
 
 config("skia_config") {
-  visibility = [ ":*" ]
+  visibility = [ "./*" ]
+  visibility +=
+      [ "//foundation/arkui/ace_engine/frameworks/core/components_ng/test/*" ]
 
   include_dirs = [
     "$third_party_skia_override_path",
