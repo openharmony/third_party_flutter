@@ -656,13 +656,13 @@ ohos_source_set("skia_core_ohos") {
       "SK_GL",
     ]
   } else {
-    if (is_standard_system) {
+    if (is_ohos_standard_system) {
       public_deps = [ "//foundation/graphic/graphic_2d:libgl" ]
     } else {
-      aosp_deps = [
-        "shared_library:libEGL",
-        "shared_library:libGLESv2",
-        "shared_library:liblog",
+      libs = [
+        "EGL",
+        "GLESv2",
+        "log",
       ]
     }
   }
@@ -997,15 +997,15 @@ ohos_source_set("gpu_ohos") {
   ]
   if (ace_enable_gpu) {
     # Ohos platform
-    if (is_standard_system) {
+    if (is_ohos_standard_system) {
       public_deps = [ "//foundation/graphic/graphic_2d:libgl" ]
       if (flutter_feature_skia_small_page_enable) {
         defines += [ "SK_ENABLE_SMALL_PAGE" ]
       }
     } else {
-      aosp_deps = [
-        "shared_library:libEGL",
-        "shared_library:libGLESv2",
+      libs = [
+        "EGL",
+        "GLESv2",
       ]
     }
   }

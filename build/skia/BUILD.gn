@@ -105,9 +105,9 @@ template("make_skia_deps") {
       deps = [ ":ace_skia_ext_$platform" ]
       deps += [ ":make_system_skia_include_dir" ]
 
-      aosp_deps = [
-        "shared_library:libharfbuzz_ng",
-        "shared_library:libhwui",
+      libs = [
+        "harfbuzz_ng",
+        "hwui",
       ]
 
       sources = [ "$flutter_root/skia/src/utils/SkParsePath.cpp" ]
@@ -1009,13 +1009,13 @@ template("ace_skia_core") {
           "SK_GL",
         ]
       } else {
-        if (is_standard_system) {
+        if (is_ohos_standard_system) {
           public_deps = [ "//foundation/graphic/graphic_2d:libgl" ]
         } else {
-          aosp_deps = [
-            "shared_library:libEGL",
-            "shared_library:libGLESv2",
-            "shared_library:liblog",
+          libs = [
+            "EGL",
+            "GLESv2",
+            "log",
           ]
         }
       }
@@ -1100,9 +1100,9 @@ template("ace_skia_ext") {
 
     if (platform == "ohos" && defined(config.enable_native_view) &&
         config.enable_native_view) {
-      aosp_deps = [
-        "shared_library:libexpat",
-        "shared_library:libhwui",
+      libs = [
+        "expat",
+        "hwui",
       ]
     }
   }
@@ -1641,15 +1641,15 @@ template("ace_gpu") {
     } else {
       if (!defined(config.disable_gpu) || !config.disable_gpu) {
         # Ohos or Android platform
-        if (is_standard_system) {
+        if (is_ohos_standard_system) {
           public_deps = [ "//foundation/graphic/graphic_2d:libgl" ]
           if (flutter_feature_skia_small_page_enable) {
             defines += [ "SK_ENABLE_SMALL_PAGE" ]
           }
         } else {
-          aosp_deps = [
-            "shared_library:libEGL",
-            "shared_library:libGLESv2",
+          libs = [
+            "EGL",
+            "GLESv2",
           ]
         }
       }
@@ -1939,7 +1939,7 @@ ohos_source_set("ace_fontmgr_standard") {
   deps = [ ":ace_fontconfig.json" ]
 
   # Only standard system has ohos_fonts source
-  if (is_standard_system) {
+  if (is_ohos_standard_system) {
     deps += [ "$jsoncpp_root:jsoncpp_static" ]
 
     if (graphic_standard_feature_wuji_enable) {

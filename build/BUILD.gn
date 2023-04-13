@@ -210,7 +210,7 @@ template("flutter_engine_fml") {
         "$flutter_root/engine/flutter/fml/platform/posix/paths_posix.cc",
       ]
 
-      if (is_standard_system) {
+      if (is_ohos_standard_system) {
         sources += [
           "$flutter_root/engine/flutter/fml/platform/linux/message_loop_linux.cc",
           "$flutter_root/engine/flutter/fml/platform/linux/paths_linux.cc",
@@ -224,9 +224,9 @@ template("flutter_engine_fml") {
           "$flutter_root/engine/flutter/fml/platform/android/paths_android.cc",
           "$flutter_root/engine/flutter/fml/platform/android/scoped_java_ref.cc",
         ]
-        aosp_deps = [
-          "shared_library:libandroid",
-          "shared_library:liblog",
+        libs = [
+          "android",
+          "log",
         ]
       }
     }
@@ -527,9 +527,9 @@ template("flutter_engine_shell") {
         deps += [ "//foundation/appframework/ability/ability_runtime/cross_platform/frameworks/native/base/event_handler:cross_platform_event_handler" ]
       }
 
-      aosp_deps = [
-        "shared_library:libEGL",
-        "shared_library:libGLESv2",
+      libs = [
+        "EGL",
+        "GLESv2",
       ]
 
       if (defined(config.use_agp_vsync) && config.use_agp_vsync) {
@@ -626,7 +626,7 @@ template("flutter_engine_shell") {
         "FLUTTER_RUNTIME_MODE=3",
       ]
 
-      libs = [
+      frameworks = [
         "CoreMedia.framework",
         "CoreVideo.framework",
         "UIKit.framework",
