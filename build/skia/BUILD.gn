@@ -972,7 +972,7 @@ template("ace_skia_core") {
         "$flutter_root/skia/src/ports/SkImageEncoder_CG.cpp",
         "$flutter_root/skia/src/ports/SkImageGeneratorCG.cpp",
       ]
-      libs = [
+      frameworks = [
         "CoreFoundation.framework",
         "CoreGraphics.framework",
         "CoreText.framework",
