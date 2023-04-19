@@ -4,6 +4,11 @@
 
 #include "txt/platform.h"
 
+#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_LINUX)
+#include "include/core/SkFontMgr.h"
+
+#endif
+
 #ifdef FLUTTER_USE_FONTCONFIG
 #include "third_party/skia/include/ports/SkFontMgr_fontconfig.h"
 #else
@@ -12,13 +17,27 @@
 
 namespace txt {
 
+#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_LINUX)
+std::vector<std::string> GetDefaultFontFamilies()
+{
+    if (SkFontMgr::runtimeOS == "OHOS") {
+        return {"HarmonyOS-Sans"};
+    }
+    if (SkFontMgr::runtimeOS == "OHOS_Container") {
+        return {"sans-serif"};
+    }
+    return {"Ubuntu", "Cantarell", "DejaVu Sans", "Liberation Sans", "Arial"};;
+}
+#else
 std::vector<std::string> GetDefaultFontFamilies() {
   return {"Ubuntu", "Cantarell", "DejaVu Sans", "Liberation Sans", "Arial"};
-}
-
-sk_sp<SkFontMgr> GetDefaultFontManager() {
-#ifdef FLUTTER_USE_FONTCONFIG
-  return SkFontMgr_New_FontConfig(nullptr);
+#endif
+sk_sp<SkFontMgr> GetDefaultFontManager()
+{
+#ifdef SK_BUILD_FONT_MGR_FOR_PREVIEW_LINUX
+    return SkFontMgr::RefDefault();
+#elif FLUTTER_USE_FONTCONFIG
+    return SkFontMgr_New_FontConfig(nullptr);
 #else
   return SkFontMgr_New_Custom_Directory("/usr/share/fonts/");
 #endif

@@ -173,6 +173,9 @@ class FontFamily {
   std::shared_ptr<FontFamily> createFamilyWithVariation(
       const std::vector<FontVariation>& variations) const;
 
+  int getHwFontFamilyType();
+  void setHwFontFamilyType(int type);
+
  private:
   void computeCoverage();
 
@@ -183,6 +186,7 @@ class FontFamily {
 
   SparseBitSet mCoverage;
   bool mHasVSTable;
+  int mHwFontFamilyType = 0;
 
   // Forbid copying and assignment.
   FontFamily(const FontFamily&) = delete;

@@ -18,6 +18,7 @@
 #define LIB_TXT_SRC_FONT_COLLECTION_H_
 
 #include <memory>
+#include <mutex>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -29,6 +30,7 @@
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "txt/asset_font_manager.h"
+#include "txt/platform.h"
 #include "txt/text_style.h"
 
 #if FLUTTER_ENABLE_SKSHAPER
@@ -68,12 +70,25 @@ class FontCollection : public std::enable_shared_from_this<FontCollection> {
   // Remove all entries in the font family cache.
   void ClearFontFamilyCache();
 
+  // Vary font collection with font weight scale.
+  void VaryFontCollectionWithFontWeightScale(float font_weight_scale);
+
+  void LoadSystemFont();
+
+  void SetIsZawgyiMyanmar(bool is_zawgyi_myanmar);
+
 #if FLUTTER_ENABLE_SKSHAPER
 
   // Construct a Skia text layout FontCollection based on this collection.
   sk_sp<skia::textlayout::FontCollection> CreateSktFontCollection();
 
 #endif  // FLUTTER_ENABLE_SKSHAPER
+
+#if defined(OHOS_PLATFORM) && !defined(OHOS_STANDARD_SYSTEM)
+    const std::shared_ptr<minikin::FontFamily>& MatchFallbackFontFromHwFont(
+            uint32_t ch,
+            std::string locale);
+#endif
 
  private:
   struct FamilyKey {
@@ -107,6 +122,12 @@ class FontCollection : public std::enable_shared_from_this<FontCollection> {
   std::unordered_map<std::string, std::vector<std::string>>
       fallback_fonts_for_locale_;
   bool enable_font_fallback_;
+  bool is_zawgyi_myanmar_ = false; // whether encoding of Burmese is zawgyi, not unicode.
+  float font_weight_scale_ = 1.0f;
+  std::vector<FamilyKey> varied_fonts_;
+
+  std::mutex mutex_;
+  mutable std::mutex fontManagerMutex_;
 
 #if FLUTTER_ENABLE_SKSHAPER
   // An equivalent font collection usable by the Skia text shaper library.
@@ -136,6 +157,51 @@ class FontCollection : public std::enable_shared_from_this<FontCollection> {
   const std::shared_ptr<minikin::FontFamily>& GetFallbackFontFamily(
       const sk_sp<SkFontMgr>& manager,
       const std::string& family_name);
+
+  sk_sp<SkFontMgr> GetDefaultFontManagerSafely() const;
+
+#if defined(OHOS_PLATFORM) && !defined(OHOS_STANDARD_SYSTEM)
+  std::shared_ptr<minikin::FontCollection>
+  GetMinikinFontCollectionForFamiliesWithVariation(
+      const std::vector<std::string>& font_families,
+      const std::string& locale);
+
+  std::vector<std::pair<sk_sp<SkFontMgr>, txt::FontManagerType>>
+  GetFontManagerOrderWithType() const;
+
+  std::shared_ptr<minikin::FontFamily> FindFontFamilyInManagersWithType(
+      const std::string& family_name);
+
+  std::shared_ptr<minikin::FontFamily> CreateMinikinFontFamilyForOHOS(
+      const sk_sp<SkFontMgr>& manager,
+      const std::string& family_name);
+
+  std::shared_ptr<minikin::FontFamily> CreateMinikinFontFamilyExceptOHOS(
+      const sk_sp<SkFontMgr>& manager,
+      const std::string& family_name);
+
+  void VaryTypeface(sk_sp<SkTypeface>& typeface, float wght);
+
+  // Provides a FontFamily that contains glyphs for ch. This caches previously
+  // matched fonts. Also see FontCollection::DoMatchFallbackFontWithVariation.
+  const std::shared_ptr<minikin::FontFamily>& MatchFallbackFontWithVariation(
+      uint32_t ch,
+      std::string locale);
+
+  // Performs the actual work of MatchFallbackFont. The result is cached in
+  // fallback_match_cache_.
+  const std::shared_ptr<minikin::FontFamily>& DoMatchFallbackFontWithVariation(
+      uint32_t ch,
+      std::string locale);
+
+  const std::shared_ptr<minikin::FontFamily>& GetFallbackFontFamilyForOHOS(
+      const sk_sp<SkFontMgr>& manager,
+      const std::string& family_name);
+
+  const std::shared_ptr<minikin::FontFamily>& DoMatchFallbackFontFromHwFont(
+      uint32_t ch,
+      std::string locale);
+#endif
 
   FML_DISALLOW_COPY_AND_ASSIGN(FontCollection);
 };

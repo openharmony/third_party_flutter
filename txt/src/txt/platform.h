@@ -13,9 +13,20 @@
 
 namespace txt {
 
+enum FontManagerType {
+  DYNAMIC = 0,
+  ASSET = 1,
+  TEST = 2,
+  DEFAULT_OHOS = 3,
+  DEFAULT_ANDROID = 4,
+  NONE = 5,
+};
+
 std::vector<std::string> GetDefaultFontFamilies();
 
 sk_sp<SkFontMgr> GetDefaultFontManager();
+
+FontManagerType GetDefaultFontManagerType();
 
 }  // namespace txt
 
