@@ -28,8 +28,13 @@ config("flutter_config") {
     "$flutter_root",
     "$flutter_root/engine",
     "$flutter_root/engine/flutter",
-    "$flutter_root/engine/flutter/third_party/txt/src",
   ]
+  
+  if (use_new_skia) {
+    include_dirs += [ "$flutter_root/txt/src" ]
+  } else {
+    include_dirs += [ "$flutter_root/engine/flutter/third_party/txt/src" ]
+  }
 
   cflags = [
     "-fvisibility=hidden",
