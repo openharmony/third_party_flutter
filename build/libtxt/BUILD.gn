@@ -23,7 +23,7 @@ config("thirdparty_lib_txt_config") {
   ]
 }
 
-if (use_new_skia) {
+if (defined(use_new_skia) && use_new_skia) {
   txt_root = "$flutter_root/txt"
 } else {
   txt_root = "$flutter_root/engine/flutter/third_party/txt"
@@ -87,11 +87,11 @@ template("thirdparty_lib_txt") {
       "$txt_root/src/utils/JenkinsHash.cpp",
     ]
 
-    if (use_new_skia) {
-      deps = [ 
+    if (defined(use_new_skia) && use_new_skia) {
+      deps = [
         "$ace_flutter_engine_root:flutter_engine_fml_$platform",
         "$ace_flutter_engine_root/icu:ace_libicu_$platform",
-        "//third_party/skia:skia",
+        "//third_party/skia:skia_$platform",
         "$ace_flutter_engine_root/harfbuzz:ace_libharfbuzz_$platform",
       ]
       include_dirs = [
