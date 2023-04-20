@@ -2189,6 +2189,56 @@ void SkPath::dump(SkWStream* wStream, bool forceClose, bool dumpAsHex) const {
     }
 }
 
+void SkPath::dump(std::string &desc, int depth) const {
+    std::string split(depth, '\t');
+    desc += split + "SkPath:{";
+    SkScalarAsStringType asType = kDec_SkScalarAsStringType;
+    Iter    iter(*this, false);
+    SkPoint pts[4];
+    Verb    verb;
+
+    SkString builder;
+    char const * const gFillTypeStrs[] = {
+        "Winding",
+        "EvenOdd",
+        "InverseWinding",
+        "InverseEvenOdd",
+    };
+    builder.printf("path.setFillType(SkPath::k%s_FillType);\n",
+            gFillTypeStrs[(int) this->getFillType()]);
+    while ((verb = iter.next(pts)) != kDone_Verb) {
+        switch (verb) {
+            case kMove_Verb:
+                append_params(&builder, "path.moveTo", &pts[0], 1, asType);
+                break;
+            case kLine_Verb:
+                append_params(&builder, "path.lineTo", &pts[1], 1, asType);
+                break;
+            case kQuad_Verb:
+                append_params(&builder, "path.quadTo", &pts[1], 2, asType);
+                break;
+            case kConic_Verb:
+                append_params(&builder, "path.conicTo", &pts[1], 2, asType, iter.conicWeight());
+                break;
+            case kCubic_Verb:
+                append_params(&builder, "path.cubicTo", &pts[1], 3, asType);
+                break;
+            case kClose_Verb:
+                builder.append("path.close();\n");
+                break;
+            default:
+                SkDebugf("  path: UNKNOWN VERB %d, aborting dump...\n", verb);
+                verb = kDone_Verb;  // stop the loop
+                break;
+        }
+        if (builder.size()) {
+            desc += split + std::string(builder.c_str()) + "\n";
+            builder.reset();
+        }
+    }
+    desc += split + "}\n";
+}
+
 void SkPath::dump() const {
     this->dump(nullptr, false, false);
 }

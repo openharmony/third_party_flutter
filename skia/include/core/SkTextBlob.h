@@ -186,6 +186,8 @@ public:
     static sk_sp<SkTextBlob> Deserialize(const void* data, size_t size,
                                          const SkDeserialProcs& procs);
 
+    void dump(std::string &desc, int depth) const;
+
 private:
     friend class SkNVRefCnt<SkTextBlob>;
     class RunRecord;

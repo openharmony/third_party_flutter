@@ -158,3 +158,13 @@ void SkRect::dump(bool asHex) const {
     }
     SkDebugf("%s\n", line.c_str());
 }
+
+void SkRect::dump(std::string& desc, int depth) const {
+    std::string split(depth, '\t');
+    desc += split + "SkRect:{";
+    desc += split + "\t fLeft:" + std::to_string(fLeft) + "\n";
+    desc += split + "\t fTop:" + std::to_string(fTop) + "\n";
+    desc += split + "\t fRight:" + std::to_string(fRight) + "\n";
+    desc += split + "\t fBottom:" + std::to_string(fBottom) + "\n";
+    desc += split + "}\n";
+}

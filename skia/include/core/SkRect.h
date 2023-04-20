@@ -1527,6 +1527,7 @@ public:
     */
     void dump(bool asHex) const;
 
+    void dump(std::string& desc, int depth) const;
     /** Writes text representation of SkRect to standard output. The representation may be
         directly compiled as C++ code. Floating point values are written
         with limited precision; it may not be possible to reconstruct original SkRect
