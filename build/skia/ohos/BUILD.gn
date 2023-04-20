@@ -54,6 +54,11 @@ ohos_shared_library("skia_ohos") {
     "$rosen_flutter_engine_root/icu:rosen_libicu_ohos",
   ]
 
+  if (defined(use_new_skia) && use_new_skia) {
+    deps -=
+        [ "$ace_flutter_engine_root/skia:make_third_party_skia_include_dir" ]
+  }
+
   if (ace_enable_gpu) {
     deps += [ ":gpu_ohos" ]
   }

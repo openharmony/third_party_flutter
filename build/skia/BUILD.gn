@@ -214,6 +214,10 @@ if (!is_cross_platform_build) {
       "$ace_flutter_engine_root/libwebp:ace_libwebp",
     ]
 
+    if (defined(use_new_skia) && use_new_skia) {
+      deps -= [ ":make_third_party_skia_include_dir" ]
+    }
+
     if (defined(disable_gpu) && disable_gpu) {
       deps -= [ ":ace_gpu_$platform" ]
     } else {
