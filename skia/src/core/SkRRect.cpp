@@ -603,7 +603,6 @@ void SkRRect::dump(std::string &desc, int depth) const {
     desc += split + "\t}\n";
     desc += split + "\t fType:" + std::to_string(fType) + "\n";
     desc += split + "}\n";
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////

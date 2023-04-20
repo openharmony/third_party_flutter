@@ -29,7 +29,8 @@ public:
         {
             std::string split(depth, '\t');
             desc += split + "BoneIndices:{";
-            desc += std::to_string(indices[0]) + " " + std::to_string(indices[1]) + " " + std::to_string(indices[2]) + " " + std::to_string(indices[3]);
+            desc += std::to_string(indices[0]) + " " + std::to_string(indices[1]) + " " +
+                    std::to_string(indices[2]) + " " + std::to_string(indices[3]);
             desc += split + "}\n";
         }
 
@@ -56,7 +57,8 @@ public:
         {
             std::string split(depth, '\t');
             desc += split + "BoneWeights:{";
-            desc += std::to_string(weights[0]) + " " + std::to_string(weights[1]) + " " + std::to_string(weights[2]) + " " + std::to_string(weights[3]);
+            desc += std::to_string(weights[0]) + " " + std::to_string(weights[1]) + " " +
+                    std::to_string(weights[2]) + " " + std::to_string(weights[3]);
             desc += split + "}\n";
         }
 
@@ -84,7 +86,8 @@ public:
         {
             std::string split(depth, '\t');
             desc += split + "Bone:{";
-            desc += std::to_string(values[0]) + " " + std::to_string(values[1]) + " " + std::to_string(values[2]) + " " + std::to_string(values[3]);
+            desc += std::to_string(values[0]) + " " + std::to_string(values[1]) + " " +
+                    std::to_string(values[2]) + " " + std::to_string(values[3]);
             desc += split + "}\n";
         }
 

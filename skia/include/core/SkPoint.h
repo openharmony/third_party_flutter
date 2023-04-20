@@ -8,6 +8,7 @@
 #ifndef SkPoint_DEFINED
 #define SkPoint_DEFINED
 
+#include <string>
 #include "include/core/SkMath.h"
 #include "include/core/SkScalar.h"
 #include "include/private/SkSafe32.h"

@@ -36,7 +36,6 @@ struct SkDrawShadowRec {
         desc += split + "\t fFlags: " + std::to_string(fFlags) + "\n";
         desc += split + "}\n";
     }
-
 };
 
 namespace SkDrawShadowMetrics {

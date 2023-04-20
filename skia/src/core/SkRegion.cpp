@@ -1344,7 +1344,7 @@ void SkRegion::dump(std::string& desc, int depth) const {
         if (this->isComplex()) {
             desc += split + "\t fRunHead->readonly_runs():";
             const RunType* runs = fRunHead->readonly_runs();
-            for (int i = 0; i < fRunHead->fRunCount; i++){
+            for (int i = 0; i < fRunHead->fRunCount; i++) {
                 desc += " " + std::to_string(runs[i]);
             }
             desc += "\n";
