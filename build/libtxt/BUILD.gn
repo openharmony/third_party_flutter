@@ -90,14 +90,14 @@ template("thirdparty_lib_txt") {
     if (defined(use_new_skia) && use_new_skia) {
       deps = [
         "$ace_flutter_engine_root:flutter_engine_fml_$platform",
+        "$ace_flutter_engine_root/harfbuzz:ace_libharfbuzz_$platform",
         "$ace_flutter_engine_root/icu:ace_libicu_$platform",
         "//third_party/skia:skia_$platform",
-        "$ace_flutter_engine_root/harfbuzz:ace_libharfbuzz_$platform",
       ]
       include_dirs = [
-         "$flutter_root/txt/src",
-         "//third_party/skia/third_party/externals/harfbuzz/src",
-         "//",
+        "$flutter_root/txt/src",
+        "//third_party/skia/third_party/externals/harfbuzz/src",
+        "//",
       ]
     } else {
       deps = [
@@ -114,17 +114,14 @@ template("thirdparty_lib_txt") {
         sources += [ "$txt_root/src/txt/platform_ohos.cc" ]
       }
     } else if (platform == "windows") {
-      sources +=
-          [ "$txt_root/src/txt/platform.cc" ]
+      sources += [ "$txt_root/src/txt/platform.cc" ]
       if (use_mingw_win) {
         defines += [ "SK_BUILD_FONT_MGR_FOR_PREVIEW_WIN" ]
       }
       deps += [ "$ace_flutter_engine_root/harfbuzz:ace_libharfbuzz_$platform" ]
     } else if (platform == "mac" || platform == "ios") {
       cflags = [ "-DNS_FORMAT_ARGUMENT(A)=" ]
-      sources += [
-        "$txt_root/src/txt/platform_mac.mm",
-      ]
+      sources += [ "$txt_root/src/txt/platform_mac.mm" ]
       deps += [ "$ace_flutter_engine_root/harfbuzz:ace_libharfbuzz_$platform" ]
       if (use_mac) {
         defines += [ "SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC" ]
