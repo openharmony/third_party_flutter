@@ -55,7 +55,8 @@ ohos_shared_library("skia_ohos") {
   ]
 
   if (defined(use_new_skia) && use_new_skia) {
-    deps -= [ "$ace_flutter_engine_root/skia:make_third_party_skia_include_dir" ]
+    deps -=
+        [ "$ace_flutter_engine_root/skia:make_third_party_skia_include_dir" ]
   }
 
   if (ace_enable_gpu) {
