@@ -605,7 +605,7 @@ public:
     void dump(std::string &desc, int depth) const
     {
         std::string split(depth, '\t');
-        desc += split + "SkImageInfo:{";
+        desc += split + "\n SkImageInfo:{ \n";
         desc += split + "\t fColorSpace: Omit\n";
         desc += split + "\t fDimensions:{fWidth:" + std::to_string(fDimensions.fWidth) +
             " fHeight:" + std::to_string(fDimensions.fHeight) + "}\n";

@@ -22,7 +22,7 @@ struct SK_API SkPoint3 {
     void dump(std::string &desc, int depth) const
     {
         std::string split(depth, '\t');
-        desc += split + "SkPoint3:{";
+        desc += split + "\n SkPoint3:{ \n";
         desc += split + "\t fX: " + std::to_string(fX) + "\n";
         desc += split + "\t fY: " + std::to_string(fY) + "\n";
         desc += split + "\t fZ: " + std::to_string(fZ) + "\n";

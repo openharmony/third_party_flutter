@@ -1127,7 +1127,7 @@ public:
     void dump(std::string &desc, int depth) const
     {
         std::string split(depth, '\t');
-        desc += split + "SkImage:{";
+        desc += split + "\n SkImage:{ \n";
         fInfo.dump(desc, depth + 1);
         desc += split + "\t fUniqueID: " + std::to_string(fUniqueID) + "\n";
         desc += split + "}\n";

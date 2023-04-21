@@ -27,7 +27,7 @@ struct SkDrawShadowRec {
     void dump(std::string &desc, int depth) const
     {
         std::string split(depth, '\t');
-        desc += split + "SkDrawShadowRec:{";
+        desc += split + "\n SkDrawShadowRec:{ \n";
         fZPlaneParams.dump(desc, depth + 1);
         fLightPos.dump(desc, depth + 1);
         desc += split + "\t fLightRadius: " + std::to_string(fLightRadius) + "\n";

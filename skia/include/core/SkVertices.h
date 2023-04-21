@@ -28,7 +28,7 @@ public:
         void dump(std::string &desc, int depth) const
         {
             std::string split(depth, '\t');
-            desc += split + "BoneIndices:{";
+            desc += split + "\n BoneIndices:{ \n";
             desc += std::to_string(indices[0]) + " " + std::to_string(indices[1]) + " " +
                     std::to_string(indices[2]) + " " + std::to_string(indices[3]);
             desc += split + "}\n";
@@ -56,7 +56,7 @@ public:
         void dump(std::string &desc, int depth) const
         {
             std::string split(depth, '\t');
-            desc += split + "BoneWeights:{";
+            desc += split + "\n BoneWeights:{ \n";
             desc += std::to_string(weights[0]) + " " + std::to_string(weights[1]) + " " +
                     std::to_string(weights[2]) + " " + std::to_string(weights[3]);
             desc += split + "}\n";
@@ -85,7 +85,7 @@ public:
         void dump(std::string &desc, int depth) const
         {
             std::string split(depth, '\t');
-            desc += split + "Bone:{";
+            desc += split + "\n Bone:{ \n";
             desc += std::to_string(values[0]) + " " + std::to_string(values[1]) + " " +
                     std::to_string(values[2]) + " " + std::to_string(values[3]);
             desc += split + "}\n";
@@ -276,7 +276,7 @@ public:
     void dump(std::string &desc, int depth) const
     {
         std::string split(depth, '\t');
-        desc += split + "SkVertices:{";
+        desc += split + "\n SkVertices:{ \n";
         desc += split + "\t fUniqueID: " + std::to_string(fUniqueID) + "\n";
         if (fPositions != nullptr) {
             fPositions->dump(desc, depth + 1);

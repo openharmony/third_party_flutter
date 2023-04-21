@@ -1331,7 +1331,7 @@ bool SkRegion::isValid() const {
 
 void SkRegion::dump(std::string& desc, int depth) const {
     std::string split(depth, '\t');
-    desc += split + "SkRegion:{";
+    desc += split + "\n SkRegion:{ \n";
     if (this->isEmpty()) {
         desc += split + "  rgn: empty\n";
     } else {

@@ -1604,7 +1604,7 @@ void SkMatrix::dump(std::string &desc, int depth) const {
     str.appendf("[%8.4f %8.4f %8.4f][%8.4f %8.4f %8.4f][%8.4f %8.4f %8.4f]",
         fMat[0], fMat[1], fMat[2], fMat[3], fMat[4], fMat[5], fMat[6], fMat[7], fMat[8]);
     std::string split(depth, '\t');
-    desc += split + "SkMatrix:{";
+    desc += split + "\n SkMatrix:{ \n";
     desc += std::string(str.c_str());
     desc += split + "}\n";
 

@@ -32,7 +32,7 @@ struct SK_API SkIRect {
 
     void dump(std::string& desc, int depth) const {
         std::string split(depth, '\t');
-        desc += split + "SkIRect:{";
+        desc += split + "\n SkIRect:{ \n";
         desc += split + "\t fLeft:" + std::to_string(fLeft) + "\n";
         desc += split + "\t fTop:" + std::to_string(fTop) + "\n";
         desc += split + "\t fRight:" + std::to_string(fRight) + "\n";

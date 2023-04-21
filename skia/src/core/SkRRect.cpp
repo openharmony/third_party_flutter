@@ -592,7 +592,7 @@ void SkRRect::dump(bool asHex) const {
 
 void SkRRect::dump(std::string &desc, int depth) const {
     std::string split(depth, '\t');
-    desc += split + "SkRRect:{";
+    desc += split + "\n SkRRect:{ \n";
 
     fRect.dump(desc, depth + 1);
     desc += split + "\t const SkPoint corners[] = {\n";

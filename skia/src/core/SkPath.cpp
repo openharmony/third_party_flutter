@@ -2191,7 +2191,7 @@ void SkPath::dump(SkWStream* wStream, bool forceClose, bool dumpAsHex) const {
 
 void SkPath::dump(std::string &desc, int depth) const {
     std::string split(depth, '\t');
-    desc += split + "SkPath:{";
+    desc += split + "\n SkPath:{ \n";
     Iter    iter(*this, false);
     SkPoint points[4];
     Verb    verb;
@@ -2229,7 +2229,7 @@ void SkPath::dump(std::string &desc, int depth) const {
                 break;
         }
         if (descSk.size()) {
-            desc += split + std::string(descSk.c_str()) + "\n";
+            desc += split + std::string(descSk.c_str());
             descSk.reset();
         }
     }

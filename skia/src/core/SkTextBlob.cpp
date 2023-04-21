@@ -832,7 +832,7 @@ sk_sp<SkTextBlob> SkTextBlob::Deserialize(const void* data, size_t length,
 
 void SkTextBlob::dump(std::string& desc, int depth) const {
     std::string split(depth, '\t');
-    desc += split + "SkTextBlob:{";
+    desc += split + "\n SkTextBlob:{ \n";
     fBounds.dump(desc, depth + 1);
     desc += split + "\t fUniqueID:" + std::to_string(fUniqueID) + "\n";
     desc += split + "}\n";
