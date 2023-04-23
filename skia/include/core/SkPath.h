@@ -8,6 +8,7 @@
 #ifndef SkPath_DEFINED
 #define SkPath_DEFINED
 
+#include <string>
 #include "include/core/SkMatrix.h"
 #include "include/private/SkPathRef.h"
 #include "include/private/SkTo.h"
@@ -1584,7 +1585,7 @@ public:
         @param dumpAsHex   true if SkScalar values are written as hexadecimal
     */
     void dump(SkWStream* stream, bool forceClose, bool dumpAsHex) const;
-
+    void dump(std::string &desc, int depth) const;
     /** Writes text representation of SkPath to standard output. The representation may be
         directly compiled as C++ code. Floating point values are written
         with limited precision; it may not be possible to reconstruct original SkPath

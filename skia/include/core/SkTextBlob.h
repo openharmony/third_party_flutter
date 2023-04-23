@@ -8,6 +8,7 @@
 #ifndef SkTextBlob_DEFINED
 #define SkTextBlob_DEFINED
 
+#include <string>
 #include "include/core/SkFont.h"
 #include "include/core/SkPaint.h"
 #include "include/core/SkRefCnt.h"
@@ -185,6 +186,8 @@ public:
     */
     static sk_sp<SkTextBlob> Deserialize(const void* data, size_t size,
                                          const SkDeserialProcs& procs);
+
+    void dump(std::string &desc, int depth) const;
 
 private:
     friend class SkNVRefCnt<SkTextBlob>;

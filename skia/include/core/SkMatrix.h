@@ -1561,7 +1561,7 @@ public:
         original SkMatrix from output.
     */
     void dump() const;
-
+    void dump(std::string &desc, int depth) const;
     /** Returns the minimum scaling factor of SkMatrix by decomposing the scaling and
         skewing elements.
         Returns -1 if scale factor overflows or SkMatrix contains perspective.

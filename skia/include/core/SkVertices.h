@@ -25,6 +25,15 @@ public:
     struct BoneIndices {
         uint32_t indices[4];
 
+        void dump(std::string &desc, int depth) const
+        {
+            std::string split(depth, '\t');
+            desc += split + "\n BoneIndices:{ \n";
+            desc += std::to_string(indices[0]) + " " + std::to_string(indices[1]) + " " +
+                    std::to_string(indices[2]) + " " + std::to_string(indices[3]);
+            desc += split + "}\n";
+        }
+
         uint32_t& operator[] (int i) {
             SkASSERT(i >= 0);
             SkASSERT(i < 4);
@@ -43,6 +52,15 @@ public:
     // slot should be 0.
     struct BoneWeights {
         float weights[4];
+
+        void dump(std::string &desc, int depth) const
+        {
+            std::string split(depth, '\t');
+            desc += split + "\n BoneWeights:{ \n";
+            desc += std::to_string(weights[0]) + " " + std::to_string(weights[1]) + " " +
+                    std::to_string(weights[2]) + " " + std::to_string(weights[3]);
+            desc += split + "}\n";
+        }
 
         float& operator[] (int i) {
             SkASSERT(i >= 0);
@@ -63,6 +81,15 @@ public:
     // SkRSXform is insufficient because bones can have non uniform scale.
     struct Bone {
         float values[6];
+
+        void dump(std::string &desc, int depth) const
+        {
+            std::string split(depth, '\t');
+            desc += split + "\n Bone:{ \n";
+            desc += std::to_string(values[0]) + " " + std::to_string(values[1]) + " " +
+                    std::to_string(values[2]) + " " + std::to_string(values[3]);
+            desc += split + "}\n";
+        }
 
         float& operator[] (int i) {
             SkASSERT(i >= 0);
@@ -245,6 +272,55 @@ public:
      *  by calling Decode() with the buffer.
      */
     sk_sp<SkData> encode() const;
+
+    void dump(std::string &desc, int depth) const
+    {
+        std::string split(depth, '\t');
+        desc += split + "\n SkVertices:{ \n";
+        desc += split + "\t fUniqueID: " + std::to_string(fUniqueID) + "\n";
+        if (fPositions != nullptr) {
+            fPositions->dump(desc, depth + 1);
+        } else {
+            desc += split + "\t fPositions: nullptr\n";
+        }
+
+        if (fTexs != nullptr) {
+            fTexs->dump(desc, depth + 1);
+        } else {
+            desc += split + "\t fTexs: nullptr\n";
+        }
+
+        if (fColors != nullptr) {
+            desc += split + "\t fColors: " + std::to_string(*fColors) + "\n";
+        } else {
+            desc += split + "\t fColors: nullptr\n";
+        }
+
+        if (fBoneIndices != nullptr) {
+            fBoneIndices->dump(desc, depth + 1);
+        } else {
+            desc += split + "\t fBoneIndices: nullptr\n";
+        }
+
+        if (fBoneWeights != nullptr) {
+            fBoneWeights->dump(desc, depth + 1);
+        } else {
+            desc += split + "\t fBoneWeights: nullptr\n";
+        }
+
+        if (fIndices != nullptr) {
+            desc += split + "\t fIndices: " + std::to_string(*fIndices) + "\n";
+        } else {
+            desc += split + "\t fIndices: nullptr\n";
+        }
+
+        fBounds.dump(desc, depth + 1);
+        desc += split + "\t fVertexCnt: " + std::to_string(fVertexCnt) + "\n";
+        desc += split + "\t fIndexCnt: " + std::to_string(fIndexCnt) + "\n";
+        desc += split + "\t fIsVolatile: " + std::to_string(fIsVolatile) + "\n";
+        desc += split + "\t fMode: " + std::to_string(static_cast<int>(fMode)) + "\n";
+        desc += split + "}\n";
+    }
 
 private:
     SkVertices() {}
