@@ -124,6 +124,14 @@ bool FontFamily::analyzeStyle(const std::shared_ptr<MinikinFont>& typeface,
                                  italic);
 }
 
+int FontFamily::getHwFontFamilyType() {
+  return mHwFontFamilyType;
+}
+
+void FontFamily::setHwFontFamilyType(int HwFontFamilyType) {
+  mHwFontFamilyType = HwFontFamilyType;
+}
+
 // Compute a matching metric between two styles - 0 is an exact match
 static int computeMatch(FontStyle style1, FontStyle style2) {
   if (style1 == style2)

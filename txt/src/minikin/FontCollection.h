@@ -43,6 +43,9 @@ class FontCollection {
     virtual const std::shared_ptr<FontFamily>& matchFallbackFont(
         uint32_t ch,
         std::string locale) = 0;
+    virtual const std::shared_ptr<FontFamily>& matchFallbackFontFromHwFont(
+        uint32_t ch,
+        std::string locale) = 0;
   };
 
   struct Run {
@@ -78,6 +81,10 @@ class FontCollection {
 
   void set_fallback_font_provider(std::unique_ptr<FallbackFontProvider> ffp) {
     mFallbackFontProvider = std::move(ffp);
+  }
+
+  void SetIsZawgyiMyanmar(bool isZawgyiMyanmar) {
+    mIsZawgyiMyanmar = isZawgyiMyanmar;
   }
 
  private:
@@ -159,6 +166,7 @@ class FontCollection {
   // was constructed.
   mutable std::map<std::string, std::vector<std::shared_ptr<FontFamily>>>
       mCachedFallbackFamilies;
+  bool mIsZawgyiMyanmar = false;
 };
 
 }  // namespace minikin
