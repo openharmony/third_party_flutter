@@ -987,7 +987,7 @@ template("ace_skia_core") {
       libs = [ "GL" ]
     } else {
       # Ohos and Android plarform
-      if (target_cpu != "arm") {
+      if (current_cpu != "arm") {
         defines += [ "SKVM_JIT" ]
       }
 
