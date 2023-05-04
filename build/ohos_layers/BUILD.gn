@@ -16,6 +16,8 @@ import("//foundation/arkui/ace_engine/ace_config.gni")
 
 # build core flow sources
 ohos_source_set("flutter_ohos_layers") {
+  part_name = flutter_part
+  subsystem_name = flutter_subsystem
   public_configs = [ "$ace_flutter_engine_root:flutter_config" ]
 
   sources = [
