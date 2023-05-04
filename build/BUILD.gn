@@ -22,7 +22,7 @@ import("//third_party/flutter/flutter_config.gni")
 config("flutter_config") {
   visibility = [ "./*" ]
   visibility += [
-    "//foundation/arkui/ace_engine/frameworks/core/*",
+    "//foundation/arkui/ace_engine/*",
     "//foundation/graphic/graphic_2d/rosen/*",
     "//foundation/multimedia/image_framework/plugins/common/libs/image/libjpegplugin/*",
     "//third_party/flutter/engine/flutter/*",
