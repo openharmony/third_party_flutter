@@ -16,8 +16,7 @@ import("//foundation/arkui/ace_engine/ace_config.gni")
 import("//foundation/graphic/graphic_2d/graphic_config.gni")
 import("//third_party/flutter/flutter_config.gni")
 
-rosen_flutter_engine_root =
-    "//foundation/graphic/graphic_2d/rosen/build/flutter"
+rosen_flutter_engine_root = "$ace_graphic/rosen/build/flutter"
 
 # ------------------------------------------------
 #      Skia shared library
@@ -208,6 +207,8 @@ config("skia_core_config") {
 }
 
 ohos_source_set("skia_core_ohos") {
+  part_name = flutter_part
+  subsystem_name = flutter_subsystem
   defines = skia_common_defines
   configs = [
     ":skia_core_config",
@@ -662,7 +663,7 @@ ohos_source_set("skia_core_ohos") {
     ]
   } else {
     if (is_ohos_standard_system) {
-      public_deps = [ "//foundation/graphic/graphic_2d:libgl" ]
+      public_deps = [ "$ace_graphic:libgl" ]
     } else {
       libs = [
         "EGL",
@@ -692,6 +693,8 @@ config("jpeg_config") {
 }
 
 ohos_source_set("jpeg") {
+  part_name = flutter_part
+  subsystem_name = flutter_subsystem
   configs = [ ":jpeg_config" ]
 
   sources = [
@@ -719,6 +722,8 @@ config("gpu_config") {
 }
 
 ohos_source_set("gpu_ohos") {
+  part_name = flutter_part
+  subsystem_name = flutter_subsystem
   defines = skia_common_defines
   defines += [ "SK_DISABLE_REDUCE_OPLIST_SPLITTING" ]
   configs = [
@@ -1003,7 +1008,7 @@ ohos_source_set("gpu_ohos") {
   if (ace_enable_gpu) {
     # Ohos platform
     if (is_ohos_standard_system) {
-      public_deps = [ "//foundation/graphic/graphic_2d:libgl" ]
+      public_deps = [ "$ace_graphic:libgl" ]
       if (flutter_feature_skia_small_page_enable) {
         defines += [ "SK_ENABLE_SMALL_PAGE" ]
       }
@@ -1031,6 +1036,8 @@ config("webp_config") {
 }
 
 ohos_source_set("webp") {
+  part_name = flutter_part
+  subsystem_name = flutter_subsystem
   configs = [ ":webp_config" ]
   sources = [
     "$flutter_root/skia/src/codec/SkWebpCodec.cpp",
@@ -1055,6 +1062,8 @@ config("png_config") {
 }
 
 ohos_source_set("png_ohos") {
+  part_name = flutter_part
+  subsystem_name = flutter_subsystem
   defines = skia_common_defines
 
   configs = [ ":png_config" ]
@@ -1082,6 +1091,8 @@ config("svg_compile_flags") {
 }
 
 ohos_source_set("svg_model_ohos") {
+  part_name = flutter_part
+  subsystem_name = flutter_subsystem
   defines = skia_common_defines
   configs = [
     ":svg_model_config",

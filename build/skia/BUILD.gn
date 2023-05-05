@@ -221,7 +221,7 @@ if (!is_cross_platform_build) {
     if (defined(disable_gpu) && disable_gpu) {
       deps -= [ ":ace_gpu_$platform" ]
     } else {
-      public_deps = [ "//foundation/graphic/graphic_2d:libgl" ]
+      public_deps = [ "$ace_graphic:libgl" ]
     }
 
     public_configs += [
@@ -242,7 +242,7 @@ config("skia_deps_include_config") {
   include_dirs += [
     "$libs_root/shared_library/${target_os}_${target_cpu}/include/frameworks/native/libs/nativewindow/include",
     "$libs_root/shared_library/${target_os}_${target_cpu}/include/frameworks/native/libs/arect/include",
-    "//foundation/graphic/graphic_2d/frameworks/vulkan_wrapper/include",
+    "$ace_graphic/frameworks/vulkan_wrapper/include",
     "//third_party/vulkan-headers/include",
   ]
 }
@@ -385,15 +385,14 @@ config("harfbuzz_config") {
 
 config("skia_config") {
   visibility = [ "./*" ]
-  visibility +=
-      [ "//foundation/arkui/ace_engine/frameworks/core/components_ng/test/*" ]
+  visibility += [ "$ace_root/frameworks/core/components_ng/test/*" ]
 
   include_dirs = [
     "$third_party_skia_override_path",
     "$flutter_root/skia",
     "$third_party_skia_override_path/third_party/skia",
     "$third_party_skia_override_path/third_party/skia/include/config/android",
-    "//foundation/graphic/graphic_2d/frameworks/vulkan_wrapper/include",
+    "$ace_graphic/frameworks/vulkan_wrapper/include",
     "//third_party/vulkan-headers/include",
   ]
 
@@ -1016,7 +1015,7 @@ template("ace_skia_core") {
         ]
       } else {
         if (is_ohos_standard_system) {
-          public_deps = [ "//foundation/graphic/graphic_2d:libgl" ]
+          public_deps = [ "$ace_graphic:libgl" ]
         } else {
           libs = [
             "EGL",
@@ -1648,7 +1647,7 @@ template("ace_gpu") {
       if (!defined(config.disable_gpu) || !config.disable_gpu) {
         # Ohos or Android platform
         if (is_ohos_standard_system) {
-          public_deps = [ "//foundation/graphic/graphic_2d:libgl" ]
+          public_deps = [ "$ace_graphic:libgl" ]
           if (flutter_feature_skia_small_page_enable) {
             defines += [ "SK_ENABLE_SMALL_PAGE" ]
           }
@@ -1949,9 +1948,9 @@ ohos_source_set("ace_fontmgr_standard") {
     deps += [ "$jsoncpp_root:jsoncpp_static" ]
 
     if (graphic_standard_feature_wuji_enable) {
-      deps += [ "//foundation/graphic/graphic_2d_ext:ohos_fonts_wuji" ]
+      deps += [ "$ace_graphic_ext:ohos_fonts_wuji" ]
     } else if (ace_engine_standard_fonts_enable) {
-      deps += [ "//base/global/system_resources:ohos_fonts" ]
+      deps += [ "$system_resources_root:ohos_fonts" ]
     }
   }
 

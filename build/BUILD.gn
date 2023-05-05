@@ -22,10 +22,10 @@ import("//third_party/flutter/flutter_config.gni")
 config("flutter_config") {
   visibility = [ "./*" ]
   visibility += [
-    "//foundation/arkui/ace_engine/frameworks/core/*",
-    "//foundation/graphic/graphic_2d/rosen/*",
-    "//foundation/multimedia/image_framework/plugins/common/libs/image/libjpegplugin/*",
-    "//third_party/flutter/engine/flutter/*",
+    "$ace_graphic/rosen/*",
+    "$ace_root/frameworks/core/*",
+    "$flutter_root/engine/flutter/*",
+    "$multimedia_root/image_framework/plugins/common/libs/image/libjpegplugin/*",
   ]
 
   include_dirs = []
@@ -472,10 +472,7 @@ template("flutter_engine_shell") {
     ]
 
     if (is_standard_system && platform == "ohos") {
-      include_dirs += [
-        "//foundation/window/window_manager/interfaces/innerkits",
-        "//commonlibrary/c_utils/base/include",
-      ]
+      include_dirs += [ "$window_manager_path/interfaces/innerkits" ]
       sources += [
         "$flutter_root/engine/flutter/shell/platform/ohos/ace_vsync_waiter_embedder.cc",
         "$flutter_root/engine/flutter/shell/platform/ohos/ohos_shell_holder.cc",
@@ -497,15 +494,15 @@ template("flutter_engine_shell") {
           sources += [ "$flutter_root/engine/flutter/shell/platform/ohos/ohos_surface_gl.cc" ]
         }
 
-        public_deps = [ "//foundation/graphic/graphic_2d:libgl" ]
+        public_deps = [ "$ace_graphic:libgl" ]
       }
       deps += [
-        "//foundation/graphic/graphic_2d/rosen/modules/composer:libcomposer",
-        "//foundation/graphic/graphic_2d/rosen/modules/render_service_client:librender_service_client",
-        "//foundation/window/window_manager/wm:libwm",
+        "$ace_graphic/rosen/modules/render_service_client:librender_service_client",
+        "$window_manager_path/wm:libwm",
       ]
       external_deps = [
         "eventhandler:libeventhandler",
+        "graphic_standard:libcomposer",
         "ipc:ipc_core",
       ]
     } else if (platform == "ohos" || platform == "android") {
@@ -528,14 +525,14 @@ template("flutter_engine_shell") {
 
       if (platform == "android") {
         include_dirs += [
-          "//foundation/appframework/ability/ability_runtime/cross_platform/frameworks/native/base/event_handler/include",
-          "//foundation/appframework/ability/ability_runtime/cross_platform/interfaces/inner_api/error",
+          "$ability_runtime_root/cross_platform/frameworks/native/base/event_handler/include",
+          "$ability_runtime_root/cross_platform/interfaces/inner_api/error",
         ]
         sources += [
           "$flutter_root/engine/flutter/shell/platform/ohos/platform_task_runner.cc",
           "$flutter_root/engine/flutter/shell/platform/ohos/platform_task_runner_adapter.cc",
         ]
-        deps += [ "//foundation/appframework/ability/ability_runtime/cross_platform/frameworks/native/base/event_handler:cross_platform_event_handler" ]
+        deps += [ "$ability_runtime_root/cross_platform/frameworks/native/base/event_handler:cross_platform_event_handler" ]
       }
 
       libs = [
@@ -558,15 +555,15 @@ template("flutter_engine_shell") {
         "$ios_prefix",
         "$ios_prefix/framework/Headers",
         "$flutter_root/engine/flutter/shell/platform/darwin/common/framework/Headers",
-        "//foundation/appframework/ability/ability_runtime/cross_platform/frameworks/native/base/event_handler/include",
-        "//foundation/appframework/ability/ability_runtime/cross_platform/interfaces/inner_api/error",
+        "$ability_runtime_root/cross_platform/frameworks/native/base/event_handler/include",
+        "$ability_runtime_root/cross_platform/interfaces/inner_api/error",
       ]
       sources += [
         "$flutter_root/engine/flutter/shell/platform/ohos/platform_task_runner.cc",
         "$flutter_root/engine/flutter/shell/platform/ohos/platform_task_runner_adapter.cc",
       ]
 
-      deps += [ "//foundation/appframework/ability/ability_runtime/cross_platform/frameworks/native/base/event_handler:cross_platform_event_handler" ]
+      deps += [ "$ability_runtime_root/cross_platform/frameworks/native/base/event_handler:cross_platform_event_handler" ]
 
       _flutter_framework_headers = [
         "$ios_prefix/framework/Headers/Flutter.h",
