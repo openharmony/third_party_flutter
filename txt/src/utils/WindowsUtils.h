@@ -28,7 +28,12 @@
 #define WINDOWS_ONLY(TEST_NAME) TEST_NAME
 
 #define NOMINMAX
+// ACE PC preivew.
+#ifdef WINDOWS_PLATFORM
+#include <basetsd.h>
+#else
 #include <BaseTsd.h>
+#endif
 #include <intrin.h>
 #include <windows.h>
 
