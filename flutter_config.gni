@@ -17,6 +17,10 @@ flutter_part = "flutter"
 # Config subsystem name
 flutter_subsystem = "thirdparty"
 
+ability_runtime_root = "//foundation/appframework/ability/ability_runtime"
+multimedia_root = "//foundation/multimedia"
+system_resources_root = "//base/global/system_resources"
+
 declare_args() {
   flutter_feature_skia_small_page_enable = true
 }

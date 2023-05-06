@@ -18,9 +18,11 @@
         "subsystem": "thirdparty",
         "syscap": [],
         "features": ["flutter_feature_skia_small_page_enable"],
-        "adapted_system_type": [],
-        "rom": "",
-        "ram": "",
+        "adapted_system_type": [
+            "standard"
+        ],
+        "rom": "10MB",
+        "ram": "0",
         "deps": {
             "components": [],
             "third_party": []
