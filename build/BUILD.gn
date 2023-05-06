@@ -23,7 +23,7 @@ config("flutter_config") {
   visibility = [ "./*" ]
   visibility += [
     "$ace_graphic/rosen/*",
-    "$ace_root/frameworks/core/*",
+    "$ace_root/*",
     "$flutter_root/engine/flutter/*",
     "$multimedia_root/image_framework/plugins/common/libs/image/libjpegplugin/*",
   ]
