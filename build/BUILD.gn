@@ -22,10 +22,10 @@ import("//third_party/flutter/flutter_config.gni")
 config("flutter_config") {
   visibility = [ "./*" ]
   visibility += [
-    "//foundation/arkui/ace_engine/*",
-    "//foundation/graphic/graphic_2d/rosen/*",
-    "//foundation/multimedia/image_framework/plugins/common/libs/image/libjpegplugin/*",
-    "//third_party/flutter/engine/flutter/*",
+    "$ace_graphic/rosen/*",
+    "$ace_root/*",
+    "$flutter_root/engine/flutter/*",
+    "$multimedia_root/image_framework/plugins/common/libs/image/libjpegplugin/*",
   ]
 
   include_dirs = []
