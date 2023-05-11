@@ -46,7 +46,7 @@ if (graphic_standard_feature_enable_vulkan) {
       "//third_party/flutter/engine",
       "//third_party/flutter/engine/flutter/vulkan",
       "//foundation/graphic/graphic_2d/frameworks/surface/include",
-      "//foundation/graphic/graphic_2d/frameworks/vulkan_wrapper/include",
+      "//third_party/vulkan-headers/include",
       "//foundation/graphic/graphic_2d/rosen/modules/2d_graphics/include",
       "//foundation/graphic/graphic_2d/interfaces/inner_api/surface",
       "//commonlibrary/c_utils/base/include",
@@ -56,7 +56,7 @@ if (graphic_standard_feature_enable_vulkan) {
     cflags = [ "-Wno-error=deprecated-declarations" ]
 
     defines = [
-      "VK_USE_PLATFORM_OHOS_KHR",
+      "VK_USE_PLATFORM_OHOS_OPENHARMONY",
       "NDEBUG",
     ]
   }
@@ -96,8 +96,8 @@ if (graphic_standard_feature_enable_vulkan) {
 
     public_deps = [
       "//foundation/graphic/graphic_2d:libsurface",
-      "//foundation/graphic/graphic_2d/frameworks/vulkan_wrapper:vulkan",
       "//third_party/flutter/build/skia:ace_skia_ohos",
+      "//third_party/vulkan-loader/openharmony:vulkan_loader",
     ]
 
     part_name = "flutter"

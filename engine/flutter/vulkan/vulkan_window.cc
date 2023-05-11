@@ -51,7 +51,7 @@ void VulkanWindow::InitializeVulkan(size_t thread_num)
 
   // Create the application instance.
   std::vector<std::string> extensions = {
-      VK_KHR_SURFACE_SPEC_VERSION,               // parent extension
+      VK_KHR_SURFACE_EXTENSION_NAME,               // parent extension
       VK_OPENHARMONY_OHOS_SURFACE_EXTENSION_NAME // child extension
   };
 

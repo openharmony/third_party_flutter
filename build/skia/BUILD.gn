@@ -242,7 +242,6 @@ config("skia_deps_include_config") {
   include_dirs += [
     "$libs_root/shared_library/${target_os}_${target_cpu}/include/frameworks/native/libs/nativewindow/include",
     "$libs_root/shared_library/${target_os}_${target_cpu}/include/frameworks/native/libs/arect/include",
-    "$ace_graphic/frameworks/vulkan_wrapper/include",
     "//third_party/vulkan-headers/include",
   ]
 }
@@ -392,7 +391,6 @@ config("skia_config") {
     "$flutter_root/skia",
     "$third_party_skia_override_path/third_party/skia",
     "$third_party_skia_override_path/third_party/skia/include/config/android",
-    "$ace_graphic/frameworks/vulkan_wrapper/include",
     "//third_party/vulkan-headers/include",
   ]
 
