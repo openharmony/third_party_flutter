@@ -21,6 +21,9 @@ static const char* OHOS_DEFAULT_CONFIG = "fontconfig.json";
 #else
 static const char* OHOS_DEFAULT_CONFIG = "/system/etc/fontconfig.json";
 #endif
+
+static const char* PRODUCT_DEFAULT_CONFIG = "/system/etc/productfontconfig.json";
+
 /*! Constructor
  * \param fontScanner the scanner to get the font information from a font file
  * \param fname the full name of system font configuration document.
@@ -29,7 +32,7 @@ static const char* OHOS_DEFAULT_CONFIG = "/system/etc/fontconfig.json";
 FontConfig_OHOS::FontConfig_OHOS(const SkTypeface_FreeType::Scanner& fontScanner,
     const char* fname)
 {
-    int err = parseConfig(fname);
+    int err = checkProductFile(fname);
     if (err != NO_ERROR) {
         return;
     }
@@ -1267,6 +1270,70 @@ int FontConfig_OHOS::logErrInfo(int err, const char* key, Json::ValueType expect
         } else {
             LOGE("%s : %s\n", errToString(err), key);
         }
+    }
+    return err;
+}
+
+bool FontConfig_OHOS::judgeFileExist()
+{
+    bool haveFile = false;
+    for (unsigned int i = 0; i < fontDirSet.size(); i++) {
+        DIR* dir = opendir(fontDirSet[i].c_str());
+        if (dir == nullptr) {
+            logErrInfo(ERROR_DIR_NOT_FOUND, fontDirSet[i].c_str());
+            continue;
+        }
+        struct dirent* node = nullptr;
+#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_WIN)
+        struct stat filestat;
+#endif
+        while ((node = readdir(dir))) {
+#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_WIN)
+            stat(node->d_name, &filestat);
+            if (S_ISDIR(filestat.st_mode)) {
+                continue;
+            }
+#else
+            if (node->d_type != DT_REG) {
+                continue;
+            }
+#endif
+            const char* fileName = node->d_name;
+            int len = strlen(fileName);
+            int suffixLen = strlen(".ttf");
+            if (len < suffixLen || (strncmp(fileName + len - suffixLen, ".ttf", suffixLen) &&
+                strncmp(fileName + len - suffixLen, ".otf", suffixLen) &&
+                strncmp(fileName + len - suffixLen, ".ttc", suffixLen) &&
+                strncmp(fileName + len - suffixLen, ".otc", suffixLen))) {
+                continue;
+            }
+            haveFile = true;
+            break;
+        }
+        closedir(dir);
+        if (haveFile) {
+            break;
+        }
+    }
+    return haveFile;
+}
+
+int FontConfig_OHOS::checkProductFile(const char* fname)
+{
+    int err = parseConfig(PRODUCT_DEFAULT_CONFIG);
+    if ((err != NO_ERROR) || (!judgeFileExist())) {
+        fontDirSet.clear();
+        fallbackForMap.reset();
+        genericFamilySet.clear();
+        fallbackSet.clear();
+        genericNames.reset();
+        fallbackNames.reset();
+        errSet.clear();
+        aliasMap.reset();
+        adjustMap.reset();
+        variationMap.reset();
+        ttcIndexMap.reset();
+        err = parseConfig(fname);
     }
     return err;
 }
