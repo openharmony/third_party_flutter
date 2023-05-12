@@ -1228,6 +1228,8 @@ template("ace_pdf") {
       "SK_USING_THIRD_PARTY_ICU",
     ]
 
+    include_dirs = [ "//base/hiviewdfx/hitrace/interfaces/native/innerkits/include/hitrace_meter" ]
+
     configs = [
       ":skia_deps_include_config",
       ":pdf_compile_flags",
@@ -1270,6 +1272,8 @@ template("ace_pdf") {
       "$ace_flutter_engine_root/sfntly:ace_libsfntly_$platform",
       "//third_party/zlib:libz",
     ]
+
+    external_deps = [ "hitrace_native:hitrace_meter" ]
   }
 }
 

@@ -664,6 +664,7 @@ ohos_source_set("skia_core_ohos") {
   } else {
     if (is_ohos_standard_system) {
       public_deps = [ "$ace_graphic:libgl" ]
+      include_dirs = [ "//base/hiviewdfx/hitrace/interfaces/native/innerkits/include/hitrace_meter" ]
     } else {
       libs = [
         "EGL",
@@ -673,9 +674,13 @@ ohos_source_set("skia_core_ohos") {
     }
   }
 
+  defines += [ "SK_BUILD_FOR_OHOS" ]
   sources -= [ "$flutter_root/skia/src/ports/SkDebug_android.cpp" ]
   sources += [ "$flutter_root/skia/src/ports/SkDebug_ohos.cpp" ]
-  external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
+  external_deps = [
+    "hitrace_native:hitrace_meter",
+    "hiviewdfx_hilog_native:libhilog",
+  ]
 }
 
 # ------------------------------------------------
@@ -1009,6 +1014,14 @@ ohos_source_set("gpu_ohos") {
     # Ohos platform
     if (is_ohos_standard_system) {
       public_deps = [ "$ace_graphic:libgl" ]
+      include_dirs = [
+        "//base/hiviewdfx/hilog/interfaces/native/innerkits/include",
+        "//base/hiviewdfx/hitrace/interfaces/native/innerkits/include/hitrace_meter",
+      ]
+      external_deps = [
+        "hitrace_native:hitrace_meter",
+        "hiviewdfx_hilog_native:libhilog",
+      ]
       if (flutter_feature_skia_small_page_enable) {
         defines += [ "SK_ENABLE_SMALL_PAGE" ]
       }
@@ -1018,6 +1031,7 @@ ohos_source_set("gpu_ohos") {
         "GLESv2",
       ]
     }
+    defines += [ "SK_BUILD_FOR_OHOS" ]
   }
 }
 
