@@ -157,16 +157,64 @@ private:
 
 #define ATRACE_ANDROID_FRAMEWORK(fmt, ...) TRACE_EMPTY
 
+#ifdef SK_BUILD_FOR_OHOS
+
+#include "hitrace_meter.h"
+
+class SkOHOSTraceUtil {
+public:
+    SkOHOSTraceUtil(const char* name) {
+        StartTraceDebug(gEnableTracing, HITRACE_TAG_GRAPHIC_AGP, name, 0);
+    }
+
+    ~SkOHOSTraceUtil() {
+        FinishTraceDebug(gEnableTracing, HITRACE_TAG_GRAPHIC_AGP);
+    }
+
+    static void setEnableTracing(bool enableTracing) {
+        gEnableTracing = enableTracing;
+    }
+
+    static bool getEnableTracing() {
+        return gEnableTracing;
+    }
+
+private:
+    static bool gEnableTracing;
+};
+
 // Records a pair of begin and end events called "name" for the current scope, with 0, 1 or 2
 // associated arguments. If the category is not enabled, then this does nothing.
 #define TRACE_EVENT0(category_group, name) \
-  INTERNAL_TRACE_EVENT_ADD_SCOPED(category_group, name)
+    SkOHOSTraceUtil _trace(name); \
+    INTERNAL_TRACE_EVENT_ADD_SCOPED(category_group, name)
 
 #define TRACE_EVENT1(category_group, name, arg1_name, arg1_val) \
-  INTERNAL_TRACE_EVENT_ADD_SCOPED(category_group, name, arg1_name, arg1_val)
+    SkOHOSTraceUtil _trace(name); \
+    INTERNAL_TRACE_EVENT_ADD_SCOPED(category_group, name, arg1_name, arg1_val)
 
 #define TRACE_EVENT2(category_group, name, arg1_name, arg1_val, arg2_name, arg2_val) \
-  INTERNAL_TRACE_EVENT_ADD_SCOPED(category_group, name, arg1_name, arg1_val, arg2_name, arg2_val)
+    SkOHOSTraceUtil _trace(name); \
+    INTERNAL_TRACE_EVENT_ADD_SCOPED(category_group, name, arg1_name, arg1_val, arg2_name, arg2_val)
+
+#define RS_SK_TRACE_NAME(name) SkOHOSTraceUtil __trace(name)
+
+#else  // !SK_BUILD_FOR_OHOS
+
+// Records a pair of begin and end events called "name" for the current scope, with 0, 1 or 2
+// associated arguments. If the category is not enabled, then this does nothing.
+#define TRACE_EVENT0(category_group, name) \
+    INTERNAL_TRACE_EVENT_ADD_SCOPED(category_group, name)
+
+#define TRACE_EVENT1(category_group, name, arg1_name, arg1_val) \
+    INTERNAL_TRACE_EVENT_ADD_SCOPED(category_group, name, arg1_name, arg1_val)
+
+#define TRACE_EVENT2(category_group, name, arg1_name, arg1_val, arg2_name, arg2_val) \
+    INTERNAL_TRACE_EVENT_ADD_SCOPED(category_group, name, arg1_name, arg1_val, arg2_name, arg2_val)
+
+#define RS_SK_TRACE_NAME(name) TRACE_EMPTY
+
+#endif // #ifdef SK_BUILD_FOR_OHOS
 
 // Records a single event called "name" immediately, with 0, 1 or 2 associated arguments. If the
 // category is not enabled, then this does nothing.

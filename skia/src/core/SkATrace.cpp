@@ -79,5 +79,9 @@ bool SkAndroidFrameworkTraceUtil::gEnableAndroidTracing = false;
 
 #endif //SK_BUILD_FOR_ANDROID_FRAMEWORK
 
+#ifdef SK_BUILD_FOR_OHOS
 
+bool SkOHOSTraceUtil::gEnableTracing = false;
+
+#endif // #ifdef SK_BUILD_FOR_OHOS
 
