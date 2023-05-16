@@ -2022,4 +2022,8 @@ std::vector<LineMetrics>& ParagraphTxt::GetLineMetrics() {
   return line_metrics_;
 }
 
+void ParagraphTxt::SetIndents(const std::vector<float>& indents) {
+  breaker_.setIndents(indents);
+}
+
 }  // namespace txt
