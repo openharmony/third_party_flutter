@@ -90,7 +90,6 @@ template("thirdparty_lib_txt") {
     if (defined(use_new_skia) && use_new_skia) {
       deps = [
         "$ace_flutter_engine_root:flutter_engine_fml_$platform",
-        "$ace_flutter_engine_root/harfbuzz:ace_libharfbuzz_$platform",
         "$ace_flutter_engine_root/icu:ace_libicu_$platform",
         "//third_party/skia:skia_$platform",
       ]
