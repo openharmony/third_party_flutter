@@ -386,14 +386,16 @@ config("skia_config") {
   visibility = [ "./*" ]
   visibility += [ "$ace_root/frameworks/core/components_ng/test/*" ]
 
-  include_dirs = [
-    "$third_party_skia_override_path",
-    "$flutter_root/skia",
-    "$third_party_skia_override_path/third_party/skia",
-    "$third_party_skia_override_path/third_party/skia/include/config/android",
-    "//third_party/vulkan-headers/include",
-  ]
+  include_dirs = [ "//third_party/vulkan-headers/include" ]
 
+  if (!ace_use_new_skia) {
+    include_dirs += [
+      "$flutter_root/skia",
+      "$third_party_skia_override_path",
+      "$third_party_skia_override_path/third_party/skia",
+      "$third_party_skia_override_path/third_party/skia/include/config/android",
+    ]
+  }
   defines = ace_skia_common_defines
   defines -= [
     "SK_DISABLE_READBUFFER",
