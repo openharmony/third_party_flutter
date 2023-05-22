@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <cstring>
 #include <vector>
 
 // HACK: for reading pattern file
