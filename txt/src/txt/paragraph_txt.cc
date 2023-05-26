@@ -293,6 +293,7 @@ bool ParagraphTxt::ComputeLineBreaks() {
     memcpy(breaker_.buffer(), text_.data() + block_start,
            block_size * sizeof(text_[0]));
     breaker_.setText();
+    breaker_.setIndents(indents_);
 
     // Add the runs that include this line to the LineBreaker.
     double block_total_width = 0;
@@ -1089,7 +1090,8 @@ void ParagraphTxt::Layout(double width) {
     }  // for each in line_runs
 
     // Adjust the glyph positions based on the alignment of the line.
-    double line_x_offset = GetLineXOffset(run_x_offset, justify_line);
+    double line_x_offset =
+        GetLineXOffset(run_x_offset, line_number, justify_line);
     if (line_x_offset) {
       for (CodeUnitRun& code_unit_run : line_code_unit_runs) {
         code_unit_run.Shift(line_x_offset);
@@ -1302,6 +1304,7 @@ void ParagraphTxt::UpdateLineMetrics(const SkFontMetrics& metrics,
 };
 
 double ParagraphTxt::GetLineXOffset(double line_total_advance,
+                                    size_t line_number,
                                     bool justify_line) {
   if (isinf(width_))
     return 0;
@@ -1316,7 +1319,11 @@ double ParagraphTxt::GetLineXOffset(double line_total_advance,
   } else if (align == TextAlign::center) {
     return (width_ - line_total_advance) / 2;
   } else {
-    return 0;
+    if (line_number < indents_.size()) {
+      return indents_[line_number];
+    } else {
+      return indents_.size() > 0 ? indents_.back() : 0;
+    }
   }
 }
 
@@ -1339,6 +1346,10 @@ double ParagraphTxt::GetIdeographicBaseline() {
 double ParagraphTxt::GetMaxIntrinsicWidth() {
   FML_DCHECK(!needs_layout_) << "only valid after layout";
   return max_intrinsic_width_;
+}
+
+void ParagraphTxt::SetIndents(const std::vector<float>& indents) {
+  indents_ = indents;
 }
 
 double ParagraphTxt::GetMinIntrinsicWidth() {
@@ -1771,7 +1782,7 @@ std::vector<Paragraph::TextBox> ParagraphTxt::GetRectsForRange(
         if (it != newline_x_positions.end()) {
           x = it->second;
         } else {
-          x = GetLineXOffset(0, false);
+          x = GetLineXOffset(0, 0, false);
         }
         SkScalar top =
             (line_number > 0) ? line_metrics_[line_number - 1].height : 0;
@@ -2020,10 +2031,6 @@ void ParagraphTxt::SetDirty(bool dirty) {
 std::vector<LineMetrics>& ParagraphTxt::GetLineMetrics() {
   FML_DCHECK(!needs_layout_) << "only valid after layout";
   return line_metrics_;
-}
-
-void ParagraphTxt::SetIndents(const std::vector<float>& indents) {
-  breaker_.setIndents(indents);
 }
 
 }  // namespace txt

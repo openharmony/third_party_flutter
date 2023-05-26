@@ -169,6 +169,7 @@ class ParagraphTxt : public Paragraph {
 
   // Starting data to layout.
   std::vector<uint16_t> text_;
+  std::vector<float> indents_;
   // A vector of PlaceholderRuns, which detail the sizes, positioning and break
   // behavior of the empty spaces to leave. Each placeholder span corresponds to
   // a 0xFFFC (object replacement character) in text_, which indicates the
@@ -373,7 +374,9 @@ class ParagraphTxt : public Paragraph {
 
   // Calculate the starting X offset of a line based on the line's width and
   // alignment.
-  double GetLineXOffset(double line_total_advance, bool justify_line);
+  double GetLineXOffset(double line_total_advance,
+                        size_t line_number,
+                        bool justify_line);
 
   // Creates and draws the decorations onto the canvas.
   void PaintDecorations(SkCanvas* canvas,
