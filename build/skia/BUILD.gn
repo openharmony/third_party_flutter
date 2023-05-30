@@ -152,6 +152,10 @@ template("make_skia_deps") {
         "$ace_flutter_engine_root/sfntly:ace_libsfntly_$platform",
       ]
 
+      if (defined(use_new_skia) && use_new_skia) {
+        deps -= [ ":make_third_party_skia_include_dir" ]
+      }
+
       if (defined(config.disable_gpu) && config.disable_gpu) {
         deps -= [ ":ace_gpu_$platform" ]
       }
