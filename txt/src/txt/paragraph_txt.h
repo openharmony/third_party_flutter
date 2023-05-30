@@ -126,6 +126,8 @@ class ParagraphTxt : public Paragraph {
   // Layout from being calculated by setting to false.
   void SetDirty(bool dirty = true);
 
+  void SetIndents(const std::vector<float>& indents);
+
  private:
   friend class ParagraphBuilderTxt;
   FRIEND_TEST(ParagraphTest, SimpleParagraph);
