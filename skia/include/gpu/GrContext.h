@@ -216,6 +216,9 @@ public:
      */
     void purgeUnlockedResources(bool scratchResourcesOnly);
     void purgeUnlockedResourcesByTag(bool scratchResourcesOnly, const GrGpuResourceTag tag);
+    void purgeUnlockAndSafeCacheGpuResources() {
+        return;
+    }
 
     /**
      * Gets the maximum supported texture size.
