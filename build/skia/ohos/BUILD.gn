@@ -95,7 +95,6 @@ skia_common_ccflags = [
   "-Wno-unused-variable",
   "-Wno-extra-semi-stmt",
   "-Wno-missing-field-initializers",
-  "-Os",
 ]
 
 skia_common_cflags = [
@@ -158,7 +157,6 @@ skia_common_cflags = [
   "-Wno-array-parameter",
   "-Wno-reserved-identifier",
   "-Wno-bitwise-instead-of-logical",
-  "-Os",
 ]
 
 skia_common_defines = [

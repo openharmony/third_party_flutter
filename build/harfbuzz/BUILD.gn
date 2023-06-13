@@ -20,13 +20,11 @@ config("libharfbuzz_compile_flags") {
     "-std=c++14",
     "-fno-exceptions",
     "-fno-rtti",
-    "-Os",
   ]
 
   cflags = [
     "-w",
     "-fstrict-aliasing",
-    "-Os",
     "-fdata-sections",
     "-ffunction-sections",
     "-gline-tables-only",

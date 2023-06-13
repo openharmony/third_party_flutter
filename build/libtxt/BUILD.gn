@@ -19,7 +19,6 @@ config("thirdparty_lib_txt_config") {
   cflags_cc = [
     "-Wno-implicit-fallthrough",
     "-fvisibility-inlines-hidden",
-    "-Os",
   ]
 }
 

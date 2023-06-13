@@ -24,7 +24,6 @@ config("ace_libpng_config") {
   cflags = [
     "-w",
     "-fstrict-aliasing",
-    "-Os",
     "-fdata-sections",
     "-ffunction-sections",
     "-gline-tables-only",
