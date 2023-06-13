@@ -26,7 +26,6 @@ config("ace_libfreetype2_config") {
   cflags = [
     "-w",
     "-fstrict-aliasing",
-    "-Os",
     "-fdata-sections",
     "-ffunction-sections",
     "-gline-tables-only",

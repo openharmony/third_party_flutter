@@ -274,7 +274,6 @@ ace_skia_common_ccflags = [
   "-Wno-suggest-override",
   "-Wno-psabi",
   "-Wno-four-char-constants",
-  "-Os",
   "-DSKIA_DLL",
 ]
 
@@ -341,7 +340,6 @@ ace_skia_common_cflags = [
   "-Wno-unused-but-set-variable",
   "-Wno-array-parameter",
   "-Wno-bitwise-instead-of-logical",
-  "-Os",
   "-DSKIA_DLL",
 ]
 

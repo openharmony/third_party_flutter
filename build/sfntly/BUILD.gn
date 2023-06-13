@@ -21,13 +21,11 @@ config("libsfntly_compile_flags") {
     "-fno-exceptions",
     "-fno-rtti",
     "-fvisibility-inlines-hidden",
-    "-Os",
   ]
 
   cflags = [
     "-w",
     "-fstrict-aliasing",
-    "-Os",
     "-fdata-sections",
     "-ffunction-sections",
     "-gline-tables-only",

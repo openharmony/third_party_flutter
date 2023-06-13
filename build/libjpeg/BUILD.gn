@@ -24,7 +24,6 @@ config("ace_libjpeg_config") {
   cflags = [
     "-w",
     "-fstrict-aliasing",
-    "-Os",
     "-fdata-sections",
     "-ffunction-sections",
     "-gline-tables-only",

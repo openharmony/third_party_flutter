@@ -24,7 +24,6 @@ config("ace_libwebp_config") {
   cflags = [
     "-w",
     "-fstrict-aliasing",
-    "-Os",
     "-fdata-sections",
     "-ffunction-sections",
     "-gline-tables-only",
@@ -167,7 +166,6 @@ config("ace_libwebp_sse41_config") {
   cflags = [
     "-w",
     "-fstrict-aliasing",
-    "-Os",
     "-fdata-sections",
     "-ffunction-sections",
     "-gline-tables-only",
