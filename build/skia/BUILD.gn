@@ -440,7 +440,7 @@ template("ace_skia_opts") {
 
     sources = []
 
-    if (target_cpu == "x86_64" || platform == "windows" || platform == "mac" ||
+    if (current_cpu == "x86_64" || platform == "windows" || platform == "mac" ||
         platform == "linux" || platform == "ios") {
       cflags -= [ "-march=armv8-a+crc" ]
       sources += [
