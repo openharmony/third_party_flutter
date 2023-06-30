@@ -24,7 +24,7 @@ namespace txt {
 #if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC)
 std::vector<std::string> GetDefaultFontFamilies() {
   if (SkFontMgr::runtimeOS == "OHOS") {
-    return "HarmonyOS-Sans";
+    return {"HarmonyOS-Sans"};
   }
   if (fml::IsPlatformVersionAtLeast(9)) {
     return {[FONT_CLASS systemFontOfSize:14].familyName.UTF8String};
