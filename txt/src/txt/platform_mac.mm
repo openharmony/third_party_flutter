@@ -15,8 +15,24 @@
 #define FONT_CLASS NSFont
 #endif  // TARGET_OS_EMBEDDED
 
+#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC)
+#include "include/core/SkFontMgr.h"
+#endif
+
 namespace txt {
 
+#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_MAC)
+std::vector<std::string> GetDefaultFontFamilies() {
+  if (SkFontMgr::runtimeOS == "OHOS") {
+    return "HarmonyOS-Sans";
+  }
+  if (fml::IsPlatformVersionAtLeast(9)) {
+    return {[FONT_CLASS systemFontOfSize:14].familyName.UTF8String};
+  } else {
+    return {"Helvetica"};
+  }
+}
+#else
 std::vector<std::string> GetDefaultFontFamilies() {
   if (fml::IsPlatformVersionAtLeast(9)) {
     return {[FONT_CLASS systemFontOfSize:14].familyName.UTF8String};
@@ -24,6 +40,7 @@ std::vector<std::string> GetDefaultFontFamilies() {
     return {"Helvetica"};
   }
 }
+#endif
 
 sk_sp<SkFontMgr> GetDefaultFontManager() {
   return SkFontMgr::RefDefault();
