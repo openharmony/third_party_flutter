@@ -4,14 +4,27 @@
 
 #include "txt/platform.h"
 
+#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_WIN)
+#include "include/core/SkFontMgr.h"
+#endif
+
 namespace txt {
 
+#if defined(SK_BUILD_FONT_MGR_FOR_PREVIEW_WIN)
 std::vector<std::string> GetDefaultFontFamilies() {
-  return {"Arial"};
+    if (SkFontMgr::runtimeOS == "OHOS") {
+        return {"HarmonyOS-Sans"};
+    }
+    return {"Arial"};
 }
+#else
+std::vector<std::string> GetDefaultFontFamilies() {
+    return {"Arial"};
+}
+#endif
 
 sk_sp<SkFontMgr> GetDefaultFontManager() {
-  return SkFontMgr::RefDefault();
+    return SkFontMgr::RefDefault();
 }
 
 FontManagerType GetDefaultFontManagerType() {

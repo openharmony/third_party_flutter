@@ -31,6 +31,7 @@ std::vector<std::string> GetDefaultFontFamilies()
 #else
 std::vector<std::string> GetDefaultFontFamilies() {
   return {"Ubuntu", "Cantarell", "DejaVu Sans", "Liberation Sans", "Arial"};
+}
 #endif
 sk_sp<SkFontMgr> GetDefaultFontManager()
 {
