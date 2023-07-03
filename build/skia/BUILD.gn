@@ -1030,7 +1030,7 @@ template("ace_skia_core") {
       if (defined(config.sk_use_hilog) && config.sk_use_hilog) {
         sources -= [ "$flutter_root/skia/src/ports/SkDebug_android.cpp" ]
         sources += [ "$flutter_root/skia/src/ports/SkDebug_ohos.cpp" ]
-        external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
+        external_deps = [ "hilog:libhilog" ]
       }
     }
   }
@@ -1275,7 +1275,7 @@ template("ace_pdf") {
       "//third_party/zlib:libz",
     ]
 
-    external_deps = [ "hitrace_native:hitrace_meter" ]
+    external_deps = [ "hitrace:hitrace_meter" ]
   }
 }
 
