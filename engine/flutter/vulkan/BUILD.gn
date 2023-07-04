@@ -91,7 +91,7 @@ if (graphic_standard_feature_enable_vulkan) {
 
     external_deps = [
       "c_utils:utils",
-      "hilog_native:libhilog",
+      "hilog:libhilog",
     ]
 
     public_deps = [
