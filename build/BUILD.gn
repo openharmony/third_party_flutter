@@ -501,7 +501,7 @@ template("flutter_engine_shell") {
       ]
       external_deps = [
         "eventhandler:libeventhandler",
-        "graphic_standard:libcomposer",
+        "graphic_2d:libcomposer",
         "ipc:ipc_core",
       ]
     } else if (platform == "ohos" || platform == "android") {
