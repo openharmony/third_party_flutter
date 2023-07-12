@@ -6,7 +6,7 @@ import("//build/ohos.gni")
 import("//foundation/graphic/graphic_2d/graphic_config.gni")
 import("//third_party/flutter/flutter_config.gni")
 
-if (graphic_standard_feature_enable_vulkan) {
+if (graphic_2d_feature_enable_vulkan) {
   config("vulkan_flutter_config") {
     visibility = [ ":*" ]
 
@@ -81,7 +81,7 @@ if (graphic_standard_feature_enable_vulkan) {
       "vulkan_window.cc",
     ]
 
-    if (graphic_standard_feature_enable_vulkan) {
+    if (graphic_2d_feature_enable_vulkan) {
       defines = [ "RS_ENABLE_VK" ]
     }
 
