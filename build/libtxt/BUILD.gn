@@ -93,8 +93,7 @@ template("thirdparty_lib_txt") {
         "//third_party/skia:skia_$platform",
       ]
       if (is_ios || is_mac) {
-        deps +=
-            [ "$ace_flutter_engine_root/harfbuzz:ace_libharfbuzz_$platform" ]
+        deps += [ "//third_party/skia/third_party/harfbuzz:harfbuzz" ]
       }
       include_dirs = [
         "$flutter_root/txt/src",
