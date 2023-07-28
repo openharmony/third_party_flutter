@@ -39,6 +39,7 @@ config("flutter_config") {
   if (defined(use_new_skia) && use_new_skia) {
     include_dirs += [
       "$flutter_root/txt/src",
+      "//third_party/skia",
       "//third_party/skia/third_party/externals/harfbuzz/src",
     ]
   } else {
@@ -753,6 +754,53 @@ foreach(item, ace_platforms) {
     }
   }
 }
+
 # ------------------------------------------------
 #      Flutter lib_ui config end
+# ------------------------------------------------
+
+# ------------------------------------------------
+#      Flutter dependency for NG BUILD begin
+# ------------------------------------------------
+
+if (is_cross_platform_build) {
+  ohos_source_set("flutter_for_ng") {
+    part_name = flutter_part
+    subsystem_name = flutter_subsystem
+    sources = [
+      "$flutter_root/engine/flutter/common/task_runners.cc",
+      "$flutter_root/engine/flutter/lib/ui/window/pointer_data_packet.cc",
+      "$flutter_root/engine/flutter/lib/ui/window/viewport_metrics.cc",
+      "$flutter_root/engine/flutter/shell/common/thread_host.cc",
+      "$flutter_root/engine/flutter/shell/common/vsync_waiter.cc",
+      "$flutter_root/engine/flutter/shell/platform/ohos/platform_task_runner.cc",
+      "$flutter_root/engine/flutter/shell/platform/ohos/platform_task_runner_adapter.cc",
+    ]
+
+    include_dirs = [
+      "//foundation/appframework/ability/ability_runtime/cross_platform/frameworks/native/base/event_handler/include",
+      "//foundation/appframework/ability/ability_runtime/cross_platform/interfaces/inner_api/error",
+    ]
+
+    if (is_android) {
+      sources += [
+        "$flutter_root/engine/flutter/shell/platform/android/ace_vsync_waiter_android.cc",
+        "$flutter_root/engine/flutter/shell/platform/android/apk_asset_provider.cc",
+      ]
+    }
+
+    if (is_ios) {
+      sources += [
+        "$flutter_root/engine/flutter/lib/ui/window/pointer_data.cc",
+        "$flutter_root/engine/flutter/shell/platform/darwin/ios/framework/Source/vsync_waiter_ios.mm",
+      ]
+
+      include_dirs += [ "//third_party/skia" ]
+    }
+
+    public_configs = [ ":flutter_config" ]
+  }
+}
+# ------------------------------------------------
+#      Flutter dependency for NG BUILD end
 # ------------------------------------------------
