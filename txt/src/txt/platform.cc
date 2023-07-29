@@ -15,6 +15,9 @@ std::vector<std::string> GetDefaultFontFamilies() {
     if (SkFontMgr::runtimeOS == "OHOS") {
         return {"HarmonyOS-Sans"};
     }
+    if (SkFontMgr::runtimeOS == "OHOS_Container") {
+        return {"sans-serif"};
+    }
     return {"Arial"};
 }
 #else
