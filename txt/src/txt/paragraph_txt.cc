@@ -1154,10 +1154,10 @@ void ParagraphTxt::Layout(double width) {
     // Replaced round() with ceil() to avoid rounding down.
     line_metrics.height =
         (line_number == 0 ? 0 : line_metrics_[line_number - 1].height) +
-        round(max_ascent + max_descent);
+        ceil(max_ascent + max_descent);
     line_metrics.baseline = line_metrics.height - max_descent;
 
-    y_offset += round(max_ascent + prev_max_descent);
+    y_offset += ceil(max_ascent + prev_max_descent);
     prev_max_descent = max_descent;
 
     line_metrics.line_number = line_number;
