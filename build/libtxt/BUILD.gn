@@ -108,7 +108,7 @@ template("thirdparty_lib_txt") {
       ]
     }
 
-    if (platform == "ohos") {
+    if (platform == "ohos" || platform == "ohos_ng") {
       if (defined(oem_commercial_build) && oem_commercial_build) {
         sources += [ "$txt_root/src/txt/platform_android.cc" ]
       } else {
