@@ -471,7 +471,7 @@ template("flutter_engine_shell") {
       "skia:ace_skia_$platform",
     ]
 
-    if (is_standard_system && platform == "ohos") {
+    if (is_standard_system && (platform == "ohos" || platform == "ohos_ng")) {
       include_dirs += [ "$window_manager_path/interfaces/innerkits" ]
       sources += [
         "$flutter_root/engine/flutter/shell/platform/ohos/ace_vsync_waiter_embedder.cc",
@@ -505,7 +505,8 @@ template("flutter_engine_shell") {
         "graphic_2d:libcomposer",
         "ipc:ipc_core",
       ]
-    } else if (platform == "ohos" || platform == "android") {
+    } else if (platform == "ohos" || platform == "ohos_ng" ||
+               platform == "android") {
       sources += [
         # Ability Cross-platform Environment(ACE) override implementation
         "$flutter_root/engine/flutter/shell/common/ace_display_manager_jni.cc",

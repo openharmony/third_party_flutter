@@ -24,8 +24,13 @@
         "rom": "10MB",
         "ram": "0",
         "deps": {
-            "components": [],
-            "third_party": []
+            "components": [
+                "hilog"
+            ],
+            "third_party": [
+                "icu",
+                "skia"
+            ]
         },
         "build": {
             "sub_component": [],
