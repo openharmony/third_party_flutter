@@ -112,7 +112,7 @@ class ParagraphTxt : public Paragraph {
   // Returns the number of lines the paragraph takes up. If the text exceeds the
   // amount width and maxlines provides, Layout() truncates the extra text from
   // the layout and this will return the max lines allowed.
-  size_t GetLineCount();
+  size_t GetLineCount() override;
 
   bool DidExceedMaxLines() override;
 

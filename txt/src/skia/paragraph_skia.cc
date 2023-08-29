@@ -213,4 +213,8 @@ Paragraph::Range<size_t> ParagraphSkia::GetWordBoundary(size_t offset) {
   return Paragraph::Range<size_t>(range.start, range.end);
 }
 
+size_t ParagraphSkia::GetLineCount() {
+  return paragraph_->GetLineCount();
+}
+
 }  // namespace txt
