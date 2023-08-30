@@ -174,6 +174,8 @@ class Paragraph {
   // Finds the first and last glyphs that define a word containing the glyph at
   // index offset.
   virtual Range<size_t> GetWordBoundary(size_t offset) = 0;
+
+  virtual size_t GetLineCount() = 0;
 };
 
 }  // namespace txt

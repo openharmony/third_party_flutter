@@ -174,6 +174,8 @@ class Paragraph {
   // index offset.
   virtual Range<size_t> GetWordBoundary(size_t offset) = 0;
 
+  virtual size_t GetLineCount() = 0;
+
   virtual std::vector<LineMetrics>& GetLineMetrics() = 0;
 };
 
