@@ -1972,7 +1972,8 @@ Paragraph::Range<size_t> ParagraphTxt::GetWordBoundary(size_t offset) {
       return Range<size_t>(0, 0);
   }
 
-  word_breaker_->setText(icu::UnicodeString(false, text_.data(), text_.size()));
+  auto u_str = icu::UnicodeString(false, text_.data(), text_.size());
+  word_breaker_->setText(u_str);
 
   int32_t prev_boundary = word_breaker_->preceding(offset + 1);
   int32_t next_boundary = word_breaker_->next();
