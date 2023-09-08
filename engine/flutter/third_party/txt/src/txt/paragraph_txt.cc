@@ -1145,7 +1145,7 @@ void ParagraphTxt::Layout(double width) {
     line_heights_.push_back((line_heights_.empty() ? 0 : line_heights_.back()) +
                             ceil(max_ascent + max_descent));
     line_baselines_.push_back(line_heights_.back() - max_descent);
-    y_offset += ceil(max_ascent + prev_max_descent);
+    y_offset += round(max_ascent + prev_max_descent);
     prev_max_descent = max_descent;
 
     // The max line spacing and ascent have been multiplied by -1 to make math
