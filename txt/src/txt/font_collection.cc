@@ -119,7 +119,11 @@ void FontCollection::SetupDefaultFontManager() {
   default_font_manager_ = GetDefaultFontManager();
 }
 
+#ifndef USE_ROSEN_DRAWING
 void FontCollection::SetDefaultFontManager(sk_sp<SkFontMgr> font_manager) {
+#else
+void FontCollection::SetDefaultFontManager(std::shared_ptr<RSFontMgr> font_manager) {
+#endif
   std::lock_guard<std::mutex> lock(fontManagerMutex_);
   default_font_manager_ = font_manager;
 
@@ -128,7 +132,11 @@ void FontCollection::SetDefaultFontManager(sk_sp<SkFontMgr> font_manager) {
 #endif
 }
 
+#ifndef USE_ROSEN_DRAWING
 void FontCollection::SetAssetFontManager(sk_sp<SkFontMgr> font_manager) {
+#else
+void FontCollection::SetAssetFontManager(std::shared_ptr<RSFontMgr> font_manager) {
+#endif
   asset_font_manager_ = font_manager;
 
 #if FLUTTER_ENABLE_SKSHAPER
@@ -136,7 +144,11 @@ void FontCollection::SetAssetFontManager(sk_sp<SkFontMgr> font_manager) {
 #endif
 }
 
+#ifndef USE_ROSEN_DRAWING
 void FontCollection::SetDynamicFontManager(sk_sp<SkFontMgr> font_manager) {
+#else
+void FontCollection::SetDynamicFontManager(std::shared_ptr<RSFontMgr> font_manager) {
+#endif
   dynamic_font_manager_ = font_manager;
 
 #if FLUTTER_ENABLE_SKSHAPER
@@ -144,7 +156,11 @@ void FontCollection::SetDynamicFontManager(sk_sp<SkFontMgr> font_manager) {
 #endif
 }
 
+#ifndef USE_ROSEN_DRAWING
 void FontCollection::SetTestFontManager(sk_sp<SkFontMgr> font_manager) {
+#else
+void FontCollection::SetTestFontManager(std::shared_ptr<RSFontMgr> font_manager) {
+#endif
   test_font_manager_ = font_manager;
 
 #if FLUTTER_ENABLE_SKSHAPER
@@ -152,14 +168,23 @@ void FontCollection::SetTestFontManager(sk_sp<SkFontMgr> font_manager) {
 #endif
 }
 
+#ifndef USE_ROSEN_DRAWING
 sk_sp<SkFontMgr> FontCollection::GetDefaultFontManagerSafely() const {
+#else
+std::shared_ptr<RSFontMgr> FontCollection::GetDefaultFontManagerSafely() const {
+#endif
   std::lock_guard<std::mutex> lock(fontManagerMutex_);
   return default_font_manager_;
 }
 
 // Return the available font managers in the order they should be queried.
+#ifndef USE_ROSEN_DRAWING
 std::vector<sk_sp<SkFontMgr>> FontCollection::GetFontManagerOrder() const {
   std::vector<sk_sp<SkFontMgr>> order;
+#else
+std::vector<std::shared_ptr<RSFontMgr>> FontCollection::GetFontManagerOrder() const {
+  std::vector<std::shared_ptr<RSFontMgr>> order;
+#endif
   if (dynamic_font_manager_)
     order.push_back(dynamic_font_manager_);
   if (asset_font_manager_)
@@ -260,7 +285,11 @@ std::shared_ptr<minikin::FontFamily> FontCollection::FindFontFamilyInManagers(
     const std::string& family_name) {
   TRACE_EVENT0("flutter", "FontCollection::FindFontFamilyInManagers");
   // Search for the font family in each font manager.
+#ifndef USE_ROSEN_DRAWING
   for (sk_sp<SkFontMgr>& manager : GetFontManagerOrder()) {
+#else
+  for (std::shared_ptr<RSFontMgr>& manager : GetFontManagerOrder()) {
+#endif
     std::shared_ptr<minikin::FontFamily> minikin_family =
         CreateMinikinFontFamily(manager, family_name);
     if (!minikin_family)
@@ -271,15 +300,28 @@ std::shared_ptr<minikin::FontFamily> FontCollection::FindFontFamilyInManagers(
 }
 
 void FontCollection::SortSkTypefaces(
+#ifndef USE_ROSEN_DRAWING
     std::vector<sk_sp<SkTypeface>>& sk_typefaces) {
+#else
+    std::vector<std::shared_ptr<RSTypeface>>& sk_typefaces) {
+#endif
   std::sort(
       sk_typefaces.begin(), sk_typefaces.end(),
+#ifndef USE_ROSEN_DRAWING
       [](const sk_sp<SkTypeface>& a, const sk_sp<SkTypeface>& b) {
         SkFontStyle a_style = a->fontStyle();
         SkFontStyle b_style = b->fontStyle();
 
         int a_delta = std::abs(a_style.width() - SkFontStyle::kNormal_Width);
         int b_delta = std::abs(b_style.width() - SkFontStyle::kNormal_Width);
+#else
+      [](const std::shared_ptr<RSTypeface>& a, const std::shared_ptr<RSTypeface>& b) {
+        RSFontStyle a_style = a->GetFontStyle();
+        RSFontStyle b_style = b->GetFontStyle();
+
+        int a_delta = std::abs(a_style.GetWidth() - RSFontStyle::NORMAL_WIDTH);
+        int b_delta = std::abs(b_style.GetWidth() - RSFontStyle::NORMAL_WIDTH);
+#endif
 
         if (a_delta != b_delta) {
           // If a family name query is so generic it ends up bringing in fonts
@@ -294,6 +336,7 @@ void FontCollection::SortSkTypefaces(
           // ordering here is more consequential since TextStyle doesn't have
           // letter width APIs.
           return a_delta < b_delta;
+#ifndef USE_ROSEN_DRAWING
         } else if (a_style.width() != b_style.width()) {
           // However, if the 2 fonts are equidistant from the "normal" width,
           // just arbitrarily but consistently return the more condensed font.
@@ -302,27 +345,55 @@ void FontCollection::SortSkTypefaces(
           return a_style.weight() < b_style.weight();
         } else {
           return a_style.slant() < b_style.slant();
+#else
+        } else if (a_style.GetWidth() != b_style.GetWidth()) {
+          // However, if the 2 fonts are equidistant from the "normal" width,
+          // just arbitrarily but consistently return the more condensed font.
+          return a_style.GetWidth() < b_style.GetWidth();
+        } else if (a_style.GetWeight() != b_style.GetWeight()) {
+          return a_style.GetWeight() < b_style.GetWeight();
+        } else {
+          return a_style.GetSlant() < b_style.GetSlant();
+#endif
         }
         // Use a cascade of conditions so results are consistent each time.
       });
 }
 
 std::shared_ptr<minikin::FontFamily> FontCollection::CreateMinikinFontFamily(
+#ifndef USE_ROSEN_DRAWING
     const sk_sp<SkFontMgr>& manager,
+#else
+    const std::shared_ptr<RSFontMgr>& manager,
+#endif
     const std::string& family_name) {
   TRACE_EVENT1("flutter", "FontCollection::CreateMinikinFontFamily",
                "family_name", family_name.c_str());
+#ifndef USE_ROSEN_DRAWING
   sk_sp<SkFontStyleSet> font_style_set(
       manager->matchFamily(family_name.c_str()));
   if (font_style_set == nullptr || font_style_set->count() == 0) {
+#else
+  std::shared_ptr<RSFontStyleSet> font_style_set(
+      manager->MatchFamily(family_name.c_str()));
+  if (font_style_set == nullptr || font_style_set->Count() == 0) {
+#endif
     return nullptr;
   }
 
+#ifndef USE_ROSEN_DRAWING
   std::vector<sk_sp<SkTypeface>> skia_typefaces;
   for (int i = 0; i < font_style_set->count(); ++i) {
     TRACE_EVENT0("flutter", "CreateSkiaTypeface");
     sk_sp<SkTypeface> skia_typeface(
         sk_sp<SkTypeface>(font_style_set->createTypeface(i)));
+#else
+  std::vector<std::shared_ptr<RSTypeface>> skia_typefaces;
+  for (int i = 0; i < font_style_set->Count(); ++i) {
+    TRACE_EVENT0("flutter", "CreateSkiaTypeface");
+    std::shared_ptr<RSTypeface> skia_typeface(
+        font_style_set->CreateTypeface(i));
+#endif
     if (skia_typeface != nullptr) {
       skia_typefaces.emplace_back(std::move(skia_typeface));
     }
@@ -335,13 +406,22 @@ std::shared_ptr<minikin::FontFamily> FontCollection::CreateMinikinFontFamily(
   SortSkTypefaces(skia_typefaces);
 
   std::vector<minikin::Font> minikin_fonts;
+#ifndef USE_ROSEN_DRAWING
   for (const sk_sp<SkTypeface>& skia_typeface : skia_typefaces) {
+#else
+  for (const std::shared_ptr<RSTypeface>& skia_typeface : skia_typefaces) {
+#endif
     // Create the minikin font from the skia typeface.
     // Divide by 100 because the weights are given as "100", "200", etc.
     minikin_fonts.emplace_back(
         std::make_shared<FontSkia>(skia_typeface),
+#ifndef USE_ROSEN_DRAWING
         minikin::FontStyle{skia_typeface->fontStyle().weight() / 100,
                            skia_typeface->isItalic()});
+#else
+        minikin::FontStyle{skia_typeface->GetFontStyle().GetWeight() / 100,
+                           skia_typeface->IsItalic()});
+#endif
   }
 
   return std::make_shared<minikin::FontFamily>(std::move(minikin_fonts));
@@ -375,18 +455,32 @@ const std::shared_ptr<minikin::FontFamily>& FontCollection::MatchFallbackFont(
 const std::shared_ptr<minikin::FontFamily>& FontCollection::DoMatchFallbackFont(
     uint32_t ch,
     std::string locale) {
+#ifndef USE_ROSEN_DRAWING
   for (const sk_sp<SkFontMgr>& manager : GetFontManagerOrder()) {
+#else
+  for (const std::shared_ptr<RSFontMgr>& manager : GetFontManagerOrder()) {
+#endif
     std::vector<const char*> bcp47;
     if (!locale.empty())
       bcp47.push_back(locale.c_str());
+#ifndef USE_ROSEN_DRAWING
     sk_sp<SkTypeface> typeface(manager->matchFamilyStyleCharacter(
         0, SkFontStyle(), bcp47.data(), bcp47.size(), ch));
+#else
+    std::shared_ptr<RSTypeface> typeface(manager->MatchFamilyStyleCharacter(
+        0, RSFontStyle(), bcp47.data(), bcp47.size(), ch));
+#endif
     if (!typeface)
       continue;
 
+#ifndef USE_ROSEN_DRAWING
     SkString sk_family_name;
     typeface->getFamilyName(&sk_family_name);
     std::string family_name(sk_family_name.c_str());
+#else
+    std::string family_name;
+    typeface->GetFamilyName(&family_name);
+#endif
     {
 	  std::lock_guard<std::mutex> lock(mutex_);
 	  if (std::find(fallback_fonts_for_locale_[locale].begin(),
@@ -400,7 +494,11 @@ const std::shared_ptr<minikin::FontFamily>& FontCollection::DoMatchFallbackFont(
 }
 
 const std::shared_ptr<minikin::FontFamily>&
+#ifndef USE_ROSEN_DRAWING
 FontCollection::GetFallbackFontFamily(const sk_sp<SkFontMgr>& manager,
+#else
+FontCollection::GetFallbackFontFamily(const std::shared_ptr<RSFontMgr>& manager,
+#endif
                                       const std::string& family_name) {
   TRACE_EVENT0("flutter", "FontCollection::GetFallbackFontFamily");
   {

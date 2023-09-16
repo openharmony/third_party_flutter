@@ -17,20 +17,33 @@
 #ifndef LIB_TXT_SRC_TEXT_SHADOW_H_
 #define LIB_TXT_SRC_TEXT_SHADOW_H_
 
+#ifndef USE_ROSEN_DRAWING
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPoint.h"
+#else
+#include "drawing.h"
+#endif
 
 namespace txt {
 
 class TextShadow {
  public:
+#ifndef USE_ROSEN_DRAWING
   SkColor color = SK_ColorBLACK;
   SkPoint offset;
+#else
+  uint32_t color = RSColor::COLOR_BLACK;
+  RSPoint offset;
+#endif
   double blur_sigma = 0.0;
 
   TextShadow();
 
+#ifndef USE_ROSEN_DRAWING
   TextShadow(SkColor color, SkPoint offset, double blur_sigma);
+#else
+  TextShadow(uint32_t color, RSPoint offset, double blur_sigma);
+#endif
 
   bool operator==(const TextShadow& other) const;
 

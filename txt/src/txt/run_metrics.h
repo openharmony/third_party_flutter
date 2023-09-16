@@ -27,7 +27,11 @@ class RunMetrics {
  public:
   RunMetrics(const TextStyle* style) : text_style(style) {}
 
+#ifndef USE_ROSEN_DRAWING
   RunMetrics(const TextStyle* style, const SkFontMetrics& metrics)
+#else
+  RunMetrics(const TextStyle* style, const RSFontMetrics& metrics)
+#endif
       : text_style(style), font_metrics(metrics) {}
 
   const TextStyle* text_style;
@@ -49,7 +53,11 @@ class RunMetrics {
   // * UnderlinePosition   underline position relative to baseline
   // * StrikeoutThickness  strikeout thickness
   // * StrikeoutPosition   strikeout position relative to baseline
+#ifndef USE_ROSEN_DRAWING
   SkFontMetrics font_metrics;
+#else
+  RSFontMetrics font_metrics;
+#endif
 };
 
 }  // namespace txt

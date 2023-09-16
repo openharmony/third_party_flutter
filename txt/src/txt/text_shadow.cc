@@ -20,7 +20,11 @@
 namespace txt {
 
 TextShadow::TextShadow() {}
+#ifndef USE_ROSEN_DRAWING
 TextShadow::TextShadow(SkColor color, SkPoint offset, double blur_sigma)
+#else
+TextShadow::TextShadow(uint32_t color, RSPoint offset, double blur_sigma)
+#endif
     : color(color), offset(offset), blur_sigma(blur_sigma) {}
 
 bool TextShadow::operator==(const TextShadow& other) const {
@@ -39,7 +43,11 @@ bool TextShadow::operator!=(const TextShadow& other) const {
 }
 
 bool TextShadow::hasShadow() const {
+#ifndef USE_ROSEN_DRAWING
   if (!offset.isZero())
+#else
+  if (!offset.IsZero())
+#endif
     return true;
   if (blur_sigma > 0.5)
     return true;

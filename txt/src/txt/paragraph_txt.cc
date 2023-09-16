@@ -53,7 +53,11 @@ namespace {
 
 class GlyphTypeface {
  public:
+#ifndef USE_ROSEN_DRAWING
   GlyphTypeface(sk_sp<SkTypeface> typeface, minikin::FontFakery fakery)
+#else
+  GlyphTypeface(std::shared_ptr<RSTypeface> typeface, minikin::FontFakery fakery)
+#endif
       : typeface_(std::move(typeface)),
         fake_bold_(fakery.isFakeBold()),
         fake_italic_(fakery.isFakeItalic()) {}
@@ -65,14 +69,25 @@ class GlyphTypeface {
 
   bool operator!=(GlyphTypeface& other) { return !(*this == other); }
 
+#ifndef USE_ROSEN_DRAWING
   void apply(SkFont& font) {
     font.setTypeface(typeface_);
     font.setEmbolden(fake_bold_);
     font.setSkewX(fake_italic_ ? -SK_Scalar1 / 4 : 0);
+#else
+  void apply(RSFont& font) {
+    font.SetTypeface(typeface_);
+    font.SetEmbolden(fake_bold_);
+    font.SetSkewX(fake_italic_ ? -RSDrawing::SCALAR_ONE / 4 : 0);
+#endif
   }
 
  private:
+#ifndef USE_ROSEN_DRAWING
   sk_sp<SkTypeface> typeface_;
+#else
+  std::shared_ptr<RSTypeface> typeface_;
+#endif
   bool fake_bold_;
   bool fake_italic_;
 };
@@ -209,7 +224,11 @@ ParagraphTxt::CodeUnitRun::CodeUnitRun(std::vector<GlyphPosition>&& p,
                                        Range<size_t> cu,
                                        Range<double> x,
                                        size_t line,
+#ifndef USE_ROSEN_DRAWING
                                        const SkFontMetrics& metrics,
+#else
+                                       const RSFontMetrics& metrics,
+#endif
                                        const TextStyle& st,
                                        TextDirection dir,
                                        const PlaceholderRun* placeholder)
@@ -518,7 +537,11 @@ bool ParagraphTxt::IsStrutValid() const {
           paragraph_style_.strut_font_size >= 0);
 }
 
+#ifndef USE_ROSEN_DRAWING
 void ParagraphTxt::ComputeStrut(StrutMetrics* strut, SkFont& font) {
+#else
+void ParagraphTxt::ComputeStrut(StrutMetrics* strut, RSFont& font) {
+#endif
   strut->ascent = 0;
   strut->descent = 0;
   strut->leading = 0;
@@ -545,6 +568,7 @@ void ParagraphTxt::ComputeStrut(StrutMetrics* strut, SkFont& font) {
   minikin::FakedFont faked_font = collection->baseFontFaked(minikin_font_style);
 
   if (faked_font.font != nullptr) {
+#ifndef USE_ROSEN_DRAWING
     SkString str;
     static_cast<FontSkia*>(faked_font.font)
         ->GetSkTypeface()
@@ -553,6 +577,16 @@ void ParagraphTxt::ComputeStrut(StrutMetrics* strut, SkFont& font) {
     font.setSize(paragraph_style_.strut_font_size);
     SkFontMetrics strut_metrics;
     font.getMetrics(&strut_metrics);
+#else
+    std::string str;
+    static_cast<FontSkia*>(faked_font.font)
+        ->GetSkTypeface()
+        ->GetFamilyName(&str);
+    font.SetTypeface(static_cast<FontSkia*>(faked_font.font)->GetSkTypeface());
+    font.SetSize(paragraph_style_.strut_font_size);
+    RSFontMetrics strut_metrics;
+    font.GetMetrics(&strut_metrics);
+#endif
 
     const double metrics_height =
         -strut_metrics.fAscent + strut_metrics.fDescent;
@@ -691,13 +725,24 @@ void ParagraphTxt::Layout(double width) {
   if (!ComputeBidiRuns(&bidi_runs))
     return;
 
+#ifndef USE_ROSEN_DRAWING
   SkFont font;
   font.setEdging(SkFont::Edging::kAntiAlias);
   font.setSubpixel(true);
   font.setHinting(SkFontHinting::kSlight);
+#else
+  RSFont font;
+  font.SetEdging(RSFontEdging::ANTI_ALIAS);
+  font.SetSubpixel(true);
+  font.SetHinting(RSFontHinting::SLIGHT);
+#endif
 
   minikin::Layout layout;
+#ifndef USE_ROSEN_DRAWING
   SkTextBlobBuilder builder;
+#else
+  RSTextBlobBuilder builder;
+#endif
   double y_offset = 0;
   double prev_max_descent = 0;
   double max_word_width = 0;
@@ -812,7 +857,11 @@ void ParagraphTxt::Layout(double width) {
       minikin::FontStyle minikin_font;
       minikin::MinikinPaint minikin_paint;
       GetFontAndMinikinPaint(run.style(), &minikin_font, &minikin_paint);
+#ifndef USE_ROSEN_DRAWING
       font.setSize(run.style().font_size);
+#else
+      font.SetSize(run.style().font_size);
+#endif
 
       std::shared_ptr<minikin::FontCollection> minikin_font_collection =
           GetMinikinFontCollectionForStyle(run.style());
@@ -903,8 +952,13 @@ void ParagraphTxt::Layout(double width) {
         std::vector<GlyphPosition> glyph_positions;
 
         GetGlyphTypeface(layout, glyph_blob.start).apply(font);
+#ifndef USE_ROSEN_DRAWING
         const SkTextBlobBuilder::RunBuffer& blob_buffer =
             builder.allocRunPos(font, glyph_blob.end - glyph_blob.start);
+#else
+        const RSTextBlobBuilder::RunBuffer& blob_buffer =
+            builder.AllocRunPos(font, glyph_blob.end - glyph_blob.start);
+#endif
 
         double justify_x_offset_delta = 0;
         for (size_t glyph_index = glyph_blob.start;
@@ -1031,15 +1085,26 @@ void ParagraphTxt::Layout(double width) {
         // correct RunMetrics at any text index.
         size_t run_key = run.end() - 1;
         line_metrics.run_metrics.emplace(run_key, &run.style());
+#ifndef USE_ROSEN_DRAWING
         SkFontMetrics* metrics =
             &line_metrics.run_metrics.at(run_key).font_metrics;
         font.getMetrics(metrics);
+#else
+        RSFontMetrics* metrics =
+            &line_metrics.run_metrics.at(run_key).font_metrics;
+        font.GetMetrics(metrics);
+#endif
 
         Range<double> record_x_pos(
             glyph_positions.front().x_pos.start - run_x_offset,
             glyph_positions.back().x_pos.end - run_x_offset);
+#ifndef USE_ROSEN_DRAWING
         paint_records.emplace_back(run.style(), SkPoint::Make(run_x_offset, 0),
                                    builder.make(), *metrics, line_number,
+#else
+        paint_records.emplace_back(run.style(), RSPoint(run_x_offset, 0),
+                                   builder.Make(), *metrics, line_number,
+#endif
                                    record_x_pos.start, record_x_pos.end,
                                    run.is_ghost(), run.placeholder_run());
 
@@ -1134,11 +1199,19 @@ void ParagraphTxt::Layout(double width) {
     // If no fonts were actually rendered, then compute a baseline based on the
     // font of the paragraph style.
     if (paint_records.empty()) {
+#ifndef USE_ROSEN_DRAWING
       SkFontMetrics metrics;
       TextStyle style(paragraph_style_.GetTextStyle());
       font.setTypeface(GetDefaultSkiaTypeface(style));
       font.setSize(style.font_size);
       font.getMetrics(&metrics);
+#else
+      RSFontMetrics metrics;
+      TextStyle style(paragraph_style_.GetTextStyle());
+      font.SetTypeface(GetDefaultSkiaTypeface(style));
+      font.SetSize(style.font_size);
+      font.GetMetrics(&metrics);
+#endif
       UpdateLineMetrics(metrics, style, max_ascent, max_descent,
                         max_unscaled_ascent, nullptr, line_number, line_limit);
     }
@@ -1171,7 +1244,11 @@ void ParagraphTxt::Layout(double width) {
 
     for (PaintRecord& paint_record : paint_records) {
       paint_record.SetOffset(
+#ifndef USE_ROSEN_DRAWING
           SkPoint::Make(paint_record.offset().x() + line_x_offset, y_offset));
+#else
+          RSPoint(paint_record.offset().GetX() + line_x_offset, y_offset));
+#endif
       records_.emplace_back(std::move(paint_record));
     }
   }  // for each line_number
@@ -1191,7 +1268,11 @@ void ParagraphTxt::Layout(double width) {
   longest_line_ = max_right_ - min_left_;
 }
 
+#ifndef USE_ROSEN_DRAWING
 void ParagraphTxt::UpdateLineMetrics(const SkFontMetrics& metrics,
+#else
+void ParagraphTxt::UpdateLineMetrics(const RSFontMetrics& metrics,
+#endif
                                      const TextStyle& style,
                                      double& max_ascent,
                                      double& max_descent,
@@ -1405,7 +1486,11 @@ ParagraphTxt::GetMinikinFontCollectionForStyle(const TextStyle& style) {
       style.font_families, locale);
 }
 
+#ifndef USE_ROSEN_DRAWING
 sk_sp<SkTypeface> ParagraphTxt::GetDefaultSkiaTypeface(const TextStyle& style) {
+#else
+std::shared_ptr<RSTypeface> ParagraphTxt::GetDefaultSkiaTypeface(const TextStyle& style) {
+#endif
   std::shared_ptr<minikin::FontCollection> collection =
       GetMinikinFontCollectionForStyle(style);
   if (!collection) {
@@ -1418,6 +1503,7 @@ sk_sp<SkTypeface> ParagraphTxt::GetDefaultSkiaTypeface(const TextStyle& style) {
 
 // The x,y coordinates will be the very top left corner of the rendered
 // paragraph.
+#ifndef USE_ROSEN_DRAWING
 void ParagraphTxt::Paint(SkCanvas* canvas, double x, double y) {
   SkPoint base_offset = SkPoint::Make(x, y);
   SkPaint paint;
@@ -1441,16 +1527,62 @@ void ParagraphTxt::Paint(SkCanvas* canvas, double x, double y) {
     PaintDecorations(canvas, record, base_offset);
   }
 }
+#else
+void ParagraphTxt::Paint(RSCanvas* canvas, double x, double y) {
+  RSPoint base_offset(x, y);
+  // Paint the background first before painting any text to prevent
+  // potential overlap.
+  for (const PaintRecord& record : records_) {
+    PaintBackground(canvas, record, base_offset);
+  }
+  for (const PaintRecord& record : records_) {
+    RSPoint offset = base_offset + record.offset();
+    if (record.GetPlaceholderRun() == nullptr) {
+      PaintShadow(canvas, record, offset);
+      if (record.style().has_foreground_pen && record.style().has_foreground_brush) {
+        canvas->AttachPen(record.style().foreground_pen);
+        canvas->DrawTextBlob(record.text(), offset.GetX(), offset.GetY());
+        canvas->DetachPen();
+        canvas->AttachBrush(record.style().foreground_brush);
+        canvas->DrawTextBlob(record.text(), offset.GetX(), offset.GetY());
+        canvas->DetachBrush();
+      } else if (record.style().has_foreground_pen && !record.style().has_foreground_brush) {
+        canvas->AttachPen(record.style().foreground_pen);
+        canvas->DrawTextBlob(record.text(), offset.GetX(), offset.GetY());
+        canvas->DetachPen();
+      } else if (!record.style().has_foreground_pen && record.style().has_foreground_brush) {
+        canvas->AttachBrush(record.style().foreground_brush);
+        canvas->DrawTextBlob(record.text(), offset.GetX(), offset.GetY());
+        canvas->DetachBrush();
+      } else {
+        RSBrush brush;
+        brush.SetColor(record.style().color);
+        canvas->AttachBrush(brush);
+        canvas->DrawTextBlob(record.text(), offset.GetX(), offset.GetY());
+        canvas->DetachBrush();
+      }
+    }
+    PaintDecorations(canvas, record, base_offset);
+  }
+}
+#endif
 
+#ifndef USE_ROSEN_DRAWING
 void ParagraphTxt::PaintDecorations(SkCanvas* canvas,
                                     const PaintRecord& record,
                                     SkPoint base_offset) {
+#else
+void ParagraphTxt::PaintDecorations(RSCanvas* canvas,
+                                    const PaintRecord& record,
+                                    RSPoint base_offset) {
+#endif
   if (record.style().decoration == TextDecoration::kNone)
     return;
 
   if (record.isGhost())
     return;
 
+#ifndef USE_ROSEN_DRAWING
   const SkFontMetrics& metrics = record.metrics();
   SkPaint paint;
   paint.setStyle(SkPaint::kStroke_Style);
@@ -1460,18 +1592,40 @@ void ParagraphTxt::PaintDecorations(SkCanvas* canvas,
     paint.setColor(record.style().decoration_color);
   }
   paint.setAntiAlias(true);
+#else
+  const RSFontMetrics& metrics = record.metrics();
+  RSPen paint;
+  if (record.style().decoration_color == RSColor::COLOR_TRANSPARENT) {
+    paint.SetColor(record.style().color);
+  } else {
+    paint.SetColor(record.style().decoration_color);
+  }
+  paint.SetAntiAlias(true);
+#endif
 
   // This is set to 2 for the double line style
   int decoration_count = 1;
 
   // Filled when drawing wavy decorations.
+#ifndef USE_ROSEN_DRAWING
   SkPath path;
+#else
+  RSPath path;
+#endif
 
   double width = record.GetRunWidth();
 
+#ifndef USE_ROSEN_DRAWING
   SkScalar underline_thickness;
+#else
+  RSScalar underline_thickness;
+#endif
   if ((metrics.fFlags &
+#ifndef USE_ROSEN_DRAWING
        SkFontMetrics::FontMetricsFlags::kUnderlineThicknessIsValid_Flag) &&
+#else
+       RSFontMetrics::FontMetricsFlags::UNDERLINE_THICKNESS_IS_VALID_FLAG) &&
+#endif
       metrics.fUnderlineThickness > 0) {
     underline_thickness = metrics.fUnderlineThickness;
   } else {
@@ -1479,12 +1633,21 @@ void ParagraphTxt::PaintDecorations(SkCanvas* canvas,
     // Divide by 14pt as it is the default size.
     underline_thickness = record.style().font_size / 14.0f;
   }
+#ifndef USE_ROSEN_DRAWING
   paint.setStrokeWidth(underline_thickness *
                        record.style().decoration_thickness_multiplier);
 
   SkPoint record_offset = base_offset + record.offset();
   SkScalar x = record_offset.x() + record.x_start();
   SkScalar y = record_offset.y();
+#else
+  paint.SetWidth(underline_thickness *
+                 record.style().decoration_thickness_multiplier);
+
+  RSPoint record_offset = base_offset + record.offset();
+  RSScalar x = record_offset.GetX() + record.x_start();
+  RSScalar y = record_offset.GetY();
+#endif
 
   // Setup the decorations.
   switch (record.style().decoration_style) {
@@ -1501,12 +1664,21 @@ void ParagraphTxt::PaintDecorations(SkCanvas* canvas,
     case TextDecorationStyle::kDotted: {
       // Divide by 14pt as it is the default size.
       const float scale = record.style().font_size / 14.0f;
+#ifndef USE_ROSEN_DRAWING
       const SkScalar intervals[] = {1.0f * scale, 1.5f * scale, 1.0f * scale,
                                     1.5f * scale};
       size_t count = sizeof(intervals) / sizeof(intervals[0]);
       paint.setPathEffect(SkPathEffect::MakeCompose(
           SkDashPathEffect::Make(intervals, count, 0.0f),
           SkDiscretePathEffect::Make(0, 0)));
+#else
+      const std::vector<RSScalar> intervals = {1.0f * scale, 1.5f * scale, 1.0f * scale,
+                                               1.5f * scale};
+      auto pathEffect1 = RSRecordingPathEffect::CreateDashPathEffect(intervals, 0.0f);
+      auto pathEffect2 = RSRecordingPathEffect::CreateDiscretePathEffect(0, 0);
+      auto recordingPathEffect = RSRecordingPathEffect::CreateComposePathEffect(*pathEffect1.get(), *pathEffect2.get());
+      paint.SetPathEffect(recordingPathEffect);
+#endif
       break;
     }
     // Note: the intervals are scaled by the thickness of the line, so it is
@@ -1515,12 +1687,21 @@ void ParagraphTxt::PaintDecorations(SkCanvas* canvas,
     case TextDecorationStyle::kDashed: {
       // Divide by 14pt as it is the default size.
       const float scale = record.style().font_size / 14.0f;
+#ifndef USE_ROSEN_DRAWING
       const SkScalar intervals[] = {4.0f * scale, 2.0f * scale, 4.0f * scale,
                                     2.0f * scale};
       size_t count = sizeof(intervals) / sizeof(intervals[0]);
       paint.setPathEffect(SkPathEffect::MakeCompose(
           SkDashPathEffect::Make(intervals, count, 0.0f),
           SkDiscretePathEffect::Make(0, 0)));
+#else
+      const std::vector<RSScalar> intervals = {4.0f * scale, 2.0f * scale, 4.0f * scale,
+                                               2.0f * scale};
+      auto pathEffect1 = RSRecordingPathEffect::CreateDashPathEffect(intervals, 0.0f);
+      auto pathEffect2 = RSRecordingPathEffect::CreateDiscretePathEffect(0, 0);
+      auto recordingPathEffect = RSRecordingPathEffect::CreateComposePathEffect(*pathEffect1.get(), *pathEffect2.get());
+      paint.SetPathEffect(recordingPathEffect);
+#endif
       break;
     }
     case TextDecorationStyle::kWavy: {
@@ -1540,15 +1721,33 @@ void ParagraphTxt::PaintDecorations(SkCanvas* canvas,
     if (record.style().decoration & TextDecoration::kUnderline) {
       y_offset +=
           (metrics.fFlags &
+#ifndef USE_ROSEN_DRAWING
            SkFontMetrics::FontMetricsFlags::kUnderlinePositionIsValid_Flag)
+#else
+           RSFontMetrics::FontMetricsFlags::UNDERLINE_POSITION_IS_VALID_FLAG)
+#endif
               ? metrics.fUnderlinePosition
               : underline_thickness;
       if (record.style().decoration_style != TextDecorationStyle::kWavy) {
+#ifndef USE_ROSEN_DRAWING
         canvas->drawLine(x, y + y_offset, x + width, y + y_offset, paint);
+#else
+        canvas->AttachPen(paint);
+        canvas->DrawLine(RSPoint{x, y + y_offset}, RSPoint{x + width, y + y_offset});
+        canvas->DetachPen();
+#endif
       } else {
+#ifndef USE_ROSEN_DRAWING
         SkPath offsetPath = path;
         offsetPath.offset(0, y_offset);
         canvas->drawPath(offsetPath, paint);
+#else
+        RSPath offsetPath = path;
+        offsetPath.Offset(0, y_offset);
+        canvas->AttachPen(paint);
+        canvas->DrawPath(offsetPath);
+        canvas->DetachPen();
+#endif
       }
       y_offset = y_offset_original;
     }
@@ -1558,43 +1757,85 @@ void ParagraphTxt::PaintDecorations(SkCanvas* canvas,
       // second line to be above, not below the first.
       y_offset -= metrics.fAscent;
       if (record.style().decoration_style != TextDecorationStyle::kWavy) {
+#ifndef USE_ROSEN_DRAWING
         canvas->drawLine(x, y - y_offset, x + width, y - y_offset, paint);
+#else
+        canvas->AttachPen(paint);
+        canvas->DrawLine(RSPoint{x, y - y_offset}, RSPoint{x + width, y - y_offset});
+        canvas->DetachPen();
+#endif
       } else {
+#ifndef USE_ROSEN_DRAWING
         SkPath offsetPath = path;
         offsetPath.offset(0, -y_offset);
         canvas->drawPath(offsetPath, paint);
+#else
+        RSPath offsetPath = path;
+        offsetPath.Offset(0, -y_offset);
+        canvas->AttachPen(paint);
+        canvas->DrawPath(offsetPath);
+        canvas->DetachPen();
+#endif
       }
       y_offset = y_offset_original;
     }
     // Strikethrough
     if (record.style().decoration & TextDecoration::kLineThrough) {
       if (metrics.fFlags &
+#ifndef USE_ROSEN_DRAWING
           SkFontMetrics::FontMetricsFlags::kStrikeoutThicknessIsValid_Flag)
         paint.setStrokeWidth(metrics.fStrikeoutThickness *
                              record.style().decoration_thickness_multiplier);
+#else
+          RSFontMetrics::FontMetricsFlags::STRIKEOUT_THICKNESS_IS_VALID_FLAG)
+        paint.SetWidth(metrics.fStrikeoutThickness *
+                       record.style().decoration_thickness_multiplier);
+#endif
       // Make sure the double line is "centered" vertically.
       y_offset += (decoration_count - 1.0) * underline_thickness *
                   kDoubleDecorationSpacing / -2.0;
       y_offset +=
           (metrics.fFlags &
+#ifndef USE_ROSEN_DRAWING
            SkFontMetrics::FontMetricsFlags::kStrikeoutPositionIsValid_Flag)
+#else
+           RSFontMetrics::FontMetricsFlags::STRIKEOUT_POSITION_IS_VALID_FLAG)
+#endif
               ? metrics.fStrikeoutPosition
               // Backup value if the strikeoutposition metric is not
               // available:
               : metrics.fXHeight / -2.0;
       if (record.style().decoration_style != TextDecorationStyle::kWavy) {
+#ifndef USE_ROSEN_DRAWING
         canvas->drawLine(x, y + y_offset, x + width, y + y_offset, paint);
+#else
+        canvas->AttachPen(paint);
+        canvas->DrawLine(RSPoint{x, y + y_offset}, RSPoint{x + width, y + y_offset});
+        canvas->DetachPen();
+#endif
       } else {
+#ifndef USE_ROSEN_DRAWING
         SkPath offsetPath = path;
         offsetPath.offset(0, y_offset);
         canvas->drawPath(offsetPath, paint);
+#else
+        RSPath offsetPath = path;
+        offsetPath.Offset(0, y_offset);
+        canvas->AttachPen(paint);
+        canvas->DrawPath(offsetPath);
+        canvas->DetachPen();
+#endif
       }
       y_offset = y_offset_original;
     }
   }
 }
 
+#ifndef USE_ROSEN_DRAWING
 void ParagraphTxt::ComputeWavyDecoration(SkPath& path,
+#else
+void ParagraphTxt::ComputeWavyDecoration(RSPath& path,
+#endif
                                          double x,
                                          double y,
                                          double width,
@@ -1603,10 +1844,18 @@ void ParagraphTxt::ComputeWavyDecoration(SkPath& path,
   double x_start = 0;
   // One full wavelength is 4 * thickness.
   double quarter = thickness;
+#ifndef USE_ROSEN_DRAWING
   path.moveTo(x, y);
+#else
+  path.MoveTo(x, y);
+#endif
   double remaining = width;
   while (x_start + (quarter * 2) < width) {
+#ifndef USE_ROSEN_DRAWING
     path.rQuadTo(quarter, wave_count % 2 == 0 ? -quarter : quarter, quarter * 2,
+#else
+    path.RQuadTo(quarter, wave_count % 2 == 0 ? -quarter : quarter, quarter * 2,
+#endif
                  0);
     x_start += quarter * 2;
     remaining = width - x_start;
@@ -1633,9 +1882,14 @@ void ParagraphTxt::ComputeWavyDecoration(SkPath& path,
   double x2 = remaining;
   double y2 = (remaining - remaining * remaining / (quarter * 2)) *
               (wave_count % 2 == 0 ? -1 : 1);
+#ifndef USE_ROSEN_DRAWING
   path.rQuadTo(x1, y1, x2, y2);
+#else
+  path.RQuadTo(x1, y1, x2, y2);
+#endif
 }
 
+#ifndef USE_ROSEN_DRAWING
 void ParagraphTxt::PaintBackground(SkCanvas* canvas,
                                    const PaintRecord& record,
                                    SkPoint base_offset) {
@@ -1648,7 +1902,30 @@ void ParagraphTxt::PaintBackground(SkCanvas* canvas,
   rect.offset(base_offset + record.offset());
   canvas->drawRect(rect, record.style().background);
 }
+#else
+void ParagraphTxt::PaintBackground(RSCanvas* canvas,
+                                   const PaintRecord& record,
+                                   RSPoint base_offset) {
+  if (!record.style().has_background_pen && !record.style().has_background_brush)
+    return;
 
+  const RSFontMetrics& metrics = record.metrics();
+  RSRect rect(record.x_start(), metrics.fAscent, record.x_end(), metrics.fDescent);
+  rect.Offset(base_offset.GetX() + record.offset().GetX(), base_offset.GetY() + record.offset().GetY());
+  if (record.style().has_background_pen) {
+    canvas->AttachPen(record.style().background_pen);
+    canvas->DrawRect(rect);
+    canvas->DetachPen();
+  }
+  if (record.style().has_background_brush) {
+    canvas->AttachBrush(record.style().background_brush);
+    canvas->DrawRect(rect);
+    canvas->DetachBrush();
+  }
+}
+#endif
+
+#ifndef USE_ROSEN_DRAWING
 void ParagraphTxt::PaintShadow(SkCanvas* canvas,
                                const PaintRecord& record,
                                SkPoint offset) {
@@ -1669,6 +1946,31 @@ void ParagraphTxt::PaintShadow(SkCanvas* canvas,
                          offset.y() + text_shadow.offset.y(), paint);
   }
 }
+#else
+void ParagraphTxt::PaintShadow(RSCanvas* canvas,
+                               const PaintRecord& record,
+                               RSPoint offset) {
+  if (record.style().text_shadows.size() == 0)
+    return;
+  for (TextShadow text_shadow : record.style().text_shadows) {
+    if (!text_shadow.hasShadow()) {
+      continue;
+    }
+
+    RSBrush paint;
+    paint.SetColor(text_shadow.color);
+    if (text_shadow.blur_sigma > 0.5) {
+      RSFliter filter;
+      filter.SetMaskFilter(RSRecordingMaskFilter::CreateBlurMaskFilter(RSBlurType::NORMAL, text_shadow.blur_sigma))
+      paint.SetFilter(filter);
+    }
+    canvas->AttachBrush(paint);
+    canvas->DrawTextBlob(record.text(), offset.GetX() + text_shadow.offset.GetX(),
+                         offset.GetY() + text_shadow.offset.GetY());
+    canvas->DetachBrush();
+  }
+}
+#endif
 
 std::vector<Paragraph::TextBox> ParagraphTxt::GetRectsForRange(
     size_t start,

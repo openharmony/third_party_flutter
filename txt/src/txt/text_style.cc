@@ -52,7 +52,11 @@ bool TextStyle::equals(const TextStyle& other) const {
     return false;
   if (locale != other.locale)
     return false;
+#ifndef USE_ROSEN_DRAWING
   if (foreground != other.foreground)
+#else
+  if (foreground_pen != other.foreground_pen || foreground_brush != other.foreground_brush)
+#endif
     return false;
   if (text_shadows.size() != other.text_shadows.size())
     return false;

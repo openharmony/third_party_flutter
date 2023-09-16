@@ -33,11 +33,19 @@ namespace txt {
 
 class TextStyle {
  public:
+#ifndef USE_ROSEN_DRAWING
   SkColor color = SK_ColorWHITE;
+#else
+  uint32_t color = RSColor::COLOR_WHITE;
+#endif
   int decoration = TextDecoration::kNone;
   // Does not make sense to draw a transparent object, so we use it as a default
   // value to indicate no decoration color was set.
+#ifndef USE_ROSEN_DRAWING
   SkColor decoration_color = SK_ColorTRANSPARENT;
+#else
+  uint32_t decoration_color = RSColor::COLOR_TRANSPARENT;
+#endif
   TextDecorationStyle decoration_style = TextDecorationStyle::kSolid;
   // Thickness is applied as a multiplier to the default thickness of the font.
   double decoration_thickness_multiplier = 1.0;
@@ -54,10 +62,21 @@ class TextStyle {
   double height = 1.0;
   bool has_height_override = false;
   std::string locale;
+#ifndef USE_ROSEN_DRAWING
   bool has_background = false;
   SkPaint background;
   bool has_foreground = false;
   SkPaint foreground;
+#else
+  bool has_background_pen = false;
+  RSPen background_pen;
+  bool has_background_brush = false;
+  RSBrush background_brush;
+  bool has_foreground_pen = false;
+  RSPen foreground_pen;
+  bool has_foreground_brush = false;
+  RSBrush foreground_brush;
+#endif
   // An ordered list of shadows where the first shadow will be drawn first (at
   // the bottom).
   std::vector<TextShadow> text_shadows;
