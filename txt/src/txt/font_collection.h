@@ -48,10 +48,17 @@ class FontCollection : public std::enable_shared_from_this<FontCollection> {
   size_t GetFontManagersCount() const;
 
   void SetupDefaultFontManager();
+#ifndef USE_ROSEN_DRAWING
   void SetDefaultFontManager(sk_sp<SkFontMgr> font_manager);
   void SetAssetFontManager(sk_sp<SkFontMgr> font_manager);
   void SetDynamicFontManager(sk_sp<SkFontMgr> font_manager);
   void SetTestFontManager(sk_sp<SkFontMgr> font_manager);
+#else
+  void SetDefaultFontManager(std::shared_ptr<RSFontMgr> font_manager);
+  void SetAssetFontManager(std::shared_ptr<RSFontMgr> font_manager);
+  void SetDynamicFontManager(std::shared_ptr<RSFontMgr> font_manager);
+  void SetTestFontManager(std::shared_ptr<RSFontMgr> font_manager);
+#endif
 
   std::shared_ptr<minikin::FontCollection> GetMinikinFontCollectionForFamilies(
       const std::vector<std::string>& font_families,
@@ -105,10 +112,17 @@ class FontCollection : public std::enable_shared_from_this<FontCollection> {
     };
   };
 
+#ifndef USE_ROSEN_DRAWING
   sk_sp<SkFontMgr> default_font_manager_;
   sk_sp<SkFontMgr> asset_font_manager_;
   sk_sp<SkFontMgr> dynamic_font_manager_;
   sk_sp<SkFontMgr> test_font_manager_;
+#else
+  std::shared_ptr<RSFontMgr> default_font_manager_;
+  std::shared_ptr<RSFontMgr> asset_font_manager_;
+  std::shared_ptr<RSFontMgr> dynamic_font_manager_;
+  std::shared_ptr<RSFontMgr> test_font_manager_;
+#endif
   std::unordered_map<FamilyKey,
                      std::shared_ptr<minikin::FontCollection>,
                      FamilyKey::Hasher>
@@ -140,18 +154,27 @@ class FontCollection : public std::enable_shared_from_this<FontCollection> {
       uint32_t ch,
       std::string locale);
 
+#ifndef USE_ROSEN_DRAWING
   std::vector<sk_sp<SkFontMgr>> GetFontManagerOrder() const;
+#else
+  std::vector<std::shared_ptr<RSFontMgr>> GetFontManagerOrder() const;
+#endif
 
   std::shared_ptr<minikin::FontFamily> FindFontFamilyInManagers(
       const std::string& family_name);
 
   std::shared_ptr<minikin::FontFamily> CreateMinikinFontFamily(
+#ifndef USE_ROSEN_DRAWING
       const sk_sp<SkFontMgr>& manager,
+#else
+      const std::shared_ptr<RSFontMgr>& manager,
+#endif
       const std::string& family_name);
 
   // Sorts in-place a group of SkTypeface from an SkTypefaceSet into a
   // reasonable order for future queries.
   FRIEND_TEST(FontCollectionTest, CheckSkTypefacesSorting);
+#ifndef USE_ROSEN_DRAWING
   static void SortSkTypefaces(std::vector<sk_sp<SkTypeface>>& sk_typefaces);
 
   const std::shared_ptr<minikin::FontFamily>& GetFallbackFontFamily(
@@ -159,6 +182,15 @@ class FontCollection : public std::enable_shared_from_this<FontCollection> {
       const std::string& family_name);
 
   sk_sp<SkFontMgr> GetDefaultFontManagerSafely() const;
+#else
+  static void SortSkTypefaces(std::vector<std::shared_ptr<RSTypeface>>& sk_typefaces);
+
+  const std::shared_ptr<minikin::FontFamily>& GetFallbackFontFamily(
+      const std::shared_ptr<RSFontMgr>& manager,
+      const std::string& family_name);
+
+  std::shared_ptr<RSFontMgr> GetDefaultFontManagerSafely() const;
+#endif
 
 #if defined(OHOS_PLATFORM) && !defined(OHOS_STANDARD_SYSTEM)
   std::shared_ptr<minikin::FontCollection>

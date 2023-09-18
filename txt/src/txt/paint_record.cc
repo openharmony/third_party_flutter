@@ -23,9 +23,15 @@ namespace txt {
 PaintRecord::~PaintRecord() = default;
 
 PaintRecord::PaintRecord(TextStyle style,
+#ifndef USE_ROSEN_DRAWING
                          SkPoint offset,
                          sk_sp<SkTextBlob> text,
                          SkFontMetrics metrics,
+#else
+                         RSPoint offset,
+                         std::shared_ptr<RSTextBlob> text,
+                         RSFontMetrics metrics,
+#endif
                          size_t line,
                          double x_start,
                          double x_end,
@@ -40,9 +46,15 @@ PaintRecord::PaintRecord(TextStyle style,
       is_ghost_(is_ghost) {}
 
 PaintRecord::PaintRecord(TextStyle style,
+#ifndef USE_ROSEN_DRAWING
                          SkPoint offset,
                          sk_sp<SkTextBlob> text,
                          SkFontMetrics metrics,
+#else
+                         RSPoint offset,
+                         std::shared_ptr<RSTextBlob> text,
+                         RSFontMetrics metrics,
+#endif
                          size_t line,
                          double x_start,
                          double x_end,
@@ -59,8 +71,13 @@ PaintRecord::PaintRecord(TextStyle style,
       placeholder_run_(placeholder_run) {}
 
 PaintRecord::PaintRecord(TextStyle style,
+#ifndef USE_ROSEN_DRAWING
                          sk_sp<SkTextBlob> text,
                          SkFontMetrics metrics,
+#else
+                         std::shared_ptr<RSTextBlob> text,
+                         RSFontMetrics metrics,
+#endif
                          size_t line,
                          double x_start,
                          double x_end,
@@ -98,7 +115,11 @@ PaintRecord& PaintRecord::operator=(PaintRecord&& other) {
   return *this;
 }
 
+#ifndef USE_ROSEN_DRAWING
 void PaintRecord::SetOffset(SkPoint pt) {
+#else
+void PaintRecord::SetOffset(RSPoint pt) {
+#endif
   offset_ = pt;
 }
 

@@ -13,7 +13,10 @@
 
 import("//build/ohos.gni")
 import("//foundation/arkui/ace_engine/ace_config.gni")
+import("//foundation/graphic/graphic_2d/graphic_config.gni")
 import("//third_party/flutter/flutter_config.gni")
+
+rosen_modules_root = "//foundation/graphic/graphic_2d/rosen/modules"
 
 config("thirdparty_lib_txt_config") {
   cflags_cc = [
@@ -86,6 +89,10 @@ template("thirdparty_lib_txt") {
       "$txt_root/src/utils/JenkinsHash.cpp",
     ]
 
+    if (ace_enable_gpu) {
+      defines += [ "ACE_ENABLE_GPU" ]
+    }
+
     if (defined(use_new_skia) && use_new_skia) {
       deps = [
         "$ace_flutter_engine_root:flutter_engine_fml_$platform",
@@ -97,6 +104,16 @@ template("thirdparty_lib_txt") {
       }
       include_dirs = [
         "$flutter_root/txt/src",
+        "$rosen_modules_root/2d_engine",
+        "$rosen_modules_root/2d_engine/rosen_text",
+        "$rosen_modules_root/2d_graphics/include",
+        "$rosen_modules_root/2d_graphics/src",
+        "$rosen_modules_root/2d_graphics/src/drawing",
+        "$rosen_modules_root/2d_graphics/src/drawing/engine_adapter",
+        "$rosen_modules_root/render_service_base/include",
+        "//third_party/skia/include/private",
+        "//third_party/skia/src/core",
+        "//third_party/skia/src/ports",
         "//third_party/skia/third_party/externals/harfbuzz/src",
         "//",
       ]

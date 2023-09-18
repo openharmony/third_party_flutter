@@ -17,14 +17,22 @@
 #include <minikin/MinikinFont.h>
 
 #include "flutter/fml/macros.h"
+#ifndef USE_ROSEN_DRAWING
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkTypeface.h"
+#else
+#include "drawing.h"
+#endif
 
 namespace txt {
 
 class FontSkia : public minikin::MinikinFont {
  public:
+#ifndef USE_ROSEN_DRAWING
   explicit FontSkia(sk_sp<SkTypeface> typeface);
+#else
+  explicit FontSkia(std::shared_ptr<RSTypeface> typeface);
+#endif
 
   ~FontSkia();
 
@@ -39,10 +47,18 @@ class FontSkia : public minikin::MinikinFont {
 
   const std::vector<minikin::FontVariation>& GetAxes() const override;
 
+#ifndef USE_ROSEN_DRAWING
   const sk_sp<SkTypeface>& GetSkTypeface() const;
+#else
+  const std::shared_ptr<RSTypeface>& GetSkTypeface() const;
+#endif
 
  private:
+#ifndef USE_ROSEN_DRAWING
   sk_sp<SkTypeface> typeface_;
+#else
+  std::shared_ptr<RSTypeface> typeface_;
+#endif
   std::vector<minikin::FontVariation> variations_;
 
   FML_DISALLOW_COPY_AND_ASSIGN(FontSkia);

@@ -9,7 +9,11 @@
 #include <vector>
 
 #include "flutter/fml/macros.h"
+#ifndef USE_ROSEN_DRAWING
 #include "third_party/skia/include/core/SkFontMgr.h"
+#else
+#include "drawing.h"
+#endif
 
 namespace txt {
 
@@ -24,7 +28,11 @@ enum FontManagerType {
 
 std::vector<std::string> GetDefaultFontFamilies();
 
+#ifndef USE_ROSEN_DRAWING
 sk_sp<SkFontMgr> GetDefaultFontManager();
+#else
+std::shared_ptr<RSFontMgr> GetDefaultFontManager();
+#endif
 
 FontManagerType GetDefaultFontManagerType();
 

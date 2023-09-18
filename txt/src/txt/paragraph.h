@@ -144,7 +144,11 @@ class Paragraph {
 
   // Paints the laid out text onto the supplied SkCanvas at (x, y) offset from
   // the origin. Only valid after Layout() is called.
+#ifndef USE_ROSEN_DRAWING
   virtual void Paint(SkCanvas* canvas, double x, double y) = 0;
+#else
+  virtual void Paint(RSCanvas* canvas, double x, double y) = 0;
+#endif
 
   // Returns a vector of bounding boxes that enclose all text between start and
   // end glyph indexes, including start and excluding end.

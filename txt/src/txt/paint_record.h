@@ -36,18 +36,30 @@ class PaintRecord {
   ~PaintRecord();
 
   PaintRecord(TextStyle style,
+#ifndef USE_ROSEN_DRAWING
               SkPoint offset,
               sk_sp<SkTextBlob> text,
               SkFontMetrics metrics,
+#else
+              RSPoint offset,
+              std::shared_ptr<RSTextBlob> text,
+              RSFontMetrics metrics,
+#endif
               size_t line,
               double x_start,
               double x_end,
               bool is_ghost);
 
   PaintRecord(TextStyle style,
+#ifndef USE_ROSEN_DRAWING
               SkPoint offset,
               sk_sp<SkTextBlob> text,
               SkFontMetrics metrics,
+#else
+              RSPoint offset,
+              std::shared_ptr<RSTextBlob> text,
+              RSFontMetrics metrics,
+#endif
               size_t line,
               double x_start,
               double x_end,
@@ -55,8 +67,13 @@ class PaintRecord {
               PlaceholderRun* placeholder_run);
 
   PaintRecord(TextStyle style,
+#ifndef USE_ROSEN_DRAWING
               sk_sp<SkTextBlob> text,
               SkFontMetrics metrics,
+#else
+              std::shared_ptr<RSTextBlob> text,
+              RSFontMetrics metrics,
+#endif
               size_t line,
               double x_start,
               double x_end,
@@ -66,6 +83,7 @@ class PaintRecord {
 
   PaintRecord& operator=(PaintRecord&& other);
 
+#ifndef USE_ROSEN_DRAWING
   SkPoint offset() const { return offset_; }
 
   void SetOffset(SkPoint pt);
@@ -73,6 +91,15 @@ class PaintRecord {
   SkTextBlob* text() const { return text_.get(); }
 
   const SkFontMetrics& metrics() const { return metrics_; }
+#else
+  RSPoint offset() const { return offset_; }
+
+  void SetOffset(RSPoint pt);
+
+  RSTextBlob* text() const { return text_.get(); }
+
+  const RSFontMetrics& metrics() const { return metrics_; }
+#endif
 
   const TextStyle& style() const { return style_; }
 
@@ -91,11 +118,19 @@ class PaintRecord {
  private:
   TextStyle style_;
   // offset_ is the overall offset of the origin of the SkTextBlob.
+#ifndef USE_ROSEN_DRAWING
   SkPoint offset_;
   // SkTextBlob stores the glyphs and coordinates to draw them.
   sk_sp<SkTextBlob> text_;
   // FontMetrics stores the measurements of the font used.
   SkFontMetrics metrics_;
+#else
+  RSPoint offset_;
+  // SkTextBlob stores the glyphs and coordinates to draw them.
+  std::shared_ptr<RSTextBlob> text_;
+  // FontMetrics stores the measurements of the font used.
+  RSFontMetrics metrics_;
+#endif
   size_t line_;
   double x_start_ = 0.0f;
   double x_end_ = 0.0f;

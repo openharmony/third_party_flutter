@@ -20,11 +20,16 @@ std::vector<std::string> GetDefaultFontFamilies() {
 #endif
 }
 
+#ifndef USE_ROSEN_DRAWING
 sk_sp<SkFontMgr> GetDefaultFontManager() {
 #ifdef OHOS_STANDARD_SYSTEM
     return SkFontMgr::RefDefault();
 #else
     return SkFontMgr_New_OHOS();
+#endif
+#else
+std::shared_ptr<RSFontMgr> GetDefaultFontManager() {
+    return RSFontMgr::CreateDefaultFontMgr();
 #endif
 }
 

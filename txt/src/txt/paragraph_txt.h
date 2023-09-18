@@ -73,7 +73,11 @@ class ParagraphTxt : public Paragraph {
   // (10k+ characters) to ensure speedy layout.
   virtual void Layout(double width) override;
 
+#ifndef USE_ROSEN_DRAWING
   virtual void Paint(SkCanvas* canvas, double x, double y) override;
+#else
+  virtual void Paint(RSCanvas* canvas, double x, double y) override;
+#endif
 
   // Getter for paragraph_style_.
   const ParagraphStyle& GetParagraphStyle() const;
@@ -286,7 +290,11 @@ class ParagraphTxt : public Paragraph {
     Range<size_t> code_units;
     Range<double> x_pos;
     size_t line_number;
+#ifndef USE_ROSEN_DRAWING
     SkFontMetrics font_metrics;
+#else
+    RSFontMetrics font_metrics;
+#endif
     const TextStyle* style;
     TextDirection direction;
     const PlaceholderRun* placeholder_run;
@@ -295,7 +303,11 @@ class ParagraphTxt : public Paragraph {
                 Range<size_t> cu,
                 Range<double> x,
                 size_t line,
+#ifndef USE_ROSEN_DRAWING
                 const SkFontMetrics& metrics,
+#else
+                const RSFontMetrics& metrics,
+#endif
                 const TextStyle& st,
                 TextDirection dir,
                 const PlaceholderRun* placeholder);
@@ -352,7 +364,11 @@ class ParagraphTxt : public Paragraph {
   bool ComputeBidiRuns(std::vector<BidiRun>* result);
 
   // Calculates and populates strut based on paragraph_style_ strut info.
+#ifndef USE_ROSEN_DRAWING
   void ComputeStrut(StrutMetrics* strut, SkFont& font);
+#else
+  void ComputeStrut(StrutMetrics* strut, RSFont& font);
+#endif
 
   // Adjusts the ascent and descent based on the existence and type of
   // placeholder. This method sets the proper metrics to achieve the different
@@ -363,7 +379,11 @@ class ParagraphTxt : public Paragraph {
 
   bool IsStrutValid() const;
 
+#ifndef USE_ROSEN_DRAWING
   void UpdateLineMetrics(const SkFontMetrics& metrics,
+#else
+  void UpdateLineMetrics(const RSFontMetrics& metrics,
+#endif
                          const TextStyle& style,
                          double& max_ascent,
                          double& max_descent,
@@ -379,32 +399,56 @@ class ParagraphTxt : public Paragraph {
                         bool justify_line);
 
   // Creates and draws the decorations onto the canvas.
+#ifndef USE_ROSEN_DRAWING
   void PaintDecorations(SkCanvas* canvas,
                         const PaintRecord& record,
                         SkPoint base_offset);
+#else
+  void PaintDecorations(RSCanvas* canvas,
+                        const PaintRecord& record,
+                        RSPoint base_offset);
+#endif
 
   // Computes the beziers for a wavy decoration. The results will be
   // applied to path.
+#ifndef USE_ROSEN_DRAWING
   void ComputeWavyDecoration(SkPath& path,
+#else
+  void ComputeWavyDecoration(RSPath& path,
+#endif
                              double x,
                              double y,
                              double width,
                              double thickness);
 
   // Draws the background onto the canvas.
+#ifndef USE_ROSEN_DRAWING
   void PaintBackground(SkCanvas* canvas,
                        const PaintRecord& record,
                        SkPoint base_offset);
+#else
+  void PaintBackground(RSCanvas* canvas,
+                       const PaintRecord& record,
+                       RSPoint base_offset);
+#endif
 
   // Draws the shadows onto the canvas.
+#ifndef USE_ROSEN_DRAWING
   void PaintShadow(SkCanvas* canvas, const PaintRecord& record, SkPoint offset);
+#else
+  void PaintShadow(RSCanvas* canvas, const PaintRecord& record, RSPoint offset);
+#endif
 
   // Obtain a Minikin font collection matching this text style.
   std::shared_ptr<minikin::FontCollection> GetMinikinFontCollectionForStyle(
       const TextStyle& style);
 
   // Get a default SkTypeface for a text style.
+#ifndef USE_ROSEN_DRAWING
   sk_sp<SkTypeface> GetDefaultSkiaTypeface(const TextStyle& style);
+#else
+  std::shared_ptr<RSTypeface> GetDefaultSkiaTypeface(const TextStyle& style);
+#endif
 
   FML_DISALLOW_COPY_AND_ASSIGN(ParagraphTxt);
 };
