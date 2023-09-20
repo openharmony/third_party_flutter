@@ -59,7 +59,7 @@ FontSkia::FontSkia(sk_sp<SkTypeface> typeface)
     : MinikinFont(typeface->uniqueID()), typeface_(std::move(typeface)) {}
 #else
 FontSkia::FontSkia(std::shared_ptr<RSTypeface> typeface)
-    : MinikinFont(typeface->UniqueID()), typeface_(std::move(typeface)) {}
+    : MinikinFont(typeface->GetUniqueID()), typeface_(std::move(typeface)) {}
 #endif
 
 FontSkia::~FontSkia() = default;

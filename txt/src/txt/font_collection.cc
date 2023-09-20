@@ -420,7 +420,7 @@ std::shared_ptr<minikin::FontFamily> FontCollection::CreateMinikinFontFamily(
                            skia_typeface->isItalic()});
 #else
         minikin::FontStyle{skia_typeface->GetFontStyle().GetWeight() / 100,
-                           skia_typeface->IsItalic()});
+                           skia_typeface->GetItalic()});
 #endif
   }
 
@@ -478,8 +478,7 @@ const std::shared_ptr<minikin::FontFamily>& FontCollection::DoMatchFallbackFont(
     typeface->getFamilyName(&sk_family_name);
     std::string family_name(sk_family_name.c_str());
 #else
-    std::string family_name;
-    typeface->GetFamilyName(&family_name);
+    std::string family_name = typeface->GetFamilyName();
 #endif
     {
 	  std::lock_guard<std::mutex> lock(mutex_);
@@ -777,7 +776,7 @@ FontCollection::CreateMinikinFontFamilyExceptOHOS(
     minikin_fonts.emplace_back(
         std::make_shared<FontSkia>(skia_typeface),
         minikin::FontStyle{skia_typeface->fontStyle().weight() / 100,
-                           skia_typeface->isItalic()});
+                           skia_typeface->GetItalic()});
   }
 
   return std::make_shared<minikin::FontFamily>(std::move(minikin_fonts));
