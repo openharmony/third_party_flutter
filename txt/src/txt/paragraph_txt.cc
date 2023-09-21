@@ -578,10 +578,6 @@ void ParagraphTxt::ComputeStrut(StrutMetrics* strut, RSFont& font) {
     SkFontMetrics strut_metrics;
     font.getMetrics(&strut_metrics);
 #else
-    std::string str;
-    static_cast<FontSkia*>(faked_font.font)
-        ->GetSkTypeface()
-        ->GetFamilyName(&str);
     font.SetTypeface(static_cast<FontSkia*>(faked_font.font)->GetSkTypeface());
     font.SetSize(paragraph_style_.strut_font_size);
     RSFontMetrics strut_metrics;
