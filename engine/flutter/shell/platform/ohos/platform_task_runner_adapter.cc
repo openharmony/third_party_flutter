@@ -21,19 +21,19 @@ PlatformTaskRunnerAdapter::PlatformTaskRunnerAdapter(bool useCurrentEventRunner)
     eventHandler_ = std::make_shared<OHOS::AppExecFwk::EventHandler>(eventRunner_);
 }
 
-void PlatformTaskRunnerAdapter::PostTask(fml::closure task)
+void PlatformTaskRunnerAdapter::PostTask(fml::closure task, const std::string& caller)
 {
-    eventHandler_->PostTask(std::move(task));
+    eventHandler_->PostTask(std::move(task), caller);
 }
 
-void PlatformTaskRunnerAdapter::PostTaskForTime(fml::closure task, fml::TimePoint target_time)
+void PlatformTaskRunnerAdapter::PostTaskForTime(fml::closure task, fml::TimePoint target_time, const std::string& caller)
 {
-    eventHandler_->PostTimingTask(std::move(task), target_time.ToEpochDelta().ToMilliseconds(), "");
+    eventHandler_->PostTimingTask(std::move(task), target_time.ToEpochDelta().ToMilliseconds(), caller);
 }
 
-void PlatformTaskRunnerAdapter::PostDelayedTask(fml::closure task, fml::TimeDelta delay)
+void PlatformTaskRunnerAdapter::PostDelayedTask(fml::closure task, fml::TimeDelta delay, const std::string& caller)
 {
-    eventHandler_->PostTask(std::move(task), delay.ToMilliseconds());
+    eventHandler_->PostTask(std::move(task), caller, delay.ToMilliseconds());
 }
 
 bool PlatformTaskRunnerAdapter::RunsTasksOnCurrentThread()
