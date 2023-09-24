@@ -54,7 +54,7 @@ struct ParagraphStyle {
     bool operator==(const ParagraphStyle& rhs) const {
         return this->fHeight == rhs.fHeight && this->fEllipsis == rhs.fEllipsis &&
                this->fTextDirection == rhs.fTextDirection && this->fTextAlign == rhs.fTextAlign &&
-               this->fDefaultTextStyle == rhs.fDefaultTextStyle;
+               this->fDefaultTextStyle == rhs.fDefaultTextStyle && this->fEllipsisModal == rhs.fEllipsisModal;
     }
 
     const StrutStyle& getStrutStyle() const { return fStrutStyle; }
@@ -75,6 +75,9 @@ struct ParagraphStyle {
     const SkString& getEllipsis() const { return fEllipsis; }
     void setEllipsis(const std::u16string& ellipsis);
 
+    const EllipsisModal getEllipsisModal() const { return fEllipsisModal; }
+    void setEllipsisModal(const EllipsisModal ellipsisModal) { fEllipsisModal = ellipsisModal; }
+
     SkScalar getHeight() const { return fHeight; }
     void setHeight(SkScalar height) { fHeight = height; }
 
@@ -93,8 +96,15 @@ private:
     TextDirection fTextDirection;
     size_t fLinesLimit;
     SkString fEllipsis;
+    EllipsisModal fEllipsisModal = EllipsisModal::TAIL;
     SkScalar fHeight;
     bool fHintingIsOn;
+};
+
+enum EllipsisModal {
+    HEAD = 0,
+    MIDDLE = 1,
+    TAIL = 2,
 };
 }  // namespace textlayout
 }  // namespace skia

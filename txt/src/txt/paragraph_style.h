@@ -62,6 +62,12 @@ enum TextHeightBehavior {
   kDisableAll = 0x1 | 0x2,
 };
 
+enum EllipsisModal {
+    HEAD = 0,
+    MIDDLE = 1,
+    TAIL = 2,
+};
+
 class ParagraphStyle {
  public:
   // Default TextStyle. Used in GetTextStyle() to obtain the base TextStyle to
@@ -94,6 +100,7 @@ class ParagraphStyle {
   TextDirection text_direction = TextDirection::ltr;
   size_t max_lines = std::numeric_limits<size_t>::max();
   std::u16string ellipsis;
+  EllipsisModal ellipsis_modal = EllipsisModal::TAIL;
   std::string locale;
 
   // Default strategy is kBreakStrategy_Greedy. Sometimes,
