@@ -130,6 +130,6 @@ ohos_shared_library("glfw") {
     defines += [ "_GLFW_X11" ]
   }
 
-  part_name = "graphic_2d"
-  subsystem_name = "graphic"
+  part_name = "flutter"
+  subsystem_name = "thirdparty"
 }
