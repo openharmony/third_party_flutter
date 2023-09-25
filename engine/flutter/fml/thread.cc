@@ -51,7 +51,7 @@ void Thread::Join() {
     return;
   }
   joined_ = true;
-  task_runner_->PostTask([]() { MessageLoop::GetCurrent().Terminate(); });
+  task_runner_->PostTask([]() { MessageLoop::GetCurrent().Terminate(); }, {});
   thread_->join();
 }
 

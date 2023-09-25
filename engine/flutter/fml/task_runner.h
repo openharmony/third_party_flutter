@@ -20,18 +20,19 @@ class TaskRunner : public fml::RefCountedThreadSafe<TaskRunner> {
  public:
   virtual ~TaskRunner();
 
-  virtual void PostTask(fml::closure task);
+  virtual void PostTask(fml::closure task, const std::string& caller);
 
-  virtual void PostTaskForTime(fml::closure task, fml::TimePoint target_time);
+  virtual void PostTaskForTime(fml::closure task, fml::TimePoint target_time, const std::string& caller);
 
-  virtual void PostDelayedTask(fml::closure task, fml::TimeDelta delay);
+  virtual void PostDelayedTask(fml::closure task, fml::TimeDelta delay, const std::string& caller);
 
   virtual bool RunsTasksOnCurrentThread();
 
   virtual TaskQueueId GetTaskQueueId();
 
   static void RunNowOrPostTask(fml::RefPtr<fml::TaskRunner> runner,
-                               fml::closure task);
+                               fml::closure task,
+                               const std::string& caller = {});
 
  protected:
   TaskRunner(fml::RefPtr<MessageLoopImpl> loop);
