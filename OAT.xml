@@ -157,6 +157,10 @@ Note:If the text contains special characters, please escape them according to th
             </policy>
         </policylist>
         <filefilterlist>
+            <filefilter name="defaultFilter" desc="Files not to check">
+                <filteritem type="filepath" name="glfw/examples/glfw.icns" desc="不使用的文件，不影响兼容性"/>
+                <filteritem type="filepath" name="glfw/examples/glfw.ico" desc="不使用的文件，不影响兼容性"/>
+            </filefilter>
             <filefilter name="binaryFileTypePolicyFilter" desc="Invalid File Type" >
                 <filteritem type="filepath" name="flutter/.*" desc="二进制不参与编译"/>
                 <filteritem type="filepath" name="skia/.*" desc="二进制不参与编译"/>
