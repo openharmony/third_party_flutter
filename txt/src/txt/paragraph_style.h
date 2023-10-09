@@ -103,6 +103,9 @@ class ParagraphStyle {
   minikin::BreakStrategy break_strategy =
       minikin::BreakStrategy::kBreakStrategy_Greedy;
 
+  minikin::WordBreakType word_break_type =
+      minikin::WordBreakType::kWordBreakType_BreakWord;
+
   TextStyle GetTextStyle() const;
 
   bool unlimited_lines() const;
