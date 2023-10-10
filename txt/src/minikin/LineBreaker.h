@@ -43,6 +43,12 @@ enum BreakStrategy {
   kBreakStrategy_Balanced = 2
 };
 
+enum WordBreakType {
+  kWordBreakType_Normal = 0,
+  kWordBreakType_BreakAll = 1,
+  kWordBreakType_BreakWord = 2
+};
+
 enum HyphenationFrequency {
   kHyphenationFrequency_None = 0,
   kHyphenationFrequency_Normal = 1,
@@ -126,6 +132,10 @@ class LineBreaker {
 
   void setStrategy(BreakStrategy strategy) { mStrategy = strategy; }
 
+  void setWordBreakType(WordBreakType wordBreakType) {
+    mWordBreakType = wordBreakType;
+  }
+
   void setJustified(bool justified) { mJustified = justified; }
 
   HyphenationFrequency getHyphenationFrequency() const {
@@ -193,6 +203,9 @@ class LineBreaker {
 
   float currentLineWidth() const;
 
+  // Determine whether to split a character string.
+  bool IsSplittingCharacters(ParaWidth postBreak);
+
   void addWordBreak(size_t offset,
                     ParaWidth preBreak,
                     ParaWidth postBreak,
@@ -225,6 +238,7 @@ class LineBreaker {
 
   // layout parameters
   BreakStrategy mStrategy = kBreakStrategy_Greedy;
+  WordBreakType mWordBreakType = WordBreakType::kWordBreakType_BreakWord;
   HyphenationFrequency mHyphenationFrequency = kHyphenationFrequency_Normal;
   bool mJustified;
   LineWidths mLineWidths;

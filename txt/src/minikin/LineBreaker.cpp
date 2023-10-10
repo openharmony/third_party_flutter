@@ -129,12 +129,13 @@ float LineBreaker::addStyleRun(MinikinPaint* paint,
                                size_t end,
                                bool isRtl) {
   float width = 0.0f;
+  int bidiFlags = isRtl ? kBidi_Force_RTL : kBidi_Force_LTR;
 
   float hyphenPenalty = 0.0;
   if (paint != nullptr) {
     width = Layout::measureText(mTextBuf.data(), start, end - start,
-                                mTextBuf.size(), isRtl, style, *paint, typeface,
-                                mCharWidths.data() + start);
+                                mTextBuf.size(), bidiFlags, style, *paint,
+                                typeface, mCharWidths.data() + start);
 
     // a heuristic that seems to perform well
     hyphenPenalty =
@@ -201,12 +202,12 @@ float LineBreaker::addStyleRun(MinikinPaint* paint,
             paint->hyphenEdit = HyphenEdit::editForThisLine(hyph);
             const float firstPartWidth = Layout::measureText(
                 mTextBuf.data(), lastBreak, j - lastBreak, mTextBuf.size(),
-                isRtl, style, *paint, typeface, nullptr);
+                bidiFlags, style, *paint, typeface, nullptr);
             ParaWidth hyphPostBreak = lastBreakWidth + firstPartWidth;
 
             paint->hyphenEdit = HyphenEdit::editForNextLine(hyph);
             const float secondPartWidth = Layout::measureText(
-                mTextBuf.data(), j, afterWord - j, mTextBuf.size(), isRtl,
+                mTextBuf.data(), j, afterWord - j, mTextBuf.size(), bidiFlags,
                 style, *paint, typeface, nullptr);
             ParaWidth hyphPreBreak = postBreak - secondPartWidth;
 
@@ -247,7 +248,7 @@ void LineBreaker::addWordBreak(size_t offset,
   // libtxt: add a fudge factor to this comparison.  The currentLineWidth passed
   // by the framework is based on maxIntrinsicWidth/Layout::measureText
   // calculations that may not precisely match the postBreak width.
-  if (postBreak - width > currentLineWidth() + LIBTXT_WIDTH_ADJUST) {
+  if (IsSplittingCharacters(postBreak)) {
     // Add desperate breaks.
     // Note: these breaks are based on the shaping of the (non-broken) original
     // text; they are imprecise especially in the presence of kerning,
@@ -288,6 +289,13 @@ void LineBreaker::addWordBreak(size_t offset,
   addCandidate(cand);
 }
 
+bool LineBreaker::IsSplittingCharacters(ParaWidth postBreak) {
+  ParaWidth width = mCandidates.back().preBreak;
+  return mWordBreakType == WordBreakType::kWordBreakType_BreakAll ||
+          (postBreak - width > currentLineWidth() + LIBTXT_WIDTH_ADJUST &&
+          mWordBreakType != WordBreakType::kWordBreakType_Normal);
+}
+
 // Helper method for addCandidate()
 void LineBreaker::pushGreedyBreak() {
   const Candidate& bestCandidate = mCandidates[mBestBreak];
@@ -320,6 +328,11 @@ void LineBreaker::addCandidate(Candidate cand) {
       mBestBreak = candIndex;
     }
     pushGreedyBreak();
+  }
+
+  if (mWordBreakType == WordBreakType::kWordBreakType_BreakAll &&
+      cand.postBreak - mPreBreak <= currentLineWidth()) {
+    mBestBreak = candIndex;
   }
 
   while (mLastBreak != candIndex &&

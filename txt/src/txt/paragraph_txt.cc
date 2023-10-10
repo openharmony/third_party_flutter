@@ -308,6 +308,7 @@ bool ParagraphTxt::ComputeLineBreaks() {
     breaker_.setLineWidths(0.0f, 0, width_);
     breaker_.setJustified(paragraph_style_.text_align == TextAlign::justify);
     breaker_.setStrategy(paragraph_style_.break_strategy);
+    breaker_.setWordBreakType(paragraph_style_.word_break_type);
     breaker_.resize(block_size);
     memcpy(breaker_.buffer(), text_.data() + block_start,
            block_size * sizeof(text_[0]));
