@@ -885,27 +885,25 @@ void ParagraphTxt::Layout(double width) {
             ellipsis.length(), ellipsis.length(), run.is_rtl(), minikin_font,
             minikin_paint, minikin_font_collection, nullptr);
 
-        std::vector<float> text_advances(text_count);
-        float text_width =
-            layout.measureText(text_ptr, text_start, text_count, text_.size(),
-                               run.is_rtl(), minikin_font, minikin_paint,
-                               minikin_font_collection, text_advances.data());
-
-        // Truncate characters from the text until the ellipsis fits.
-        size_t truncate_count = 0;
-        while (truncate_count < text_count &&
-               run_x_offset + text_width + ellipsis_width > width_) {
-          text_width -= text_advances[text_count - truncate_count - 1];
-          truncate_count++;
+        if (paragraph_style_.ellipsis_modal == EllipsisModal::TAIL) {
+          std::vector<float> text_advances(text_count);
+          float text_width = layout.measureText(text_ptr, text_start, text_count, text_size, run.is_rtl(),
+            minikin_font, minikin_paint, minikin_font_collection, text_advances.data());
+          ConsiderTailEllipsis(ellipsized_text, text_advances, run, ellipsis_width, run_x_offset, text_width);
+        } else if (line_number == 0) { // 0 means the first line, ellipsis head and middle only support single line
+          std::vector<float> text_advances(text_size);
+          float text_width = layout.measureText(text_ptr, text_start, text_size, text_size, run.is_rtl(),
+            minikin_font, minikin_paint, minikin_font_collection, text_advances.data());
+          if (paragraph_style_.ellipsis_modal == EllipsisModal::MIDDLE) {
+            ConsiderMiddleEllipsis(ellipsized_text, text_advances, ellipsis_width, run_x_offset, text_width);
+          } else {
+            ConsiderHeadEllipsis(ellipsized_text, text_advances, ellipsis_width, run_x_offset, text_width);
+          }
+        } else {
+          ellipsized_text.reserve(text_count + ellipsis.length());
+          ellipsized_text.insert(ellipsized_text.begin(), text_.begin() + run.start(), text_.begin() + run.end());
         }
 
-        ellipsized_text.reserve(text_count - truncate_count +
-                                ellipsis.length());
-        ellipsized_text.insert(ellipsized_text.begin(),
-                               text_.begin() + run.start(),
-                               text_.begin() + run.end() - truncate_count);
-        ellipsized_text.insert(ellipsized_text.end(), ellipsis.begin(),
-                               ellipsis.end());
         text_ptr = ellipsized_text.data();
         text_start = 0;
         text_count = ellipsized_text.size();
@@ -1263,6 +1261,122 @@ void ParagraphTxt::Layout(double width) {
             });
 
   longest_line_ = max_right_ - min_left_;
+}
+
+void ParagraphTxt::ConsiderTailEllipsis(std::vector<uint16_t>& ellipsized_text, std::vector<float>& text_advances,
+  const BidiRun& run, const float ellipsis_width, const double run_x_offset, float text_width) {
+  // Truncate characters from the text until the ellipsis fits.
+  size_t truncate_count = 0;
+  size_t text_count = run.end() - run.start();
+  while (truncate_count < text_count && run_x_offset + text_width + ellipsis_width > width_) {
+    text_width -= text_advances[text_count - truncate_count - 1];  // subtract character width which need to truncate
+    truncate_count++;
+  }
+  const std::u16string& ellipsis = paragraph_style_.ellipsis;
+  ellipsized_text.reserve(text_count - truncate_count + ellipsis.length());
+  ellipsized_text.insert(ellipsized_text.begin(), text_.begin() + run.start(),
+    text_.begin() + run.end() - truncate_count);
+  ellipsized_text.insert(ellipsized_text.end(), ellipsis.begin(), ellipsis.end());
+}
+
+void ParagraphTxt::ConsiderHeadEllipsis(std::vector<uint16_t>& ellipsized_text, std::vector<float>& text_advances,
+  const float ellipsis_width, const double run_x_offset, float text_width) {
+  // Truncate characters from the text until the ellipsis fits.
+  size_t truncate_count = 0;
+  size_t text_count = text_.size();
+  while (truncate_count < text_count &&
+          run_x_offset + text_width + ellipsis_width > width_) {
+    text_width -= text_advances[truncate_count];
+    truncate_count++;
+  }
+  const std::u16string& ellipsis = paragraph_style_.ellipsis;
+  ellipsized_text.reserve(text_count - truncate_count + ellipsis.length());
+  ellipsized_text.insert(ellipsized_text.begin(), ellipsis.begin(), ellipsis.end());
+  ellipsized_text.insert(ellipsized_text.end(), text_.begin() + truncate_count, text_.end());
+}
+
+void ParagraphTxt::ConsiderMiddleEllipsis(std::vector<uint16_t>& ellipsized_text, std::vector<float>& text_advances,
+    const float ellipsis_width, const double run_x_offset, float text_width) {
+  size_t text_count = text_.size();
+  std::vector<Range<size_t>> words;
+  FindWords(text_, 0, text_count, &words);
+  size_t words_count = words.size();
+  size_t left_end = 0;
+  size_t right_start = 0;
+  const std::u16string& ellipsis = paragraph_style_.ellipsis;
+
+  if (words_count > 1) {  // multi-word
+    size_t left_range_index = 0;
+    size_t right_range_index = words_count - 1;  // last word range index
+    text_width = ComputeSubTextWidth(text_advances, 0, words[left_range_index].end) +
+      ComputeSubTextWidth(text_advances, words[right_range_index].start, text_count);
+    // compute words which will be retained
+    while (right_range_index - left_range_index > 1 && run_x_offset + text_width + ellipsis_width < width_) {
+      if (words[left_range_index].end > text_count - words[right_range_index].start) {
+        // compute previous word text_width include space
+        text_width += ComputeSubTextWidth(text_advances, words[right_range_index - 1].start,
+          words[right_range_index].start);
+        right_range_index--;
+      } else {
+        text_width += ComputeSubTextWidth(text_advances, words[left_range_index].end,
+          words[left_range_index + 1].end);  // compute next word text_width include space
+        left_range_index++;
+      }
+    }
+
+    left_end = words[left_range_index].end - 1;  // end - 1 means the last character index
+    right_start = words[right_range_index].start;
+    bool truncate_right = text_count - right_start >= left_end;
+    ComputeMiddleEllipsisTruncate(text_advances, &left_end, &right_start, truncate_right, false, run_x_offset,
+      ellipsis_width, text_width, text_count);
+  } else {
+    right_start = text_count / 2;  // the middle index
+    left_end = right_start - 1;  // the previous index of middle
+    ComputeMiddleEllipsisTruncate(text_advances, &left_end, &right_start, true, true, run_x_offset, ellipsis_width,
+      text_width, text_count);
+  }
+  ellipsized_text.reserve(left_end + 1 + text_count - right_start + ellipsis.length());  // reset text count
+  if (left_end >= 0) {
+    ellipsized_text.insert(ellipsized_text.begin(), text_.begin(), text_.begin() + left_end + 1);  // insert left part
+  }
+  ellipsized_text.insert(ellipsized_text.end(), ellipsis.begin(), ellipsis.end());
+  if (right_start < text_count) {
+    ellipsized_text.insert(ellipsized_text.end(), text_.begin() + right_start, text_.end());
+  }
+}
+
+float ParagraphTxt::ComputeSubTextWidth(std::vector<float>& text_advances, const size_t start, const size_t end) {
+  size_t width = 0;
+  for (size_t i = start; i < end && i < text_advances.size(); i++) {
+    width += text_advances[i];
+  }
+  return width;
+}
+
+void ParagraphTxt::ComputeMiddleEllipsisTruncate(std::vector<float>& text_advances, size_t* left_end,
+  size_t* right_start, bool truncate_right, const bool single_word, const double run_x_offset,
+  const float ellipsis_width, float text_width, size_t text_count) {
+  while (run_x_offset + text_width + ellipsis_width > width_) {
+    if (truncate_right) {
+      text_width -= text_advances[*right_start];
+      (*right_start)++;
+    } else {
+      text_width -= text_advances[*left_end];
+      (*left_end)--;
+    }
+
+    if (*left_end < 0 && *right_start >= text_count) {
+      break;
+    }
+
+    if (truncate_right && *right_start >= text_count) {
+      truncate_right = false;
+    } else if (!truncate_right && *left_end < 0) {
+      truncate_right = true;
+    } else if (single_word) {
+      truncate_right = !truncate_right;
+    }
+  }
 }
 
 #ifndef USE_ROSEN_DRAWING

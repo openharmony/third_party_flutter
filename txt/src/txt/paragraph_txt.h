@@ -450,6 +450,21 @@ class ParagraphTxt : public Paragraph {
   std::shared_ptr<RSTypeface> GetDefaultSkiaTypeface(const TextStyle& style);
 #endif
 
+  void ConsiderTailEllipsis(std::vector<uint16_t>& ellipsized_text, std::vector<float>& text_advances,
+    const BidiRun& run, const float ellipsis_width, const double run_x_offset, float text_width);
+
+  void ConsiderHeadEllipsis(std::vector<uint16_t>& ellipsized_text, std::vector<float>& text_advances,
+    const float ellipsis_width, const double run_x_offset, float text_width);
+
+  void ConsiderMiddleEllipsis(std::vector<uint16_t>& ellipsized_text, std::vector<float>& text_advances,
+    const float ellipsis_width, const double run_x_offset, float text_width);
+
+  float ComputeSubTextWidth(std::vector<float>& text_advances, const size_t start, const size_t end);
+
+  void ComputeMiddleEllipsisTruncate(std::vector<float>& text_advances, size_t* left_end, size_t* right_start,
+    bool truncate_right, const bool single_word, const double run_x_offset, const float ellipsis_width,
+    float text_width, const size_t text_count);
+
   FML_DISALLOW_COPY_AND_ASSIGN(ParagraphTxt);
 };
 
