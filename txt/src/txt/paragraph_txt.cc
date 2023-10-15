@@ -1956,8 +1956,8 @@ void ParagraphTxt::PaintShadow(RSCanvas* canvas,
     RSBrush paint;
     paint.SetColor(text_shadow.color);
     if (text_shadow.blur_sigma > 0.5) {
-      RSFliter filter;
-      filter.SetMaskFilter(RSRecordingMaskFilter::CreateBlurMaskFilter(RSBlurType::NORMAL, text_shadow.blur_sigma))
+      RSFilter filter;
+      filter.SetMaskFilter(RSRecordingMaskFilter::CreateBlurMaskFilter(RSBlurType::NORMAL, text_shadow.blur_sigma));
       paint.SetFilter(filter);
     }
     canvas->AttachBrush(paint);
