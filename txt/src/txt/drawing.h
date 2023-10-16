@@ -53,4 +53,4 @@ using RSTextBlob = RSDrawing::TextBlob;
 using RSTextBlobBuilder = RSDrawing::TextBlobBuilder;
 using RSTypeface = RSDrawing::Typeface;
 
-#endif
+#endif // TXT_DRAWING_H
