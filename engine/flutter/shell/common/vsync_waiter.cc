@@ -87,7 +87,7 @@ void VsyncWaiter::FireCallback(fml::TimePoint frame_start_time,
         callback(frame_start_time, frame_target_time);
         TRACE_FLOW_END("flutter", kVsyncFlowName, flow_identifier);
       },
-      frame_start_time);
+      frame_start_time, {});
 }
 
 float VsyncWaiter::GetDisplayRefreshRate() const {
