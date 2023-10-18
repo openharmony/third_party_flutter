@@ -84,7 +84,7 @@ float VsyncWaiterIOS::GetDisplayRefreshRate() const {
       [client->display_link_.get() addToRunLoop:[NSRunLoop currentRunLoop]
                                         forMode:NSRunLoopCommonModes];
       [client release];
-    });
+    }, {});
   }
 
   return self;
