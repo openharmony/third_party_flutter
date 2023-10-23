@@ -1225,7 +1225,7 @@ void ParagraphTxt::Layout(double width) {
         ceil(max_ascent + max_descent);
     line_metrics.baseline = line_metrics.height - max_descent;
 
-    y_offset += round(max_ascent + prev_max_descent);
+    y_offset += ceil(max_ascent + prev_max_descent);
     prev_max_descent = max_descent;
 
     line_metrics.line_number = line_number;
