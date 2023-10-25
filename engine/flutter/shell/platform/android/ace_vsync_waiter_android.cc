@@ -42,7 +42,7 @@ void VsyncWaiterAndroid::AwaitVSync() {
                               g_async_wait_for_vsync_method_,  //
                               java_baton                       //
     );
-  });
+  }, {});
 }
 
 float VsyncWaiterAndroid::GetDisplayRefreshRate() const {
