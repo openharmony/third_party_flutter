@@ -763,7 +763,7 @@ foreach(item, ace_platforms) {
 #      Flutter dependency for NG BUILD begin
 # ------------------------------------------------
 
-if (is_cross_platform_build) {
+if (is_arkui_x) {
   ohos_source_set("flutter_for_ng") {
     part_name = flutter_part
     subsystem_name = flutter_subsystem
