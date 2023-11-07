@@ -184,7 +184,7 @@ foreach(item, ace_platforms) {
 #      Skia main target config end
 # ------------------------------------------------
 
-if (!is_cross_platform_build) {
+if (!is_arkui_x) {
   ohos_shared_library("skia_shared") {
     platform = current_os
     if (current_os == "mingw") {
