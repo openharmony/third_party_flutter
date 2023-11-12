@@ -14,7 +14,7 @@ namespace txt {
 
 std::vector<std::string> GetDefaultFontFamilies() {
 #ifdef OHOS_STANDARD_SYSTEM
-    return {"HarmonyOS-Sans"};
+    return {"OhosThemeFont", "HarmonyOS-Sans"};
 #else
     return "sans-serif";
 #endif
