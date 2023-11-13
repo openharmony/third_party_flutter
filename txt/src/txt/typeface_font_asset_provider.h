@@ -35,6 +35,8 @@ class TypefaceFontStyleSet : public SkFontStyleSet {
 
   void registerTypeface(sk_sp<SkTypeface> typeface);
 
+  void unregisterTypefaces();
+
   // |SkFontStyleSet|
   int count() override;
 
