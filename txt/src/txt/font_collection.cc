@@ -267,6 +267,7 @@ FontCollection::GetMinikinFontCollectionForFamilies(
   auto font_collection =
       minikin::FontCollection::Create(std::move(minikin_families));
   if (!font_collection) {
+    std::lock_guard<std::mutex> lock(mutex_);
     font_collections_cache_[family_key] = nullptr;
     return nullptr;
   }
@@ -275,6 +276,7 @@ FontCollection::GetMinikinFontCollectionForFamilies(
         std::make_unique<TxtFallbackFontProvider>(shared_from_this()));
   }
 
+  std::lock_guard<std::mutex> lock(mutex_);
   // Cache the font collection for future queries.
   font_collections_cache_[family_key] = font_collection;
 
