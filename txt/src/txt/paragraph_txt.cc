@@ -2353,7 +2353,7 @@ Paragraph::PositionWithAffinity ParagraphTxt::GetGlyphPositionAtCoordinate(
     }
   }
 
-  double glyph_center = (gp->x_pos.start + gp->x_pos.end) / 2;
+  double glyph_center = (gp->x_pos.start + gp->x_pos.end) * paragraph_style_.text_split_ratio;
   if ((direction == TextDirection::ltr && dx < glyph_center) ||
       (direction == TextDirection::rtl && dx >= glyph_center)) {
     return PositionWithAffinity(gp->code_units.start, DOWNSTREAM);
