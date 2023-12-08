@@ -113,6 +113,8 @@ class ParagraphStyle {
   minikin::WordBreakType word_break_type =
       minikin::WordBreakType::kWordBreakType_BreakWord;
 
+  float text_split_ratio = 0.5f;
+
   TextStyle GetTextStyle() const;
 
   bool unlimited_lines() const;
