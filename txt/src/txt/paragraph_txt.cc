@@ -2447,4 +2447,21 @@ std::vector<LineMetrics>& ParagraphTxt::GetLineMetrics() {
   return line_metrics_;
 }
 
+double ParagraphTxt::GetLineHeight(int lineNumber)
+{
+    if (lineNumber >= 0 && lineNumber < line_metrics_.size()) {
+        return line_metrics_[lineNumber].height;
+    } else {
+        return 0.0;
+    }
+}
+
+double ParagraphTxt::GetLineWidth(int lineNumber)
+{
+    if (lineNumber >= 0 && lineNumber < line_metrics_.size()) {
+        return line_metrics_[lineNumber].width;
+    } else {
+        return 0.0;
+    }
+}
 }  // namespace txt

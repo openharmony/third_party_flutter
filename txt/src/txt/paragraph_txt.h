@@ -125,6 +125,10 @@ class ParagraphTxt : public Paragraph {
   // line in the final layout.
   std::vector<LineMetrics>& GetLineMetrics() override;
 
+  double GetLineHeight(int lineNumber) override;
+
+  double GetLineWidth(int lineNumber) override;
+
   // Sets the needs_layout_ to dirty. When Layout() is called, a new Layout will
   // be performed when this is set to true. Can also be used to prevent a new
   // Layout from being calculated by setting to false.

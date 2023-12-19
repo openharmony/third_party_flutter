@@ -114,6 +114,16 @@ class ParagraphTxt : public Paragraph {
   // the layout and this will return the max lines allowed.
   size_t GetLineCount() override;
 
+  double GetLineHeight(int lineNumber) override
+  {
+    return 0.0;
+  }
+
+  double GetLineWidth(int lineNumber) override
+  {
+    return 0.0;
+  }
+
   bool DidExceedMaxLines() override;
 
   // Sets the needs_layout_ to dirty. When Layout() is called, a new Layout will

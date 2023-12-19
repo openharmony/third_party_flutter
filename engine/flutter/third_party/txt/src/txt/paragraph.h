@@ -176,6 +176,10 @@ class Paragraph {
   virtual Range<size_t> GetWordBoundary(size_t offset) = 0;
 
   virtual size_t GetLineCount() = 0;
+
+  virtual double GetLineHeight(int lineNumber) = 0;
+
+  virtual double GetLineWidth(int lineNumber) = 0;
 };
 
 }  // namespace txt
