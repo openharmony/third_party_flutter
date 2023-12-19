@@ -588,7 +588,7 @@ ohos_source_set("skia_core_ohos") {
   }
 
   # Ohos plarform
-  if (target_cpu != "arm") {
+  if (target_cpu != "arm" && target_cpu != "riscv64") {
     defines += [ "SKVM_JIT" ]
   }
 

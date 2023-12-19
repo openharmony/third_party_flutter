@@ -420,8 +420,9 @@ template("ace_skia_opts") {
 
     sources = []
 
-    if (target_cpu == "x86_64" || platform == "windows" || platform == "mac" ||
-        platform == "linux" || platform == "ios") {
+    if (target_cpu == "x86_64" || target_cpu == "riscv64" ||
+        platform == "windows" || platform == "mac" || platform == "linux" ||
+        platform == "ios") {
       cflags -= [ "-march=armv8-a+crc" ]
       sources += [
         "$flutter_root/skia/src/opts/SkOpts_avx.cpp",
@@ -966,7 +967,7 @@ template("ace_skia_core") {
       libs = [ "GL" ]
     } else {
       # Ohos and Android plarform
-      if (target_cpu != "arm") {
+      if (target_cpu != "arm" && target_cpu != "riscv64") {
         defines += [ "SKVM_JIT" ]
       }
 
