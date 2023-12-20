@@ -181,6 +181,10 @@ class Paragraph {
   virtual size_t GetLineCount() = 0;
 
   virtual std::vector<LineMetrics>& GetLineMetrics() = 0;
+
+  virtual double GetLineHeight(int lineNumber) = 0;
+
+  virtual double GetLineWidth(int lineNumber) = 0;
 };
 
 }  // namespace txt
