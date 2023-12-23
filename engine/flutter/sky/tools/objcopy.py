@@ -14,6 +14,7 @@ BFD_ARCH = {
   'arm64': 'aarch64',
   'x86': 'i386',
   'x86_64': 'i386:x86-64',
+  'riscv64': 'riscv',
 }
 
 # BFD target names recognized by objcopy.
@@ -22,6 +23,7 @@ BFD_TARGET = {
   'arm64': 'elf64-littleaarch64',
   'x86': 'elf32-i386',
   'x86_64': 'elf64-x86-64',
+  'riscv64': 'elf64-littleriscv',
 }
 
 def main():
