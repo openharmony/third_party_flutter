@@ -436,18 +436,6 @@ class ParagraphTxt : public Paragraph {
                        RSPoint base_offset);
 #endif
 
-// Draws the background round-rect onto the canvas.
-#ifndef USE_ROSEN_DRAWING
-  void PaintRoundRect(SkCanvas* canvas,
-                      const PaintRecord& record,
-                      SkPoint base_offset,
-                      SkPaint& paint);
-#else
-  void PaintRoundRect(RSCanvas* canvas,
-                      const PaintRecord& record,
-                      RSPoint base_offset);
-#endif
-
   // Draws the shadows onto the canvas.
 #ifndef USE_ROSEN_DRAWING
   void PaintShadow(SkCanvas* canvas, const PaintRecord& record, SkPoint offset);
