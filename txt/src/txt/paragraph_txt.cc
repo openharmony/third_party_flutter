@@ -2075,8 +2075,7 @@ void ParagraphTxt::PaintRoundRect(RSCanvas* canvas,
   RSPoint rightTop = {backgroundRect.rightTopRadius, backgroundRect.rightTopRadius};
   RSPoint rightBottom = {backgroundRect.rightBottomRadius, backgroundRect.rightBottomRadius};
   RSPoint leftBottom = {backgroundRect.leftBottomRadius, backgroundRect.leftBottomRadius};
-  std::vector<RSPoint> radiusXY = {leftTop, rightTop, leftBottom, rightBottom};
-  RSRoundRect roundRect(rect, radiusXY);
+  RSRoundRect roundRect(rect, {leftTop, rightTop, leftBottom, rightBottom});
   roundRect.Offset(base_offset.GetX() + record.offset().GetX(), base_offset.GetY() + record.offset().GetY());
   RSBrush brush;
   brush.SetColor(backgroundRect.color);
