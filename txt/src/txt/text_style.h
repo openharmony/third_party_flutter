@@ -37,8 +37,6 @@ struct RectStyle {
     double rightTopRadius = 0.0;
     double rightBottomRadius = 0.0;
     double leftBottomRadius = 0.0;
-    bool operator ==(const RectStyle& rhs) const;
-    bool operator !=(const RectStyle& rhs) const;
 };
 
 class TextStyle {
