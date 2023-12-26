@@ -33,6 +33,8 @@ std::vector<std::string> GetDefaultFontFamilies() {
   return {"Ubuntu", "Cantarell", "DejaVu Sans", "Liberation Sans", "Arial"};
 }
 #endif
+
+#ifndef USE_ROSEN_DRAWING
 sk_sp<SkFontMgr> GetDefaultFontManager()
 {
 #ifdef SK_BUILD_FONT_MGR_FOR_PREVIEW_LINUX
@@ -43,5 +45,11 @@ sk_sp<SkFontMgr> GetDefaultFontManager()
   return SkFontMgr_New_Custom_Directory("/usr/share/fonts/");
 #endif
 }
+#else
+std::shared_ptr<RSFontMgr> GetDefaultFontManager()
+{
+    return RSFontMgr::CreateDefaultFontMgr();
+}
+#endif
 
 }  // namespace txt

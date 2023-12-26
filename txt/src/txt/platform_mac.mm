@@ -45,8 +45,13 @@ std::vector<std::string> GetDefaultFontFamilies() {
 }
 #endif
 
+#ifndef USE_ROSEN_DRAWING
 sk_sp<SkFontMgr> GetDefaultFontManager() {
   return SkFontMgr::RefDefault();
 }
-
+#else
+std::shared_ptr<RSFontMgr> GetDefaultFontManager() {
+  return RSFontMgr::CreateDefaultFontMgr();
+}
+#endif
 }  // namespace txt
