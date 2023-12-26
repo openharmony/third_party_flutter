@@ -31,6 +31,14 @@
 
 namespace txt {
 
+struct RectStyle {
+    uint32_t color = 0;
+    double leftTopRadius = 0.0;
+    double rightTopRadius = 0.0;
+    double rightBottomRadius = 0.0;
+    double leftBottomRadius = 0.0;
+};
+
 class TextStyle {
  public:
 #ifndef USE_ROSEN_DRAWING
@@ -77,6 +85,7 @@ class TextStyle {
   bool has_foreground_brush = false;
   RSBrush foreground_brush;
 #endif
+  RectStyle backgroundRect = {0, 0.0, 0.0, 0.0, 0.0};
   // An ordered list of shadows where the first shadow will be drawn first (at
   // the bottom).
   std::vector<TextShadow> text_shadows;

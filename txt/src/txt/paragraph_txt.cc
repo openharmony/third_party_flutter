@@ -1622,6 +1622,7 @@ void ParagraphTxt::Paint(SkCanvas* canvas, double x, double y) {
   // potential overlap.
   for (const PaintRecord& record : records_) {
     PaintBackground(canvas, record, base_offset);
+    PaintRoundRect(canvas, record, base_offset, paint);
   }
   for (const PaintRecord& record : records_) {
     if (record.style().has_foreground) {
@@ -1645,6 +1646,7 @@ void ParagraphTxt::Paint(RSCanvas* canvas, double x, double y) {
   // potential overlap.
   for (const PaintRecord& record : records_) {
     PaintBackground(canvas, record, base_offset);
+    PaintRoundRect(canvas, record, base_offset);
   }
   for (const PaintRecord& record : records_) {
     RSPoint offset = base_offset + record.offset();
@@ -2033,6 +2035,53 @@ void ParagraphTxt::PaintBackground(RSCanvas* canvas,
     canvas->DrawRect(rect);
     canvas->DetachBrush();
   }
+}
+#endif
+
+#ifndef USE_ROSEN_DRAWING
+void ParagraphTxt::PaintRoundRect(SkCanvas* canvas,
+                                  const PaintRecord& record,
+                                  SkPoint base_offset,
+                                  SkPaint& paint) {
+  if (record.style().backgroundRect.color == 0) {
+    return;
+  }
+
+  const SkFontMetrics& metrics = record.metrics();
+  SkRect skRect(SkRect::MakeLTRB(record.x_start(), metrics.fAscent, record.x_end(), metrics.fDescent));
+  SkRRect skRRect;
+  double ltRadius = record.style().backgroundRect.leftTopRadius;
+  double rtRadius = record.style().backgroundRect.rightTopRadius;
+  double rbRadius = record.style().backgroundRect.rightBottomRadius;
+  double lbRadius = record.style().backgroundRect.leftBottomRadius;
+  const SkVector radii[4] = {{ltRadius, ltRadius}, {rtRadius, rtRadius}, {rbRadius, rbRadius}, {lbRadius, lbRadius}};
+  skRRect.setRectRadii(skRect, radii);
+  skRRect.offset(base_offset.fX + record.offset().fX, base_offset.fY + record.offset().fY);
+  paint.setColor(record.style().backgroundRect.color);
+  canvas->drawRRect(skRRect, paint);
+}
+#else
+void ParagraphTxt::PaintRoundRect(RSCanvas* canvas,
+                                  const PaintRecord& record,
+                                  RSPoint base_offset) {
+  const RectStyle& backgroundRect = record.style().backgroundRect;
+  if (backgroundRect.color == 0) {
+    return;
+  }
+
+  const RSFontMetrics& metrics = record.metrics();
+  RSRect rect(record.x_start(), metrics.fAscent, record.x_end(), metrics.fDescent);
+  RSPoint leftTop = {backgroundRect.leftTopRadius, backgroundRect.leftTopRadius};
+  RSPoint rightTop = {backgroundRect.rightTopRadius, backgroundRect.rightTopRadius};
+  RSPoint rightBottom = {backgroundRect.rightBottomRadius, backgroundRect.rightBottomRadius};
+  RSPoint leftBottom = {backgroundRect.leftBottomRadius, backgroundRect.leftBottomRadius};
+  RSRoundRect roundRect(rect, {leftTop, rightTop, rightBottom, leftBottom});
+  roundRect.Offset(base_offset.GetX() + record.offset().GetX(), base_offset.GetY() + record.offset().GetY());
+  RSBrush brush;
+  brush.SetColor(backgroundRect.color);
+  canvas->AttachBrush(brush);
+  canvas->DrawRoundRect(roundRect);
+  canvas->DetachBrush();
 }
 #endif
 

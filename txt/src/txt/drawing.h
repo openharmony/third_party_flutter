@@ -48,6 +48,7 @@ using RSPoint = RSDrawing::Point;
 using RSRecordingPathEffect = RSDrawing::RecordingPathEffect;
 using RSRecordingMaskFilter = RSDrawing::RecordingMaskFilter;
 using RSRect = RSDrawing::Rect;
+using RSRoundRect = RSDrawing::RoundRect;
 using RSScalar = RSDrawing::scalar;
 using RSTextBlob = RSDrawing::TextBlob;
 using RSTextBlobBuilder = RSDrawing::TextBlobBuilder;
