@@ -441,11 +441,13 @@ class ParagraphTxt : public Paragraph {
   void PaintRoundRect(SkCanvas* canvas,
                       const PaintRecord& record,
                       SkPoint base_offset,
-                      SkPaint& paint);
+                      SkPaint& paint,
+                      RoundRectType rType);
 #else
   void PaintRoundRect(RSCanvas* canvas,
                       const PaintRecord& record,
-                      RSPoint base_offset);
+                      RSPoint base_offset,
+                      RoundRectType rType);
 #endif
 
   // Draws the shadows onto the canvas.
@@ -480,6 +482,8 @@ class ParagraphTxt : public Paragraph {
   void ComputeMiddleEllipsisTruncate(std::vector<float>& text_advances, size_t* left_end, size_t* right_start,
     bool truncate_right, const bool single_word, const double run_x_offset, const float ellipsis_width,
     float text_width, const size_t text_count);
+
+  RoundRectType ComputeRoundRectType(int& last_line_num, int& index, int& pre_index, const PaintRecord& record) const;
 
   FML_DISALLOW_COPY_AND_ASSIGN(ParagraphTxt);
 };

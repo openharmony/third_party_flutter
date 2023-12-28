@@ -115,6 +115,8 @@ class PaintRecord {
 
   bool isPlaceholder() const { return placeholder_run_ == nullptr; }
 
+  bool hasBackgroundRect() const { return style_.backgroundRect.color != 0; }
+
  private:
   TextStyle style_;
   // offset_ is the overall offset of the origin of the SkTextBlob.
