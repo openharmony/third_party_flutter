@@ -38,6 +38,7 @@ class ParagraphBuilderTxt : public ParagraphBuilder {
   virtual void AddText(const std::u16string& text) override;
   virtual void AddPlaceholder(PlaceholderRun& span) override;
   virtual std::unique_ptr<Paragraph> Build() override;
+  void AddSymbol(const uint32_t& symbolId) override;
 
  private:
   std::vector<uint16_t> text_;
@@ -57,6 +58,8 @@ class ParagraphBuilderTxt : public ParagraphBuilder {
   size_t paragraph_style_index_;
 
   void SetParagraphStyle(const ParagraphStyle& style);
+
+  std::vector<uint16_t> SymbolToUTF16(const std::vector<uint32_t> &utf32Text);
 
   size_t PeekStyleIndex() const;
 };

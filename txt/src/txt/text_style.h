@@ -94,6 +94,8 @@ class TextStyle {
   TextStyle();
 
   bool equals(const TextStyle& other) const;
+
+  bool isSymbolGlyph = false;
 };
 
 }  // namespace txt

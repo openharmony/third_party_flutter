@@ -17,6 +17,7 @@
 #include "paragraph_builder_txt.h"
 
 #include "paragraph_txt.h"
+#include <unicode/utf8.h>
 
 namespace txt {
 
@@ -59,6 +60,27 @@ const TextStyle& ParagraphBuilderTxt::PeekStyle() {
 
 void ParagraphBuilderTxt::AddText(const std::u16string& text) {
   text_.insert(text_.end(), text.begin(), text.end());
+}
+
+void ParagraphBuilderTxt::AddSymbol(const uint32_t& symbolId)
+{
+    std::vector<uint32_t> symbolUnicode = {symbolId};
+    std::vector<uint16_t> symbolUnicode16 = SymbolToUTF16(symbolUnicode);
+    text_.insert(text_.end(), symbolUnicode16.begin(), symbolUnicode16.end());
+}
+
+std::vector<uint16_t> ParagraphBuilderTxt::SymbolToUTF16(const std::vector<uint32_t> &utf32Text)
+{
+    size_t utf32Index = 0;
+    size_t codePoint = 0;
+    int error = 0;
+    std::vector<uint16_t> utf16Text;
+    while (utf32Index < utf32Text.size()) {
+        UTF32_NEXT_CHAR_SAFE(utf32Text.data(), utf32Index, utf32Text.size(), codePoint, error);
+        utf16Text.push_back(U16_LEAD(codePoint));
+        utf16Text.push_back(U16_TRAIL(codePoint));
+    }
+    return utf16Text;
 }
 
 void ParagraphBuilderTxt::AddPlaceholder(PlaceholderRun& span) {
