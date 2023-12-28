@@ -67,6 +67,8 @@ class ParagraphBuilder {
   // on the style_stack_;
   virtual void AddText(const std::u16string& text) = 0;
 
+  virtual void AddSymbol(const uint32_t& symbolId) = 0;
+
   // Pushes the information required to leave an open space, where Flutter may
   // draw a custom placeholder into.
   //
