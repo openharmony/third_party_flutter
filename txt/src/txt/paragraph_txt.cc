@@ -1612,6 +1612,38 @@ std::shared_ptr<RSTypeface> ParagraphTxt::GetDefaultSkiaTypeface(const TextStyle
   return static_cast<FontSkia*>(faked_font.font)->GetSkTypeface();
 }
 
+RoundRectType ParagraphTxt::ComputeRoundRectType(int& last_line_num, int& index, int& pre_index,
+  const PaintRecord& record) const {
+  int line_num = record.line();
+  if (line_num != last_line_num) {
+    last_line_num = line_num;
+    pre_index = -1;
+  }
+  bool line_start = (index == 0) || (line_num != records_[index - 1].line());
+  bool line_end = (index == records_.size() - 1) || (line_num != records_[index + 1].line());
+  bool left_round = false;
+  bool right_round = false;
+  if (record.hasBackgroundRect()) {
+    int style_id = record.style().styleId;
+    int pre_style_id = line_start ? -1 : records_[index - 1].style().styleId;
+    int next_style_id = line_end ? -1 : records_[index + 1].style().styleId;
+    left_round = (pre_index < 0 || index - pre_index > 1 || pre_style_id != style_id);
+    right_round = (line_end || !records_[index + 1].hasBackgroundRect() || next_style_id != style_id);
+    pre_index = index;
+  }
+  RoundRectType r_type;
+  if (left_round && right_round) {
+    r_type = RoundRectType::ALL;
+  } else if (left_round) {
+    r_type = RoundRectType::LEFT_ONLY;
+  } else if (right_round) {
+    r_type = RoundRectType::RIGHT_ONLY;
+  } else {
+    r_type = RoundRectType::NONE;
+  }
+  return r_type;
+}
+
 // The x,y coordinates will be the very top left corner of the rendered
 // paragraph.
 #ifndef USE_ROSEN_DRAWING
@@ -1620,9 +1652,13 @@ void ParagraphTxt::Paint(SkCanvas* canvas, double x, double y) {
   SkPaint paint;
   // Paint the background first before painting any text to prevent
   // potential overlap.
+  int last_line_num = 0;
+  int index = 0;
+  int pre_index = -1;
   for (const PaintRecord& record : records_) {
     PaintBackground(canvas, record, base_offset);
-    PaintRoundRect(canvas, record, base_offset, paint);
+    PaintRoundRect(canvas, record, base_offset, paint, ComputeRoundRectType(last_line_num, index, pre_index, record));
+    index++;
   }
   for (const PaintRecord& record : records_) {
     if (record.style().has_foreground) {
@@ -1642,11 +1678,15 @@ void ParagraphTxt::Paint(SkCanvas* canvas, double x, double y) {
 #else
 void ParagraphTxt::Paint(RSCanvas* canvas, double x, double y) {
   RSPoint base_offset(x, y);
+  int last_line_num = 0;
+  int index = 0;
+  int pre_index = -1;
   // Paint the background first before painting any text to prevent
   // potential overlap.
   for (const PaintRecord& record : records_) {
     PaintBackground(canvas, record, base_offset);
-    PaintRoundRect(canvas, record, base_offset);
+    PaintRoundRect(canvas, record, base_offset, ComputeRoundRectType(last_line_num, index, pre_index, record));
+    index++;
   }
   for (const PaintRecord& record : records_) {
     RSPoint offset = base_offset + record.offset();
@@ -2042,39 +2082,64 @@ void ParagraphTxt::PaintBackground(RSCanvas* canvas,
 void ParagraphTxt::PaintRoundRect(SkCanvas* canvas,
                                   const PaintRecord& record,
                                   SkPoint base_offset,
-                                  SkPaint& paint) {
-  if (record.style().backgroundRect.color == 0) {
-    return;
-  }
-
-  const SkFontMetrics& metrics = record.metrics();
-  SkRect skRect(SkRect::MakeLTRB(record.x_start(), metrics.fAscent, record.x_end(), metrics.fDescent));
-  SkRRect skRRect;
-  double ltRadius = record.style().backgroundRect.leftTopRadius;
-  double rtRadius = record.style().backgroundRect.rightTopRadius;
-  double rbRadius = record.style().backgroundRect.rightBottomRadius;
-  double lbRadius = record.style().backgroundRect.leftBottomRadius;
-  const SkVector radii[4] = {{ltRadius, ltRadius}, {rtRadius, rtRadius}, {rbRadius, rbRadius}, {lbRadius, lbRadius}};
-  skRRect.setRectRadii(skRect, radii);
-  skRRect.offset(base_offset.fX + record.offset().fX, base_offset.fY + record.offset().fY);
-  paint.setColor(record.style().backgroundRect.color);
-  canvas->drawRRect(skRRect, paint);
-}
-#else
-void ParagraphTxt::PaintRoundRect(RSCanvas* canvas,
-                                  const PaintRecord& record,
-                                  RSPoint base_offset) {
+                                  SkPaint& paint,
+                                  RoundRectType r_type) {
   const RectStyle& backgroundRect = record.style().backgroundRect;
   if (backgroundRect.color == 0) {
     return;
   }
 
-  const RSFontMetrics& metrics = record.metrics();
-  RSRect rect(record.x_start(), metrics.fAscent, record.x_end(), metrics.fDescent);
-  RSPoint leftTop = {backgroundRect.leftTopRadius, backgroundRect.leftTopRadius};
-  RSPoint rightTop = {backgroundRect.rightTopRadius, backgroundRect.rightTopRadius};
-  RSPoint rightBottom = {backgroundRect.rightBottomRadius, backgroundRect.rightBottomRadius};
-  RSPoint leftBottom = {backgroundRect.leftBottomRadius, backgroundRect.leftBottomRadius};
+  double ltRadius = 0.0;
+  double rtRadius = 0.0;
+  double rbRadius = 0.0;
+  double lbRadius = 0.0;
+  if (r_type == RoundRectType::ALL || r_type == RoundRectType::LEFT_ONLY) {
+    ltRadius = backgroundRect.leftTopRadius;
+    lbRadius = backgroundRect.leftBottomRadius;
+  }
+  if (r_type == RoundRectType::ALL || r_type == RoundRectType::RIGHT_ONLY) {
+    rtRadius = backgroundRect.rightTopRadius;
+    rbRadius = backgroundRect.rightBottomRadius;
+  }
+  const SkVector radii[4] = {{ltRadius, ltRadius}, {rtRadius, rtRadius}, {rbRadius, rbRadius}, {lbRadius, lbRadius}};
+  double lineHeight = line_metrics_[record.line()].ascent + line_metrics_[record.line()].descent;
+  double lineY = -line_metrics_[record.line()].ascent;
+  SkRect skRect(SkRect::MakeLTRB(record.x_start(), lineY, record.x_end(), lineY + lineHeight));
+  SkRRect skRRect;
+  skRRect.setRectRadii(skRect, radii);
+  skRRect.offset(base_offset.fX + record.offset().fX, base_offset.fY + record.offset().fY);
+  paint.setColor(backgroundRect.color);
+  canvas->drawRRect(skRRect, paint);
+}
+#else
+void ParagraphTxt::PaintRoundRect(RSCanvas* canvas,
+                                  const PaintRecord& record,
+                                  RSPoint base_offset,
+                                  RoundRectType r_type) {
+  const RectStyle& backgroundRect = record.style().backgroundRect;
+  if (backgroundRect.color == 0) {
+    return;
+  }
+
+  double ltRadius = 0.0;
+  double rtRadius = 0.0;
+  double rbRadius = 0.0;
+  double lbRadius = 0.0;
+  if (r_type == RoundRectType::ALL || r_type == RoundRectType::LEFT_ONLY) {
+    ltRadius = backgroundRect.leftTopRadius;
+    lbRadius = backgroundRect.leftBottomRadius;
+  }
+  if (r_type == RoundRectType::ALL || r_type == RoundRectType::RIGHT_ONLY) {
+    rtRadius = backgroundRect.rightTopRadius;
+    rbRadius = backgroundRect.rightBottomRadius;
+  }
+  RSPoint leftTop = {ltRadius, ltRadius};
+  RSPoint rightTop = {rtRadius, rtRadius};
+  RSPoint rightBottom = {rbRadius, rbRadius};
+  RSPoint leftBottom = {lbRadius, lbRadius};
+  double lineHeight = line_metrics_[record.line()].ascent + line_metrics_[record.line()].descent;
+  double lineY = -line_metrics_[record.line()].ascent;
+  RSRect rect(record.x_start(), lineY, record.x_end(), lineY + lineHeight);
   RSRoundRect roundRect(rect, {leftTop, rightTop, rightBottom, leftBottom});
   roundRect.Offset(base_offset.GetX() + record.offset().GetX(), base_offset.GetY() + record.offset().GetY());
   RSBrush brush;
