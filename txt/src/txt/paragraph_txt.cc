@@ -1825,12 +1825,13 @@ void ParagraphTxt::PaintDecorations(RSCanvas* canvas,
           SkDashPathEffect::Make(intervals, count, 0.0f),
           SkDiscretePathEffect::Make(0, 0)));
 #else
-      const std::vector<RSScalar> intervals = {1.0f * scale, 1.5f * scale, 1.0f * scale,
-                                               1.5f * scale};
-      auto pathEffect1 = RSRecordingPathEffect::CreateDashPathEffect(intervals, 0.0f);
-      auto pathEffect2 = RSRecordingPathEffect::CreateDiscretePathEffect(0, 0);
-      auto recordingPathEffect = RSRecordingPathEffect::CreateComposePathEffect(*pathEffect1.get(), *pathEffect2.get());
-      paint.SetPathEffect(recordingPathEffect);
+      const RSScalar intervals[] = {1.0f * scale, 1.5f * scale, 1.0f * scale,
+                                    1.5f * scale};
+      size_t count = sizeof(intervals) / sizeof(intervals[0]);
+      auto pathEffect1 = RSPathEffect::CreateDashPathEffect(intervals, count, 0.0f);
+      auto pathEffect2 = RSPathEffect::CreateDiscretePathEffect(0, 0);
+      auto pathEffect = RSPathEffect::CreateComposePathEffect(*pathEffect1.get(), *pathEffect2.get());
+      paint.SetPathEffect(pathEffect);
 #endif
       break;
     }
@@ -1848,12 +1849,13 @@ void ParagraphTxt::PaintDecorations(RSCanvas* canvas,
           SkDashPathEffect::Make(intervals, count, 0.0f),
           SkDiscretePathEffect::Make(0, 0)));
 #else
-      const std::vector<RSScalar> intervals = {4.0f * scale, 2.0f * scale, 4.0f * scale,
-                                               2.0f * scale};
-      auto pathEffect1 = RSRecordingPathEffect::CreateDashPathEffect(intervals, 0.0f);
-      auto pathEffect2 = RSRecordingPathEffect::CreateDiscretePathEffect(0, 0);
-      auto recordingPathEffect = RSRecordingPathEffect::CreateComposePathEffect(*pathEffect1.get(), *pathEffect2.get());
-      paint.SetPathEffect(recordingPathEffect);
+      const RSScalar intervals[] = {4.0f * scale, 2.0f * scale, 4.0f * scale,
+                                    2.0f * scale};
+      size_t count = sizeof(intervals) / sizeof(intervals[0]);
+      auto pathEffect1 = RSPathEffect::CreateDashPathEffect(intervals, count, 0.0f);
+      auto pathEffect2 = RSPathEffect::CreateDiscretePathEffect(0, 0);
+      auto pathEffect = RSPathEffect::CreateComposePathEffect(*pathEffect1.get(), *pathEffect2.get());
+      paint.SetPathEffect(pathEffect);
 #endif
       break;
     }
@@ -2186,7 +2188,7 @@ void ParagraphTxt::PaintShadow(RSCanvas* canvas,
     paint.SetColor(text_shadow.color);
     if (text_shadow.blur_sigma > 0.5) {
       RSFilter filter;
-      filter.SetMaskFilter(RSRecordingMaskFilter::CreateBlurMaskFilter(RSBlurType::NORMAL, text_shadow.blur_sigma));
+      filter.SetMaskFilter(RSMaskFilter::CreateBlurMaskFilter(RSBlurType::NORMAL, text_shadow.blur_sigma));
       paint.SetFilter(filter);
     }
     canvas->AttachBrush(paint);
