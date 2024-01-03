@@ -16,10 +16,10 @@
 #ifndef TXT_DRAWING_H
 #define TXT_DRAWING_H
 
+#include "draw/path.h"
+#include "effect/mask_filter.h"
+#include "effect/path_effect.h"
 #include "recording/recording_canvas.h"
-#include "recording/recording_path.h"
-#include "recording/recording_path_effect.h"
-#include "recording/recording_mask_filter.h"
 #include "text/text_blob.h"
 #include "text/text_blob_builder.h"
 #include "text/font.h"
@@ -42,11 +42,11 @@ using RSFontMetrics = RSDrawing::FontMetrics;
 using RSFontMgr = RSDrawing::FontMgr;
 using RSFontStyle = RSDrawing::FontStyle;
 using RSFontStyleSet = RSDrawing::FontStyleSet;
-using RSPath = RSDrawing::RecordingPath;
+using RSPath = RSDrawing::Path;
 using RSPen = RSDrawing::Pen;
 using RSPoint = RSDrawing::Point;
-using RSRecordingPathEffect = RSDrawing::RecordingPathEffect;
-using RSRecordingMaskFilter = RSDrawing::RecordingMaskFilter;
+using RSPathEffect = RSDrawing::PathEffect;
+using RSMaskFilter = RSDrawing::MaskFilter;
 using RSRect = RSDrawing::Rect;
 using RSRoundRect = RSDrawing::RoundRect;
 using RSScalar = RSDrawing::scalar;
