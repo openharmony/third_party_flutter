@@ -5,6 +5,7 @@
 
 import argparse
 import os
+import platform
 import subprocess
 import sys
 
@@ -46,6 +47,16 @@ def main():
     input_file,
     output_path,
   ], cwd=input_dir)
+
+  if args.arch == "riscv64":
+    arch = platform.architecture()
+    with open(output_path, "rb+") as f:
+      if arch[0] == "64bit":
+        f.seek(48)
+        f.write(b'\x05\x00\x00\x00')
+      elif arch[0] == "32bit":
+        f.seek(36)
+        f.write(b'\x05\x00\x00\x00')
 
 if __name__ == '__main__':
   sys.exit(main())
