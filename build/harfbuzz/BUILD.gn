@@ -115,8 +115,11 @@ template("ace_libharfbuzz") {
       "$flutter_root/skia/third_party/externals/harfbuzz/src/hb-unicode.cc",
       "$flutter_root/skia/third_party/externals/harfbuzz/src/hb-warning.cc",
     ]
-
-    deps = [ "$ace_flutter_engine_root/icu:ace_libicu_$platform" ]
+    if (is_arkui_x) {
+      deps = [ "//third_party/icu/icu4c:static_icuuc" ]
+    } else {
+      deps = [ "$ace_flutter_engine_root/icu:ace_libicu_$platform" ]
+    }
   }
 }
 
